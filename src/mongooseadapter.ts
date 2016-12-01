@@ -1,0 +1,43 @@
+import * as mongoose from 'mongoose'
+import * as MuteStructs from 'mute-structs'
+
+export class MongooseAdapter {
+
+  private db: mongoose.Connection
+
+  private docSchema: mongoose.Schema = new mongoose.Schema({
+    key: {
+      type: String,
+      require: true
+    },
+    doc: {
+      root: Object,
+      str: String
+    }
+  })
+
+  private docModel = mongoose.model('Doc', this.docSchema)
+
+  constructor (url) {
+    mongoose.connect(`mongodb://${url}/docs`)
+    this.db = mongoose.connection
+    this.db.on('error', console.error.bind(console, 'connection error:'))
+    this.db.once('open', function() {
+      // we're connected!
+      console.log(`Successfully connected to database ${url}`)
+    })
+  }
+
+  // FIXME: Limit the number of saves
+  save (key: string, doc: MuteStructs.LogootSRopes) {
+    const query = { key: key }
+    const update = { doc: { root: doc.root, str: doc.str } }
+    const options = { upsert: true, new: true, setDefaultsOnInsert: true }
+
+    this.docModel.findOneAndUpdate(query, update, options, function(err, result) {
+        if (err) {
+          return console.error(err)
+        }
+    })
+  }
+}
