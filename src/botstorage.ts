@@ -1,25 +1,35 @@
+const pb = require('./message_pb.js')
 
 export class BotStorage {
 
-  private wc
+  private webChannel
+  private username = 'BotStorage'
 
-  constructor(wc) {
-    this.wc = wc
+  constructor(webChannel) {
+    this.webChannel = webChannel
 
-    wc.onMessage = (id, msg, isBroadcast) => {
+    webChannel.onMessage = (id, msg, isBroadcast) => {
       console.log('We got a message!')
-      // this.handleMessage(wc, id, msg, isBroadcast)
+      // this.handleMessage(webChannel, id, msg, isBroadcast)
     }
-    wc.replicaNumber = wc.myId
-    wc.username = 'BotStorage'
 
-    /*
-    const userInfo = {
-      peerId : wc.myId,
-      replicaNumber : wc.replicaNumber,
-      username : wc.username
+    // webChannel.replicaNumber = webChannel.myId
+    // webChannel.username = 'BotStorage'
+
+    this.sendPeerPseudo(this.username, -1)
+    this.webChannel.onPeerJoin = (id) => this.sendPeerPseudo(this.username, id)
+  }
+
+  sendPeerPseudo (pseudo: string, id: number = -1) {
+    let pseudoMsg = new pb.PeerPseudo()
+    pseudoMsg.setPseudo(pseudo)
+    let msg = new pb.Message()
+    msg.setPeerpseudo(pseudoMsg)
+    if (id !== -1) {
+      this.webChannel.sendTo(id, msg.serializeBinary())
+    } else {
+      this.webChannel.send(msg.serializeBinary())
     }
-    */
   }
 
 }
