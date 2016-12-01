@@ -1,15 +1,20 @@
 const pb = require('./message_pb.js')
 
+import { MongooseAdapter } from './mongooseadapter'
+
 import * as MuteStructs from 'mute-structs'
 
 export class BotStorage {
 
   private doc: MuteStructs.LogootSRopes
+  private key = 'doc'
+  private mongooseAdapter: MongooseAdapter
   private username = 'BotStorage'
   private webChannel
 
-  constructor(webChannel) {
+  constructor(webChannel, mongooseAdapter: MongooseAdapter) {
     this.webChannel = webChannel
+    this.mongooseAdapter = mongooseAdapter
 
     webChannel.onMessage = (id, msg, isBroadcast) => {
       this.handleMessage(webChannel, id, msg, isBroadcast)
@@ -34,6 +39,7 @@ export class BotStorage {
         const logootSAdd: any = new MuteStructs.LogootSAdd(identifier, logootSAddMsg.getContent())
         logootSAdd.execute(this.doc)
         console.log('Updated doc: ', this.doc.str)
+        this.mongooseAdapter.save(this.key, this.doc)
         break
       case pb.Message.TypeCase.LOGOOTSDEL:
         const logootSDelMsg: any = msg.getLogootsdel()
@@ -43,6 +49,7 @@ export class BotStorage {
         const logootSDel: any = new MuteStructs.LogootSDel(lid)
         logootSDel.execute(this.doc)
         console.log('Updated doc: ', this.doc.str)
+        this.mongooseAdapter.save(this.key, this.doc)
         break
       case pb.Message.TypeCase.LOGOOTSROPES:
         const myId: number = this.webChannel.myId
@@ -56,7 +63,9 @@ export class BotStorage {
         }
 
         this.doc = MuteStructs.LogootSRopes.fromPlain(myId, clock, plainDoc)
+        // TODO: Retrieve the document's key from this message
         console.log('Received doc: ', this.doc.str)
+        this.mongooseAdapter.save(this.key, this.doc)
         break
       case pb.Message.TypeCase.PEERPSEUDO:
       case pb.Message.TypeCase.PEERCURSOR:

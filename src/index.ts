@@ -1,6 +1,7 @@
 import { BotServer } from 'netflux'
 
 import { BotStorage } from './botstorage'
+import { MongooseAdapter } from './mongooseadapter'
 
 const host = '0.0.0.0'
 const port = 9000
@@ -11,6 +12,8 @@ const options = {host, port, log}
 const botServer = new BotServer(options)
 const bots: BotStorage[] = []
 
+const mongooseAdapter: MongooseAdapter = new MongooseAdapter('localhost')
+
 botServer.start()
   .then(() => {
     console.info(`Bot is listening at ${host }:${ port }`)
@@ -20,5 +23,5 @@ botServer.start()
   })
 
 botServer.onWebChannel = (wc) => {
-  bots.push(new BotStorage(wc))
+  bots.push(new BotStorage(wc, mongooseAdapter))
 }
