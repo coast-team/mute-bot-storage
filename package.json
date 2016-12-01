@@ -6,6 +6,7 @@
   "scripts": {
     "start": "npm run build:live",
     "build:live": "nodemon --exec ./node_modules/.bin/ts-node -- ./src/index.ts",
+    "protoc": "protoc/protoc-3.1.0-linux-x86_64 --js_out=import_style=commonjs,binary:. src/message.proto",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -14,6 +15,7 @@
   "devDependencies": {
     "@types/node": "0.0.1",
     "codelyzer": "^2.0.0-beta.1",
+    "google-protobuf": "^3.1.1",
     "nodemon": "^1.11.0",
     "ts-node": "^1.7.0",
     "tslint": "^4.0.2",
