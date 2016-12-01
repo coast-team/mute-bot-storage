@@ -6,7 +6,7 @@
     "experimentalDecorators": true,
     "lib": ["es6"],
     "mapRoot": "./",
-    "module": "es6",
+    "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "./dist/",
     "rootDir": "./src/",
