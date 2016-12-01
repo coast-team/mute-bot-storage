@@ -29,10 +29,20 @@ export class BotStorage {
     let msg = pb.Message.deserializeBinary(bytes)
     switch (msg.getTypeCase()) {
       case pb.Message.TypeCase.LOGOOTSADD:
-        // TODO: Handle this message
+        const logootSAddMsg = msg.getLogootsadd()
+        const identifier = new MuteStructs.Identifier(logootSAddMsg.getId().getBaseList(), logootSAddMsg.getId().getLast())
+        const logootSAdd: any = new MuteStructs.LogootSAdd(identifier, logootSAddMsg.getContent())
+        logootSAdd.execute(this.doc)
+        console.log('Updated doc: ', this.doc.str)
         break
       case pb.Message.TypeCase.LOGOOTSDEL:
-        // TODO: Handle this message
+        const logootSDelMsg: any = msg.getLogootsdel()
+        const lid: any = logootSDelMsg.getLidList().map( (identifier: any) => {
+          return new MuteStructs.IdentifierInterval(identifier.getBaseList(), identifier.getBegin(), identifier.getEnd())
+        })
+        const logootSDel: any = new MuteStructs.LogootSDel(lid)
+        logootSDel.execute(this.doc)
+        console.log('Updated doc: ', this.doc.str)
         break
       case pb.Message.TypeCase.LOGOOTSROPES:
         const myId: number = this.webChannel.myId
