@@ -18,13 +18,27 @@ export class MongooseAdapter {
 
   private docModel = mongoose.model('Doc', this.docSchema)
 
-  constructor (url) {
+  constructor (url: string) {
     mongoose.connect(`mongodb://${url}/docs`)
     this.db = mongoose.connection
     this.db.on('error', console.error.bind(console, 'connection error:'))
     this.db.once('open', function() {
       // we're connected!
       console.log(`Successfully connected to database ${url}`)
+    })
+  }
+
+  find (key: string): Promise<any> {
+    return new Promise( (resolve, reject) => {
+      const query = { key: key }
+      this.docModel.findOne(query, function (err, doc) {
+        if (err) {
+          console.error(err)
+          reject()
+        } else {
+          resolve(doc)
+        }
+      })
     })
   }
 
