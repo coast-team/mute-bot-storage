@@ -15,7 +15,6 @@ const options = {host, portWS, log}
 const app = express()
 
 const botServer = new BotServer(options)
-const bots: BotStorage[] = []
 
 const mongooseAdapter: MongooseAdapter = new MongooseAdapter('localhost')
 
@@ -28,7 +27,7 @@ botServer.start()
   })
 
 botServer.onWebChannel = (wc) => {
-  bots.push(new BotStorage(wc, mongooseAdapter))
+  new BotStorage(wc, mongooseAdapter)
 }
 
 app.get('/ping', (req, res) => {

@@ -43,6 +43,13 @@ export class BotStorage {
 
     this.sendPeerPseudo(this.username, -1)
     this.webChannel.onPeerJoin = (id) => this.sendPeerPseudo(this.username, id)
+    this.webChannel.onPeerLeave = (id) => {
+      if (this.webChannel.members.length === 0) {
+        this.webChannel.leave()
+        this.doc = null
+        this.webChannel = null
+      }
+    }
   }
 
   handleMessage (wc, id, bytes, isBroadcast) {
