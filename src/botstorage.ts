@@ -23,6 +23,18 @@ export class BotStorage {
     // webChannel.replicaNumber = webChannel.myId
     // webChannel.username = 'BotStorage'
 
+    this.sendPeerPseudo(this.username, -1)
+    this.webChannel.onPeerJoin = (id) => this.sendPeerPseudo(this.username, id)
+    this.webChannel.onPeerLeave = (id) => {
+      if (this.webChannel.members.length === 0) {
+        this.webChannel.leave()
+        this.doc = null
+        this.webChannel = null
+      }
+    }
+  }
+
+  init () {
     this.mongooseAdapter.find(this.key)
     .then( (data: any) => {
       if (data === null) {
@@ -40,16 +52,6 @@ export class BotStorage {
     .catch( (err: string) => {
       console.error(`Error while retrieving ${this.key} document: ${err}`)
     })
-
-    this.sendPeerPseudo(this.username, -1)
-    this.webChannel.onPeerJoin = (id) => this.sendPeerPseudo(this.username, id)
-    this.webChannel.onPeerLeave = (id) => {
-      if (this.webChannel.members.length === 0) {
-        this.webChannel.leave()
-        this.doc = null
-        this.webChannel = null
-      }
-    }
   }
 
   handleMessage (wc, id, bytes, isBroadcast) {
@@ -85,10 +87,13 @@ export class BotStorage {
         }
 
         this.doc = MuteStructs.LogootSRopes.fromPlain(myId, clock, plainDoc)
-        // TODO: Retrieve the document's key from this message
         console.log('Received doc: ', this.doc.str)
         this.mongooseAdapter.save(this.key, this.doc)
         break
+      case pb.Message.TypeCase.DOOR:
+          this.key = msg.getDoor().getKey()
+          this.init()
+          break
       case pb.Message.TypeCase.PEERPSEUDO:
       case pb.Message.TypeCase.PEERCURSOR:
         // Don't care about this message
