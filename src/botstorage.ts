@@ -23,8 +23,21 @@ export class BotStorage {
     // webChannel.replicaNumber = webChannel.myId
     // webChannel.username = 'BotStorage'
 
-    // TODO: Determine if we want to query the doc or broadcast the stored version
-    this.sendQueryDoc()
+    this.mongooseAdapter.find(this.key)
+    .then( (data: any) => {
+      if (data === null) {
+        // Do not have a version of the document yet
+        this.sendQueryDoc()
+      } else {
+        const myId: number = this.webChannel.myId
+        const clock = 0
+
+        this.doc = MuteStructs.LogootSRopes.fromPlain(myId, clock, data.doc)
+      }
+    })
+    .catch( (err: string) => {
+      console.error(`Error while retrieving ${this.key} document: ${err}`)
+    })
 
     this.sendPeerPseudo(this.username, -1)
     this.webChannel.onPeerJoin = (id) => this.sendPeerPseudo(this.username, id)
