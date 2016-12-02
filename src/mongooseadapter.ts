@@ -42,6 +42,19 @@ export class MongooseAdapter {
     })
   }
 
+  list (): Promise<any[]> {
+    return new Promise( (resolve, reject) => {
+      this.docModel.find((err, docs) => {
+        if (err) {
+          console.error(err)
+          reject()
+        } else {
+          resolve(docs)
+        }
+      })
+    })
+  }
+
   // FIXME: Limit the number of saves
   save (key: string, doc: MuteStructs.LogootSRopes) {
     const query = { key: key }
