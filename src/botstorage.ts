@@ -33,6 +33,8 @@ export class BotStorage {
         const clock = 0
 
         this.doc = MuteStructs.LogootSRopes.fromPlain(myId, clock, data.doc)
+
+        this.sendDoc()
       }
     })
     .catch( (err: string) => {
@@ -114,6 +116,61 @@ export class BotStorage {
     } else {
       this.webChannel.send(msg.serializeBinary())
     }
+  }
+
+  sendDoc () {
+    const msg = new pb.Message()
+
+    const logootSRopesMsg = new pb.LogootSRopes()
+    logootSRopesMsg.setStr(this.doc.str)
+
+    if (this.doc.root instanceof MuteStructs.RopesNodes) {
+      const ropesMsg = this.generateRopesNodeMsg(this.doc.root)
+      logootSRopesMsg.setRoot(ropesMsg)
+    }
+
+    msg.setLogootsropes(logootSRopesMsg)
+
+    this.webChannel.send(msg.serializeBinary())
+  }
+
+  generateRopesNodeMsg (ropesNode: MuteStructs.RopesNodes): any {
+    const ropesNodeMsg = new pb.RopesNode()
+
+    const blockMsg = this.generateBlockMsg(ropesNode.block)
+    ropesNodeMsg.setBlock(blockMsg)
+
+    if (ropesNode.left instanceof MuteStructs.RopesNodes) {
+      ropesNodeMsg.setLeft(this.generateRopesNodeMsg(ropesNode.left))
+    }
+
+    if (ropesNode.right instanceof MuteStructs.RopesNodes) {
+      ropesNodeMsg.setRight(this.generateRopesNodeMsg(ropesNode.right))
+    }
+
+    ropesNodeMsg.setOffset(ropesNode.offset)
+    ropesNodeMsg.setLength(ropesNode.length)
+
+    return ropesNodeMsg
+  }
+
+  generateBlockMsg (block: MuteStructs.LogootSBlock): any {
+    const blockMsg = new pb.LogootSBlock()
+
+    blockMsg.setId(this.generateIdentifierInterval(block.id))
+    blockMsg.setNbelement(block.nbElement)
+
+    return blockMsg
+  }
+
+  generateIdentifierInterval (id: MuteStructs.IdentifierInterval): any {
+    const identifierInterval = new pb.IdentifierInterval()
+
+    identifierInterval.setBaseList(id.base)
+    identifierInterval.setBegin(id.begin)
+    identifierInterval.setEnd(id.end)
+
+    return identifierInterval
   }
 
   // FIXME: Prevent Protobuf from renaming our fields or move this code elsewhere
