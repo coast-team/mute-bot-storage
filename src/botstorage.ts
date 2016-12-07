@@ -47,6 +47,8 @@ export class BotStorage {
         this.doc = MuteStructs.LogootSRopes.fromPlain(myId, clock, data.doc)
 
         this.sendDoc()
+        console.log('TITLE: ' + data.title)
+        this.sendDocTitle(data.title)
       }
     })
     .catch( (err: string) => {
@@ -146,6 +148,17 @@ export class BotStorage {
     }
 
     msg.setLogootsropes(logootSRopesMsg)
+
+    this.webChannel.send(msg.serializeBinary())
+  }
+
+  sendDocTitle (title: string) {
+    const msg = new pb.Message()
+
+    const docMsg = new pb.Doc()
+    docMsg.setTitle(title)
+
+    msg.setDoc(docMsg)
 
     this.webChannel.send(msg.serializeBinary())
   }

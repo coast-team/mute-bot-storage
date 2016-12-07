@@ -11,7 +11,7 @@ export class MongooseAdapter {
       require: true
     },
     title: {
-      tykpe: String,
+      type: String,
       require: false
     },
     doc: {
