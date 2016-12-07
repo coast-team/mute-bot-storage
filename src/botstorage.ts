@@ -101,6 +101,10 @@ export class BotStorage {
       case pb.Message.TypeCase.QUERYDOC:
         // Should not happen
         break
+      case pb.Message.TypeCase.DOC:
+        this.mongooseAdapter.updateTitle(this.key, msg.getDoc().getTitle())
+
+        break
       case pb.Message.TypeCase.TYPE_NOT_SET:
         console.error('network', 'Protobuf: message type not set')
         break

@@ -10,6 +10,10 @@ export class MongooseAdapter {
       type: String,
       require: true
     },
+    title: {
+      tykpe: String,
+      require: false
+    },
     doc: {
       root: Object,
       str: String
@@ -59,6 +63,18 @@ export class MongooseAdapter {
   save (key: string, doc: MuteStructs.LogootSRopes) {
     const query = { key: key }
     const update = { doc: { root: doc.root, str: doc.str } }
+    const options = { upsert: true, new: true, setDefaultsOnInsert: true }
+
+    this.docModel.findOneAndUpdate(query, update, options, function(err, result) {
+        if (err) {
+          return console.error(err)
+        }
+    })
+  }
+
+  updateTitle (key: string, title: string) {
+    const query = { key: key }
+    const update = { title }
     const options = { upsert: true, new: true, setDefaultsOnInsert: true }
 
     this.docModel.findOneAndUpdate(query, update, options, function(err, result) {
