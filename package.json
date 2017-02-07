@@ -7,9 +7,14 @@
     "start": "npm run build:live",
     "build:live": "nodemon --exec ./node_modules/.bin/ts-node -- ./src/index.ts",
     "protoc": "protoc/protoc-3.1.0-linux-x86_64 --js_out=import_style=commonjs,binary:. src/message.proto",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "commit": "git-cz",
+    "commitmsg": "validate-commit-msg"
   },
-  "keywords": ["bot", ""],
+  "keywords": [
+    "bot",
+    ""
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -23,10 +28,19 @@
     "@types/express": "^4.0.34",
     "@types/mongoose": "^4.6.2",
     "@types/node": "^7.0.5",
+    "commitizen": "^2.9.5",
+    "cz-conventional-changelog": "^1.2.0",
     "google-protobuf": "^3.1.1",
+    "husky": "^0.13.1",
     "nodemon": "^1.11.0",
     "ts-node": "^2.0.0",
     "tslint": "^4.0.2",
-    "typescript": "^2.0.10"
+    "typescript": "^2.0.10",
+    "validate-commit-msg": "^2.11.1"
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-conventional-changelog"
+    }
   }
 }
