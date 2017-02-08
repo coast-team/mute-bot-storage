@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 27);
+/******/ 	return __webpack_require__(__webpack_require__.s = 31);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -337,8 +337,8 @@ exports.Identifier = Identifier;
 
 var identifier_1 = __webpack_require__(1);
 var identifierinterval_1 = __webpack_require__(0);
-var IDFactory = __webpack_require__(15);
-var iteratorhelperidentifier_1 = __webpack_require__(18);
+var IDFactory = __webpack_require__(18);
+var iteratorhelperidentifier_1 = __webpack_require__(21);
 var logootsadd_1 = __webpack_require__(4);
 var logootsblock_1 = __webpack_require__(3);
 var logootsdel_1 = __webpack_require__(5);
@@ -2845,13 +2845,13 @@ var Util = function () {
           case Util.WEB_RTC:
             return __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"wrtc\""); e.code = 'MODULE_NOT_FOUND';; throw e; }()));
           case Util.WEB_SOCKET:
-            return __webpack_require__(26);
+            return __webpack_require__(30);
           case Util.TEXT_ENCODING:
-            return __webpack_require__(24);
+            return __webpack_require__(28);
           case Util.EVENT_SOURCE:
-            return __webpack_require__(20);
+            return __webpack_require__(24);
           case Util.FETCH:
-            return __webpack_require__(23);
+            return __webpack_require__(27);
           case Util.CLOSE_EVENT:
             return Util.isBrowser() ? window.CloseEvent : NodeCloseEvent;
           default:
@@ -5582,7 +5582,7 @@ var BotServer = function () {
         var WebSocketServer = void 0;
         try {
           console.log('uws module would be used for Bot server');
-          WebSocketServer = __webpack_require__(25).Server;
+          WebSocketServer = __webpack_require__(29).Server;
         } catch (err) {
           try {
             console.log(err.message + '. ws module will be used for Bot server instead');
@@ -5857,8 +5857,8 @@ function create(options) {
 
 "use strict";
 
-const pb = __webpack_require__(19);
-const MuteStructs = __webpack_require__(16);
+const pb = __webpack_require__(22);
+const MuteStructs = __webpack_require__(19);
 class BotStorage {
     constructor(webChannel, mongooseAdapter) {
         this.key = 'doc';
@@ -6037,7 +6037,45 @@ exports.BotStorage = BotStorage;
 
 "use strict";
 
-const mongoose = __webpack_require__(22);
+const bunyan = __webpack_require__(23);
+exports.log = bunyan.createLogger({ name: 'mute-bot-storage' });
+function setLogLevel(logLevel) {
+    switch (logLevel) {
+        case 'none':
+            exports.log.level(bunyan.FATAL + 1);
+            break;
+        case 'trace':
+            exports.log.level(bunyan.TRACE);
+            break;
+        case 'debug':
+            exports.log.level(bunyan.DEBUG);
+            break;
+        case 'info':
+            exports.log.level(bunyan.INFO);
+            break;
+        case 'warn':
+            exports.log.level(bunyan.WARN);
+            break;
+        case 'error':
+            exports.log.level(bunyan.ERROR);
+            break;
+        case 'fatal':
+            exports.log.level(bunyan.FATAL);
+            break;
+        default:
+            exports.log.level(bunyan.INFO);
+    }
+}
+exports.setLogLevel = setLogLevel;
+
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+const mongoose = __webpack_require__(26);
 class MongooseAdapter {
     constructor(url) {
         this.docSchema = new mongoose.Schema({
@@ -6116,19 +6154,31 @@ exports.MongooseAdapter = MongooseAdapter;
 
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports) {
 
-module.exports = require("bunyan");
+module.exports = require("commander");
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports) {
 
 module.exports = require("express");
 
 /***/ }),
-/* 15 */
+/* 16 */
+/***/ (function(module, exports) {
+
+module.exports = require("http");
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports) {
+
+module.exports = require("https");
+
+/***/ }),
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6151,7 +6201,7 @@ module.exports = require("express");
  *  along with Mute-structs.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-var infinitestring_1 = __webpack_require__(17);
+var infinitestring_1 = __webpack_require__(20);
 var identifier_1 = __webpack_require__(1);
 function isMine(replica) {
     return function (base) { return base[base.length - 2] === replica; };
@@ -6195,7 +6245,7 @@ exports.createBetweenPosition = createBetweenPosition;
 //# sourceMappingURL=idfactory.js.map
 
 /***/ }),
-/* 16 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6243,7 +6293,7 @@ exports.occurrences = textutils_1.occurrences;
 //# sourceMappingURL=index.js.map
 
 /***/ }),
-/* 17 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6290,7 +6340,7 @@ exports.InfiniteString = InfiniteString;
 //# sourceMappingURL=infinitestring.js.map
 
 /***/ }),
-/* 18 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6392,7 +6442,7 @@ exports.IteratorHelperIdentifier = IteratorHelperIdentifier;
 //# sourceMappingURL=iteratorhelperidentifier.js.map
 
 /***/ }),
-/* 19 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -6402,7 +6452,7 @@ exports.IteratorHelperIdentifier = IteratorHelperIdentifier;
  */
 // GENERATED CODE -- DO NOT EDIT!
 
-var jspb = __webpack_require__(21);
+var jspb = __webpack_require__(25);
 var goog = jspb;
 var global = Function('return this')();
 
@@ -9122,84 +9172,114 @@ goog.object.extend(exports, proto);
 
 
 /***/ }),
-/* 20 */
-/***/ (function(module, exports) {
-
-module.exports = require("eventsource");
-
-/***/ }),
-/* 21 */
-/***/ (function(module, exports) {
-
-module.exports = require("google-protobuf");
-
-/***/ }),
-/* 22 */
-/***/ (function(module, exports) {
-
-module.exports = require("mongoose");
-
-/***/ }),
 /* 23 */
 /***/ (function(module, exports) {
 
-module.exports = require("node-fetch");
+module.exports = require("bunyan");
 
 /***/ }),
 /* 24 */
 /***/ (function(module, exports) {
 
-module.exports = require("text-encoding");
+module.exports = require("eventsource");
 
 /***/ }),
 /* 25 */
 /***/ (function(module, exports) {
 
-module.exports = require("uws");
+module.exports = require("google-protobuf");
 
 /***/ }),
 /* 26 */
 /***/ (function(module, exports) {
 
-module.exports = require("ws");
+module.exports = require("mongoose");
 
 /***/ }),
 /* 27 */
+/***/ (function(module, exports) {
+
+module.exports = require("node-fetch");
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports) {
+
+module.exports = require("text-encoding");
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports) {
+
+module.exports = require("uws");
+
+/***/ }),
+/* 30 */
+/***/ (function(module, exports) {
+
+module.exports = require("ws");
+
+/***/ }),
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 const netflux_1 = __webpack_require__(10);
+const https = __webpack_require__(17);
+const http = __webpack_require__(16);
+const express = __webpack_require__(15);
+const program = __webpack_require__(14);
 const botstorage_1 = __webpack_require__(11);
-const mongooseadapter_1 = __webpack_require__(12);
-const express = __webpack_require__(14);
-const bunyan = __webpack_require__(13);
-const log = bunyan.createLogger({ name: "mute-bot-storage" });
-const host = '0.0.0.0';
-const portAPI = 8080;
-const portWS = 9000;
-const enableLog = true;
-const options = { host, portWS, log: enableLog };
-const app = express();
-const botServer = new netflux_1.BotServer(options);
+const mongooseadapter_1 = __webpack_require__(13);
+const log_1 = __webpack_require__(12);
+// Default options
+const defaults = {
+    host: '0.0.0.0',
+    port: 8080,
+    portBot: 9000,
+    secure: false,
+    logLevel: 'info'
+};
+// Configure command-line interface
+program
+    .option('-h, --host <ip or host name>', `Select host address to bind to, DEFAULT: "${defaults.host}"`, defaults.host)
+    .option('-p, --port <n>', `Select port to use for the server (REST API), DEFAULT: ${defaults.port}`, defaults.port)
+    .option('-b, --portBot <n>', `Select port to use for the peer to peer bot, DEFAULT: ${defaults.portBot}\n`, defaults.portBot)
+    .option('-s, --secure', `If present, the REST API server is listening on HTTPS instead of HTTP`)
+    .option('-l, --logLevel <none|trace|debug|info|warn|error|fatal>', `Specify level for logging. DEFAULT: "info". `, /^(none|trace|debug|info|warn|error|fatal)$/i, defaults.logLevel)
+    .parse(process.argv);
+// Retreive command-line interface & setup settings
+const { host, port, portBot, logLevel } = program;
+const secure = program.secure ? true : false;
+log_1.log.info('The options are: ', { host, port, portBot, secure, logLevel });
+// Configure logging
+log_1.setLogLevel(logLevel);
+// Configure error handling on process
+process.on('uncaughtException', (err) => log_1.log.fatal(err));
+// Connect to MongoDB
 const mongooseAdapter = new mongooseadapter_1.MongooseAdapter('localhost');
-botServer.start()
+// Configure & Start Peer To Peer bot
+const bot = new netflux_1.BotServer({ host: host, port: portBot });
+bot.start()
     .then(() => {
-    log.info(`Bot is listening at ${host}:${portWS}`, options);
+    log_1.log.info(`Bot is listening at ${host}:${portBot}`);
+    bot.onWebChannel = (wc) => new botstorage_1.BotStorage(wc, mongooseAdapter);
 })
     .catch((err) => {
-    console.info(`An error occurred while starting the bot: ${err}`);
+    log_1.log.fatal(`An error occurred while starting the bot`, err);
 });
-botServer.onWebChannel = (wc) => {
-    new botstorage_1.BotStorage(wc, mongooseAdapter);
-};
-// CORS: Cross-origin resource sharing
+// Configure & Start REST server
+const app = express();
+// Configure CORS: Cross-origin resource sharing middleware
 app.use(function (req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     next();
 });
 app.get('/ping', (req, res) => {
+    log_1.log.debug('Request Debug: ');
+    log_1.log.info('Request info: ');
     res.send('pong');
 });
 app.get('/docs', (req, res) => {
@@ -9215,8 +9295,10 @@ app.get('/docs', (req, res) => {
         res.status(500).json({ error: err });
     });
 });
-app.listen(portAPI, () => {
-    console.log(`API listening on port ${portAPI}!`);
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+const server = secure ? https.createServer(app) : http.createServer(app);
+server.listen(port, host, () => {
+    log_1.log.info(`Server (REST API) is listening at http${secure ? 's' : ''}://${host}:${port}`);
 });
 
 
