@@ -6,7 +6,7 @@ import * as program from 'commander'
 
 import { BotStorage } from './botstorage'
 import { MongooseAdapter } from './mongooseadapter'
-import { setLogLevel, log } from './log'
+import { createLogger, log } from './log'
 
 // Default options
 const defaults = {
@@ -14,7 +14,8 @@ const defaults = {
   port: 8080,
   portBot: 9000,
   secure: false,
-  logLevel: 'info'
+  logLevel: 'info',
+  logIntoFile: false
 }
 
 // Configure command-line interface
@@ -25,15 +26,17 @@ program
   .option('-s, --secure', `If present, the REST API server is listening on HTTPS instead of HTTP`)
   .option('-l, --logLevel <none|trace|debug|info|warn|error|fatal>', `Specify level for logging. DEFAULT: "info". `,
     /^(none|trace|debug|info|warn|error|fatal)$/i, defaults.logLevel)
+  .option('-f, --logFile', `If specified, writes logs into file`)
   .parse(process.argv)
 
 // Setup settings
 const {host, port, portBot, logLevel} = program
 const secure = (program as any).secure ? true : false
-log.info('Starting with the following settings: ', {host, port, portBot, secure, logLevel})
+const logIntoFile = (program as any).logFile ? true : false
 
 // Configure logging
-setLogLevel(logLevel)
+createLogger(logIntoFile, logLevel)
+log.info('Starting with the following settings: ', {host, port, portBot, secure, logLevel, logIntoFile})
 
 // Configure error handling on process
 process.on('uncaughtException', (err) => log.fatal(err))
