@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npm run build:live",
     "build:live": "nodemon --exec ./node_modules/.bin/ts-node -- ./src/index.ts",
-    "protoc": "protoc/protoc-3.1.0-linux-x86_64 --js_out=import_style=commonjs,binary:. src/message.proto",
+    "protoc": "protoc/protoc-3.2.0-linux-x86_64 --js_out=import_style=commonjs,binary:. src/message.proto",
     "test": "echo \"Error: no test specified\" && exit 1",
     "commit": "git-cz",
     "commitmsg": "validate-commit-msg"
@@ -30,7 +30,7 @@
     "@types/node": "^7.0.5",
     "commitizen": "^2.9.5",
     "cz-conventional-changelog": "^1.2.0",
-    "google-protobuf": "^3.1.1",
+    "google-protobuf": "~3.2.0",
     "husky": "^0.13.1",
     "nodemon": "^1.11.0",
     "ts-node": "^2.0.0",
