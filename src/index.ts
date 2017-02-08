@@ -1,13 +1,12 @@
 import { BotServer } from 'netflux'
+import * as express from 'express'
+import * as bunyan from 'bunyan'
 
 import { BotStorage } from './botstorage'
 import { MongooseAdapter } from './mongooseadapter'
 
-import * as express from 'express'
 
-import bunyan = require('bunyan')
 const log = bunyan.createLogger({name: "mute-bot-storage"})
-
 const host = '0.0.0.0'
 const portAPI = 8080
 const portWS = 9000

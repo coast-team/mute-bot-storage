@@ -4,11 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm run build:live",
+    "start": "server.js",
+    "start:dev": "npm run build:live",
+    "build": "webpack",
     "build:live": "nodemon --exec ts-node ./src/index.ts | bunyan",
     "protoc": "protoc/protoc-3.2.0-linux-x86_64 --js_out=import_style=commonjs,binary:. src/message.proto",
     "commit": "git-cz",
     "commitmsg": "validate-commit-msg"
+  },
+  "bin": {
+    "mute-bot-storage": "server.js"
   },
   "keywords": [
     "bot",
@@ -35,10 +40,13 @@
     "google-protobuf": "~3.2.0",
     "husky": "^0.13.1",
     "nodemon": "^1.11.0",
+    "ts-loader": "^2.0.0",
     "ts-node": "^2.0.0",
     "tslint": "^4.0.2",
     "typescript": "^2.0.10",
-    "validate-commit-msg": "^2.11.1"
+    "validate-commit-msg": "^2.11.1",
+    "webpack": "^2.2.1",
+    "webpack-node-externals": "^1.5.4"
   },
   "config": {
     "commitizen": {
