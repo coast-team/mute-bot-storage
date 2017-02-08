@@ -5,12 +5,15 @@ import { MongooseAdapter } from './mongooseadapter'
 
 import * as express from 'express'
 
+import bunyan = require('bunyan')
+const log = bunyan.createLogger({name: "mute-bot-storage"})
+
 const host = '0.0.0.0'
 const portAPI = 8080
 const portWS = 9000
-const log = true
+const enableLog = true
 
-const options = {host, portWS, log}
+const options = {host, portWS, log: enableLog}
 
 const app = express()
 
@@ -20,7 +23,7 @@ const mongooseAdapter: MongooseAdapter = new MongooseAdapter('localhost')
 
 botServer.start()
   .then(() => {
-    console.info(`Bot is listening at ${host }:${ portWS }`)
+    log.info(`Bot is listening at ${host }:${ portWS }`, options)
   })
   .catch((err) => {
     console.info(`An error occurred while starting the bot: ${ err }`)
