@@ -1,217 +1,76 @@
-const pb = require('./message_pb.js')
+import { ReplaySubject, BehaviorSubject } from 'rxjs'
+import { MuteCore, BroadcastMessage, SendRandomlyMessage, AbstractMessage, SendToMessage, NetworkMessage } from 'mute-core'
 
 import { MongooseAdapter } from './mongooseadapter'
+const pb = require('./proto/message_pb.js')
 
-import * as MuteStructs from 'mute-structs'
-
+// TODO: BotStorage should serialize document in DB
 export class BotStorage {
 
-  private doc: MuteStructs.LogootSRopes
-  private key = 'doc'
   private mongooseAdapter: MongooseAdapter
-  private username = 'BotStorage'
   private webChannel
+  private muteCore: MuteCore
+  private pseudonym = 'Bot Storage'
+
+  private messageSubject: ReplaySubject<NetworkMessage>
+  private peerJoinSubject: ReplaySubject<number>
+  private peerLeaveSubject: ReplaySubject<number>
 
   constructor(webChannel, mongooseAdapter: MongooseAdapter) {
+    this.messageSubject = new ReplaySubject()
+    this.peerJoinSubject = new ReplaySubject()
+    this.peerLeaveSubject = new ReplaySubject()
     this.webChannel = webChannel
-    this.mongooseAdapter = mongooseAdapter
+    // FIXME: this.muteCore.joinSource =
 
     webChannel.onMessage = (id, msg, isBroadcast) => {
-      this.handleMessage(webChannel, id, msg, isBroadcast)
-    }
-
-    // webChannel.replicaNumber = webChannel.myId
-    // webChannel.username = 'BotStorage'
-
-    this.sendPeerPseudo(this.username, -1)
-    this.webChannel.onPeerJoin = (id) => this.sendPeerPseudo(this.username, id)
-    this.webChannel.onPeerLeave = (id) => {
-      if (this.webChannel.members.length === 0) {
-        this.webChannel.leave()
-        this.doc = null
-        this.webChannel = null
-      }
-    }
-  }
-
-  init () {
-    this.mongooseAdapter.find(this.key)
-    .then( (data: any) => {
-      if (data === null) {
-        // Do not have a version of the document yet
-        this.sendQueryDoc()
-      } else {
-        const myId: number = this.webChannel.myId
-        const clock = 0
-
-        this.doc = MuteStructs.LogootSRopes.fromPlain(myId, clock, data.doc)
-
-        this.sendDoc()
-        console.log('TITLE: ' + data.title)
-        this.sendDocTitle(data.title)
-      }
-    })
-    .catch( (err: string) => {
-      console.error(`Error while retrieving ${this.key} document: ${err}`)
-    })
-  }
-
-  handleMessage (wc, id, bytes, isBroadcast) {
-    let msg = pb.Message.deserializeBinary(bytes)
-    switch (msg.getTypeCase()) {
-      case pb.Message.TypeCase.LOGOOTSADD:
-        const logootSAddMsg = msg.getLogootsadd()
-        const identifier = new MuteStructs.Identifier(logootSAddMsg.getId().getBaseList(), logootSAddMsg.getId().getLast())
-        const logootSAdd: any = new MuteStructs.LogootSAdd(identifier, logootSAddMsg.getContent())
-        logootSAdd.execute(this.doc)
-        console.log('Updated doc: ', this.doc.str)
-        this.mongooseAdapter.save(this.key, this.doc)
-        break
-      case pb.Message.TypeCase.LOGOOTSDEL:
-        const logootSDelMsg: any = msg.getLogootsdel()
-        const lid: any = logootSDelMsg.getLidList().map( (identifier: any) => {
-          return new MuteStructs.IdentifierInterval(identifier.getBaseList(), identifier.getBegin(), identifier.getEnd())
-        })
-        const logootSDel: any = new MuteStructs.LogootSDel(lid)
-        logootSDel.execute(this.doc)
-        console.log('Updated doc: ', this.doc.str)
-        this.mongooseAdapter.save(this.key, this.doc)
-        break
-      case pb.Message.TypeCase.LOGOOTSROPES:
-        const myId: number = this.webChannel.myId
-        const clock = 0
-
-        const plainDoc: any = msg.toObject().logootsropes
-
-        // Protobuf rename keys like 'base' to 'baseList' because, just because...
-        if (plainDoc.root instanceof Object) {
-          this.renameKeys(plainDoc.root)
+      const pbMsg = new pb.Message()
+      pbMsg.deserializeBinary()
+      if (pbMsg.service === this.pseudonym) {
+        const pbBotContent = new pb.DocId()
+        pbBotContent.deserializeBinary()
+        this.mongooseAdapter.find(pbBotContent.getId())
+          .then((data: {doc: Object, title: string}) => this.initMuteCore(data.doc))
+        webChannel.onMessage = (id, msg, isBroadcast) => {
+          const pbMsg = new pb.Message()
+          pbMsg.deserializeBinary()
+          this.messageSubject.next(new NetworkMessage(pbMsg.service, id, isBroadcast, pbMsg.content))
         }
-
-        this.doc = MuteStructs.LogootSRopes.fromPlain(myId, clock, plainDoc)
-        console.log('Received doc: ', this.doc.str)
-        this.mongooseAdapter.save(this.key, this.doc)
-        break
-      case pb.Message.TypeCase.DOOR:
-          this.key = msg.getDoor().getKey()
-          this.init()
-          break
-      case pb.Message.TypeCase.PEERPSEUDO:
-      case pb.Message.TypeCase.PEERCURSOR:
-        // Don't care about this message
-        break
-      case pb.Message.TypeCase.QUERYDOC:
-        // Should not happen
-        break
-      case pb.Message.TypeCase.DOC:
-        this.mongooseAdapter.updateTitle(this.key, msg.getDoc().getTitle())
-
-        break
-      case pb.Message.TypeCase.TYPE_NOT_SET:
-        console.error('network', 'Protobuf: message type not set')
-        break
-    }
-  }
-
-  sendQueryDoc () {
-    const msg = new pb.Message()
-
-    const queryDoc = new pb.QueryDoc()
-    msg.setQuerydoc(queryDoc)
-
-    const peerDoor: number = this.webChannel.members[0]
-
-    this.webChannel.sendTo(peerDoor, msg.serializeBinary())
-  }
-
-  sendPeerPseudo (pseudo: string, id: number = -1) {
-    let pseudoMsg = new pb.PeerPseudo()
-    pseudoMsg.setPseudo(pseudo)
-    let msg = new pb.Message()
-    msg.setPeerpseudo(pseudoMsg)
-    if (id !== -1) {
-      this.webChannel.sendTo(id, msg.serializeBinary())
-    } else {
-      this.webChannel.send(msg.serializeBinary())
-    }
-  }
-
-  sendDoc () {
-    const msg = new pb.Message()
-
-    const logootSRopesMsg = new pb.LogootSRopes()
-    logootSRopesMsg.setStr(this.doc.str)
-
-    if (this.doc.root instanceof MuteStructs.RopesNodes) {
-      const ropesMsg = this.generateRopesNodeMsg(this.doc.root)
-      logootSRopesMsg.setRoot(ropesMsg)
+      }
     }
 
-    msg.setLogootsropes(logootSRopesMsg)
+    webChannel.onPeerJoin = (id) => this.peerJoinSubject.next(id)
+    webChannel.onPeerLeave = (id) => this.peerLeaveSubject.next(id)
 
-    this.webChannel.send(msg.serializeBinary())
+    this.mongooseAdapter = mongooseAdapter
   }
 
-  sendDocTitle (title: string) {
-    const msg = new pb.Message()
+  initMuteCore (doc: Object) {
+    // TODO: MuteCore should consume doc Object
+    this.muteCore = new MuteCore(42)
+    this.muteCore.messageSource = this.messageSubject.asObservable() as any
+    this.muteCore.onMsgToBroadcast.subscribe((bm: BroadcastMessage) => {
+      this.webChannel.send(this.buildMessage(bm))
+    })
+    this.muteCore.onMsgToSendRandomly.subscribe((srm: SendRandomlyMessage) => {
+      const peerId = Math.ceil(Math.random() * this.webChannel.members.length)
+      this.webChannel.sendTo(peerId, this.buildMessage(srm))
+    })
+    this.muteCore.onMsgToSendTo.subscribe((stm: SendToMessage) => {
+      this.webChannel.sendTo(stm.id, this.buildMessage(stm))
+    })
 
-    const docMsg = new pb.Doc()
-    docMsg.setTitle(title)
-
-    msg.setDoc(docMsg)
-
-    this.webChannel.send(msg.serializeBinary())
+    // Collaborators config
+    this.muteCore.collaboratorsService.peerJoinSource = this.peerJoinSubject.asObservable() as any
+    this.muteCore.collaboratorsService.peerLeaveSource = this.peerLeaveSubject.asObservable() as any
+    const pseudoSubject = new BehaviorSubject<string>(this.pseudonym)
+    this.muteCore.collaboratorsService.pseudoSource = pseudoSubject.asObservable() as any
   }
 
-  generateRopesNodeMsg (ropesNode: MuteStructs.RopesNodes): any {
-    const ropesNodeMsg = new pb.RopesNode()
-
-    const blockMsg = this.generateBlockMsg(ropesNode.block)
-    ropesNodeMsg.setBlock(blockMsg)
-
-    if (ropesNode.left instanceof MuteStructs.RopesNodes) {
-      ropesNodeMsg.setLeft(this.generateRopesNodeMsg(ropesNode.left))
-    }
-
-    if (ropesNode.right instanceof MuteStructs.RopesNodes) {
-      ropesNodeMsg.setRight(this.generateRopesNodeMsg(ropesNode.right))
-    }
-
-    ropesNodeMsg.setOffset(ropesNode.offset)
-    ropesNodeMsg.setLength(ropesNode.length)
-
-    return ropesNodeMsg
+  private buildMessage (msg: AbstractMessage) {
+    const pbMsg = new pb.Message()
+    pbMsg.setService(msg.service)
+    pbMsg.setContent(msg.content)
+    return pbMsg.serializeBinary()
   }
-
-  generateBlockMsg (block: MuteStructs.LogootSBlock): any {
-    const blockMsg = new pb.LogootSBlock()
-
-    blockMsg.setId(this.generateIdentifierInterval(block.id))
-    blockMsg.setNbelement(block.nbElement)
-
-    return blockMsg
-  }
-
-  generateIdentifierInterval (id: MuteStructs.IdentifierInterval): any {
-    const identifierInterval = new pb.IdentifierInterval()
-
-    identifierInterval.setBaseList(id.base)
-    identifierInterval.setBegin(id.begin)
-    identifierInterval.setEnd(id.end)
-
-    return identifierInterval
-  }
-
-  // FIXME: Prevent Protobuf from renaming our fields or move this code elsewhere
-  renameKeys (node: {block: {id: any, nbElement?: any, nbelement: number}, right?: any, left?: any}) {
-    node.block.id.base = node.block.id.baseList
-    node.block.nbElement = node.block.nbelement
-    if (node.left) {
-      this.renameKeys(node.left)
-    }
-    if (node.right) {
-      this.renameKeys(node.right)
-    }
-  }
-
 }

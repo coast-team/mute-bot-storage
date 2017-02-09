@@ -6038,8 +6038,19 @@ exports.BotStorage = BotStorage;
 "use strict";
 
 const bunyan = __webpack_require__(23);
-exports.log = bunyan.createLogger({ name: 'mute-bot-storage' });
-function setLogLevel(logLevel) {
+function createLogger(logIntoFile, logLevel) {
+    const options = {
+        name: 'mute-bot-storage'
+    };
+    if (logIntoFile) {
+        options.streams = [{
+                type: 'rotating-file',
+                period: '1d',
+                count: 3,
+                path: `./${options.name}.log`
+            }];
+    }
+    exports.log = bunyan.createLogger(options);
     switch (logLevel) {
         case 'none':
             exports.log.level(bunyan.FATAL + 1);
@@ -6066,7 +6077,7 @@ function setLogLevel(logLevel) {
             exports.log.level(bunyan.INFO);
     }
 }
-exports.setLogLevel = setLogLevel;
+exports.createLogger = createLogger;
 
 
 /***/ }),
@@ -9239,7 +9250,8 @@ const defaults = {
     port: 8080,
     portBot: 9000,
     secure: false,
-    logLevel: 'info'
+    logLevel: 'info',
+    logIntoFile: false
 };
 // Configure command-line interface
 program
@@ -9248,13 +9260,15 @@ program
     .option('-b, --portBot <n>', `Select port to use for the peer to peer bot, DEFAULT: ${defaults.portBot}\n`, defaults.portBot)
     .option('-s, --secure', `If present, the REST API server is listening on HTTPS instead of HTTP`)
     .option('-l, --logLevel <none|trace|debug|info|warn|error|fatal>', `Specify level for logging. DEFAULT: "info". `, /^(none|trace|debug|info|warn|error|fatal)$/i, defaults.logLevel)
+    .option('-f, --logFile', `If specified, writes logs into file`)
     .parse(process.argv);
-// Retreive command-line interface & setup settings
+// Setup settings
 const { host, port, portBot, logLevel } = program;
 const secure = program.secure ? true : false;
-log_1.log.info('The options are: ', { host, port, portBot, secure, logLevel });
+const logIntoFile = program.logFile ? true : false;
 // Configure logging
-log_1.setLogLevel(logLevel);
+log_1.createLogger(logIntoFile, logLevel);
+log_1.log.info('Starting with the following settings: ', { host, port, portBot, secure, logLevel, logIntoFile });
 // Configure error handling on process
 process.on('uncaughtException', (err) => log_1.log.fatal(err));
 // Connect to MongoDB

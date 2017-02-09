@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+message Message {
+  string service = 1;
+  bytes content = 2;
+}
+
+message DocId {
+  string id = 1;
+}

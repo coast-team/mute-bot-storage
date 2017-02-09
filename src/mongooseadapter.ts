@@ -6,13 +6,9 @@ export class MongooseAdapter {
   private db: mongoose.Connection
 
   private docSchema: mongoose.Schema = new mongoose.Schema({
-    key: {
+    id: {
       type: String,
       require: true
-    },
-    title: {
-      type: String,
-      require: false
     },
     doc: {
       root: Object,
@@ -32,9 +28,9 @@ export class MongooseAdapter {
     })
   }
 
-  find (key: string): Promise<any> {
+  find (id: string): Promise<any> {
     return new Promise( (resolve, reject) => {
-      const query = { key: key }
+      const query = { id: id }
       this.docModel.findOne(query, function (err, doc) {
         if (err) {
           console.error(err)
@@ -60,21 +56,9 @@ export class MongooseAdapter {
   }
 
   // FIXME: Limit the number of saves
-  save (key: string, doc: MuteStructs.LogootSRopes) {
-    const query = { key: key }
+  save (id: string, doc: MuteStructs.LogootSRopes) {
+    const query = { id: id }
     const update = { doc: { root: doc.root, str: doc.str } }
-    const options = { upsert: true, new: true, setDefaultsOnInsert: true }
-
-    this.docModel.findOneAndUpdate(query, update, options, function(err, result) {
-        if (err) {
-          return console.error(err)
-        }
-    })
-  }
-
-  updateTitle (key: string, title: string) {
-    const query = { key: key }
-    const update = { title }
     const options = { upsert: true, new: true, setDefaultsOnInsert: true }
 
     this.docModel.findOneAndUpdate(query, update, options, function(err, result) {
