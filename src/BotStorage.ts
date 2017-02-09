@@ -1,7 +1,7 @@
 import { ReplaySubject, BehaviorSubject } from 'rxjs'
 import { MuteCore, BroadcastMessage, SendRandomlyMessage, AbstractMessage, SendToMessage, NetworkMessage } from 'mute-core'
 
-import { MongooseAdapter } from './mongooseadapter'
+import { MongooseAdapter } from './MongooseAdapter'
 const pb = require('./proto/message_pb.js')
 
 // TODO: BotStorage should serialize document in DB

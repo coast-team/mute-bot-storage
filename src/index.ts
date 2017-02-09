@@ -4,8 +4,8 @@ import * as http from 'http'
 import * as express from 'express'
 import * as program from 'commander'
 
-import { BotStorage } from './botstorage'
-import { MongooseAdapter } from './mongooseadapter'
+import { BotStorage } from './BotStorage'
+import { MongooseAdapter } from './MongooseAdapter'
 import { createLogger, log } from './log'
 
 // Default options
