@@ -13,30 +13,37 @@ const defaults = {
   host: '0.0.0.0',
   port: 8080,
   portBot: 9000,
-  secure: false,
+  signalingURL: 'http://signal2.loria.fr',
+  useHttps: false,
   logLevel: 'info',
   logIntoFile: false
 }
 
 // Configure command-line interface
 program
-  .option('-h, --host <ip or host name>', `Select host address to bind to, DEFAULT: "${defaults.host}"`, defaults.host)
-  .option('-p, --port <n>', `Select port to use for the server (REST API), DEFAULT: ${defaults.port}`, defaults.port)
-  .option('-b, --portBot <n>', `Select port to use for the peer to peer bot, DEFAULT: ${defaults.portBot}\n`, defaults.portBot)
-  .option('-s, --secure', `If present, the REST API server is listening on HTTPS instead of HTTP`)
-  .option('-l, --logLevel <none|trace|debug|info|warn|error|fatal>', `Specify level for logging. DEFAULT: "info". `,
+  .option('-h, --host <ip or host name>',
+    `Specify host address to bind to, DEFAULT: "${defaults.host}"`, defaults.host)
+  .option('-p, --port <n>',
+    `Specify port to use for the server (REST API), DEFAULT: ${defaults.port}`, defaults.port)
+  .option('-b, --portBot <n>',
+    `Specify port to use for the peer to peer bot, DEFAULT: ${defaults.portBot}`, defaults.portBot)
+  .option('-s, --signalingURL <url>',
+    `Specify Signaling server url for the peer to peer bot, DEFAULT: ${defaults.signalingURL}\n`, defaults.signalingURL)
+  .option('-t, --https',
+    `If present, the REST API server is listening on HTTPS instead of HTTP`)
+  .option('-l, --logLevel <none|trace|debug|info|warn|error|fatal>',
+    `Specify level for logging. DEFAULT: "info". `,
     /^(none|trace|debug|info|warn|error|fatal)$/i, defaults.logLevel)
   .option('-f, --logFile', `If specified, writes logs into file`)
   .parse(process.argv)
 
 // Setup settings
-const {host, port, portBot, logLevel} = program
-const secure = (program as any).secure ? true : false
+const {host, port, portBot, signalingURL, logLevel} = program
+const useHttps = (program as any).useHttps ? true : false
 const logIntoFile = (program as any).logFile ? true : false
 
 // Configure logging
 createLogger(logIntoFile, logLevel)
-log.info('Starting with the following settings: ', {host, port, portBot, secure, logLevel, logIntoFile})
 
 // Configure error handling on process
 process.on('uncaughtException', (err) => log.fatal(err))
@@ -45,7 +52,7 @@ process.on('uncaughtException', (err) => log.fatal(err))
 const mongooseAdapter: MongooseAdapter = new MongooseAdapter('localhost')
 
 // Configure & Start Peer To Peer bot
-const bot = new BotServer({host: host, port: portBot})
+const bot = new BotServer({host: host, port: portBot, signalingURL})
 
 bot.start()
   .then(() => {
@@ -86,7 +93,10 @@ app.get('/docs', (req, res) => {
   })
 })
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
-const server = secure ? https.createServer(app) : http.createServer(app)
+const server = useHttps ? https.createServer(app) : http.createServer(app)
 server.listen(port, host, () => {
-  log.info(`Server (REST API) is listening at http${secure ? 's' : ''}://${host}:${port}`)
+  log.info('Starting with the following settings: ',
+    {host, port, portBot, signalingURL, useHttps, logLevel, logIntoFile}
+  )
+  log.info(`Server (REST API) is listening at http${useHttps ? 's' : ''}://${host}:${port}`)
 })
