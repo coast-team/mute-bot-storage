@@ -57,7 +57,10 @@ const bot = new BotServer({host: host, port: portBot, signalingURL})
 bot.start()
   .then(() => {
     log.info(`Bot is listening at ${host}:${portBot}`)
-    bot.onWebChannel = (wc) => new BotStorage(wc, mongooseAdapter)
+    bot.onWebChannel = (wc) => {
+      log.info('New peer to peer network invitation. Initializing BotStorage...')
+      new BotStorage(wc, mongooseAdapter)
+    }
   })
   .catch((err) => {
     log.fatal(`An error occurred while starting the bot`, err)
