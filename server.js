@@ -6266,13 +6266,8 @@ const log_1 = __webpack_require__(5);
 class MongooseAdapter {
     constructor() {
         this.docSchema = new mongoose.Schema({
-            key: {
-                type: String,
-                require: true
-            },
-            doc: {
-                type: Object
-            }
+            key: { type: String, require: true },
+            doc: { type: Object }
         });
         this.docModel = mongoose.model('Doc', this.docSchema);
     }
@@ -6298,8 +6293,7 @@ class MongooseAdapter {
         });
     }
     list() {
-        return this.docModel.find()
-            .then((docs) => docs);
+        return this.docModel.find().exec();
     }
     save(key, doc) {
         const query = { key };
@@ -6814,7 +6808,7 @@ proto.BotReponse.serializeBinaryToWriter = function(message, writer) {
  * @enum {number}
  */
 proto.BotReponse.ErrorCode = {
-  ERRRO: 0
+  DATABASE: 0
 };
 
 /**
@@ -10238,6 +10232,7 @@ log_1.createLogger(logIntoFile, logLevel);
 // Configure error handling on process
 process.on('uncaughtException', (err) => log_1.log.fatal(err));
 // Connect to MongoDB
+let isError = false;
 const mongooseAdapter = new MongooseAdapter_1.MongooseAdapter();
 mongooseAdapter.connect('localhost')
     .then(() => {
@@ -10254,7 +10249,8 @@ mongooseAdapter.connect('localhost')
     log_1.log.info(`Successfully started the storage bot server at ws://${host}:${portBot}`);
 })
     .catch((err) => {
-    log_1.log.fatal(`Error during database/BotStorage initialization`, err);
+    isError = true;
+    log_1.log.fatal(`Error during database/bot initialization`, err);
 });
 // Configure & Start REST server
 const app = express();
@@ -10264,7 +10260,7 @@ app.use(function (req, res, next) {
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     next();
 });
-app.get('/ping', (req, res) => res.send('pong'));
+app.get('/ping', (req, res) => res.send(isError ? 'error' : 'pong'));
 app.get('/docs', (req, res) => {
     mongooseAdapter.list()
         .then((docs) => {
