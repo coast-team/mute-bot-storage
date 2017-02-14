@@ -1,7 +1,17 @@
-import { ReplaySubject, BehaviorSubject } from 'rxjs'
-import { MuteCore, BroadcastMessage, SendRandomlyMessage, AbstractMessage, SendToMessage, NetworkMessage } from 'mute-core'
+import { ReplaySubject, BehaviorSubject, Subject } from 'rxjs'
+import {
+  MuteCore,
+  BroadcastMessage,
+  SendRandomlyMessage,
+  AbstractMessage,
+  SendToMessage,
+  NetworkMessage,
+  JoinEvent,
+  RichLogootSOperation,
+  State } from 'mute-core'
 
 import { MongooseAdapter } from './MongooseAdapter'
+import { log } from './log'
 const pb = require('./proto/message_pb.js')
 
 // TODO: BotStorage should serialize document in DB
@@ -12,30 +22,53 @@ export class BotStorage {
   private muteCore: MuteCore
   private pseudonym = 'Bot Storage'
 
+  private joinSubject: Subject<JoinEvent>
   private messageSubject: ReplaySubject<NetworkMessage>
   private peerJoinSubject: ReplaySubject<number>
   private peerLeaveSubject: ReplaySubject<number>
+  private stateSubject: Subject<State>
 
   constructor(webChannel, mongooseAdapter: MongooseAdapter) {
+    this.joinSubject = new Subject<JoinEvent>()
     this.messageSubject = new ReplaySubject()
     this.peerJoinSubject = new ReplaySubject()
     this.peerLeaveSubject = new ReplaySubject()
-    this.webChannel = webChannel
-    // FIXME: this.muteCore.joinSource =
+    this.stateSubject = new Subject<State>()
 
-    webChannel.onMessage = (id, msg, isBroadcast) => {
-      const pbMsg = new pb.Message()
-      pbMsg.deserializeBinary()
-      if (pbMsg.service === this.pseudonym) {
-        const pbBotContent = new pb.DocId()
-        pbBotContent.deserializeBinary()
-        this.mongooseAdapter.find(pbBotContent.getId())
-          .then((data: {doc: Object, title: string}) => this.initMuteCore(data.doc))
-        webChannel.onMessage = (id, msg, isBroadcast) => {
-          const pbMsg = new pb.Message()
-          pbMsg.deserializeBinary()
-          this.messageSubject.next(new NetworkMessage(pbMsg.service, id, isBroadcast, pbMsg.content))
+    this.webChannel = webChannel
+
+    webChannel.onMessage = (id, bytes, isBroadcast) => {
+      const msg = pb.Message.deserializeBinary(bytes)
+
+      if (msg.getService() === this.pseudonym) {
+        const docKey = pb.BotRequest.deserializeBinary(msg.getContent()).getKey()
+
+        this.mongooseAdapter.find(docKey)
+          .then((doc: RichLogootSOperation[]) => {
+            this.initMuteCore(docKey)
+            this.joinSubject.next(new JoinEvent(this.webChannel.myId, docKey, false))
+            if (doc === null) {
+              log.info(`Document ${docKey} was not found in database, thus create a new document`)
+              this.stateSubject.next(new State(new Map(), []))
+            } else {
+              log.info(`Document ${docKey} retreived from database`)
+              this.stateSubject.next(new State(new Map(), doc))
+            }
+          })
+          .catch((err) => {
+            log.error(`Error finding the Document ${docKey}`, err)
+            const pbRes = new pb.BotResponse()
+            pbRes.setError(pb.BotResponse.DATABASE)
+            const msg = this.buildMessage({service: this.pseudonym, content: pbRes.serializeBinary()})
+            webChannel.sendTo(id, msg)
+          })
+
+        webChannel.onMessage = (id, bytes, isBroadcast) => {
+          const msg = pb.Message.deserializeBinary(bytes)
+          this.messageSubject.next(new NetworkMessage(msg.getService(), id, isBroadcast, msg.getContent()))
         }
+      } else {
+        this.messageSubject.next(new NetworkMessage(msg.getService(), id, isBroadcast, msg.getContent()))
       }
     }
 
@@ -45,16 +78,17 @@ export class BotStorage {
     this.mongooseAdapter = mongooseAdapter
   }
 
-  initMuteCore (doc: Object) {
+  initMuteCore (docKey: string): void {
     // TODO: MuteCore should consume doc Object
     this.muteCore = new MuteCore(42)
+    this.muteCore.joinSource = this.joinSubject.asObservable() as any
     this.muteCore.messageSource = this.messageSubject.asObservable() as any
     this.muteCore.onMsgToBroadcast.subscribe((bm: BroadcastMessage) => {
       this.webChannel.send(this.buildMessage(bm))
     })
     this.muteCore.onMsgToSendRandomly.subscribe((srm: SendRandomlyMessage) => {
-      const peerId = Math.ceil(Math.random() * this.webChannel.members.length)
-      this.webChannel.sendTo(peerId, this.buildMessage(srm))
+      const index: number = Math.ceil(Math.random() * this.webChannel.members.length) - 1
+      this.webChannel.sendTo(this.webChannel.members[index], this.buildMessage(srm))
     })
     this.muteCore.onMsgToSendTo.subscribe((stm: SendToMessage) => {
       this.webChannel.sendTo(stm.id, this.buildMessage(stm))
@@ -65,6 +99,16 @@ export class BotStorage {
     this.muteCore.collaboratorsService.peerLeaveSource = this.peerLeaveSubject.asObservable() as any
     const pseudoSubject = new BehaviorSubject<string>(this.pseudonym)
     this.muteCore.collaboratorsService.pseudoSource = pseudoSubject.asObservable() as any
+
+    // Sync service config
+    this.muteCore.syncService.onState.subscribe((state: State) => {
+      // FIXME: Reduce the number of saves
+      this.mongooseAdapter.save(docKey, state.richLogootSOps)
+        .catch((err) => {
+          log.error(`The document ${docKey} could not be saved into database`, err)
+        })
+    })
+    this.muteCore.syncService.setJoinAndStateSources(this.joinSubject.asObservable() as any, this.stateSubject.asObservable() as any)
   }
 
   private buildMessage (msg: AbstractMessage) {

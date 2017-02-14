@@ -361,13 +361,13 @@ var identifier_1 = __webpack_require__(3);
 var identifierinterval_1 = __webpack_require__(0);
 var IDFactory = __webpack_require__(43);
 var iteratorhelperidentifier_1 = __webpack_require__(45);
-var logootsadd_1 = __webpack_require__(16);
-var logootsblock_1 = __webpack_require__(10);
-var logootsdel_1 = __webpack_require__(17);
-var ropesnodes_1 = __webpack_require__(18);
-var textdelete_1 = __webpack_require__(19);
-var textinsert_1 = __webpack_require__(20);
-var TextUtils = __webpack_require__(21);
+var logootsadd_1 = __webpack_require__(19);
+var logootsblock_1 = __webpack_require__(11);
+var logootsdel_1 = __webpack_require__(20);
+var ropesnodes_1 = __webpack_require__(21);
+var textdelete_1 = __webpack_require__(22);
+var textinsert_1 = __webpack_require__(23);
+var TextUtils = __webpack_require__(24);
 function leftChildOf(aNode) {
     console.assert(aNode instanceof ropesnodes_1.RopesNodes, "aNode = ", aNode);
     return aNode.left;
@@ -1009,22 +1009,71 @@ exports.LogootSRopes = LogootSRopes;
 
 "use strict";
 
-var BroadcastMessage_1 = __webpack_require__(35);
+const bunyan = __webpack_require__(48);
+function createLogger(logIntoFile, logLevel) {
+    const options = {
+        name: 'mute-bot-storage'
+    };
+    if (logIntoFile) {
+        options.streams = [{
+                type: 'rotating-file',
+                period: '1d',
+                count: 3,
+                path: `./${options.name}.log`
+            }];
+    }
+    exports.log = bunyan.createLogger(options);
+    switch (logLevel) {
+        case 'none':
+            exports.log.level(bunyan.FATAL + 1);
+            break;
+        case 'trace':
+            exports.log.level(bunyan.TRACE);
+            break;
+        case 'debug':
+            exports.log.level(bunyan.DEBUG);
+            break;
+        case 'info':
+            exports.log.level(bunyan.INFO);
+            break;
+        case 'warn':
+            exports.log.level(bunyan.WARN);
+            break;
+        case 'error':
+            exports.log.level(bunyan.ERROR);
+            break;
+        case 'fatal':
+            exports.log.level(bunyan.FATAL);
+            break;
+        default:
+            exports.log.level(bunyan.INFO);
+    }
+}
+exports.createLogger = createLogger;
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var BroadcastMessage_1 = __webpack_require__(36);
 exports.BroadcastMessage = BroadcastMessage_1.BroadcastMessage;
-var JoinEvent_1 = __webpack_require__(36);
+var JoinEvent_1 = __webpack_require__(37);
 exports.JoinEvent = JoinEvent_1.JoinEvent;
-var NetworkMessage_1 = __webpack_require__(37);
+var NetworkMessage_1 = __webpack_require__(38);
 exports.NetworkMessage = NetworkMessage_1.NetworkMessage;
-var SendRandomlyMessage_1 = __webpack_require__(38);
+var SendRandomlyMessage_1 = __webpack_require__(39);
 exports.SendRandomlyMessage = SendRandomlyMessage_1.SendRandomlyMessage;
-var SendToMessage_1 = __webpack_require__(39);
+var SendToMessage_1 = __webpack_require__(40);
 exports.SendToMessage = SendToMessage_1.SendToMessage;
 var AbstractMessage_1 = __webpack_require__(2);
 exports.AbstractMessage = AbstractMessage_1.AbstractMessage;
 //# sourceMappingURL=index.js.map
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1041,7 +1090,7 @@ exports.Interval = Interval;
 //# sourceMappingURL=Interval.js.map
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1057,12 +1106,12 @@ exports.ReplySyncEvent = ReplySyncEvent;
 //# sourceMappingURL=ReplySyncEvent.js.map
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var mute_structs_1 = __webpack_require__(9);
+var mute_structs_1 = __webpack_require__(10);
 var RichLogootSOperation = (function () {
     function RichLogootSOperation(id, clock, logootSOp) {
         this.id = id;
@@ -1086,7 +1135,7 @@ exports.RichLogootSOperation = RichLogootSOperation;
 //# sourceMappingURL=RichLogootSOperation.js.map
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1113,28 +1162,28 @@ var identifier_1 = __webpack_require__(3);
 exports.Identifier = identifier_1.Identifier;
 var identifierinterval_1 = __webpack_require__(0);
 exports.IdentifierInterval = identifierinterval_1.IdentifierInterval;
-var logootsblock_1 = __webpack_require__(10);
+var logootsblock_1 = __webpack_require__(11);
 exports.LogootSBlock = logootsblock_1.LogootSBlock;
 var logootsropes_1 = __webpack_require__(4);
 exports.LogootSRopes = logootsropes_1.LogootSRopes;
-var ropesnodes_1 = __webpack_require__(18);
+var ropesnodes_1 = __webpack_require__(21);
 exports.RopesNodes = ropesnodes_1.RopesNodes;
-var logootsadd_1 = __webpack_require__(16);
+var logootsadd_1 = __webpack_require__(19);
 exports.LogootSAdd = logootsadd_1.LogootSAdd;
-var logootsdel_1 = __webpack_require__(17);
+var logootsdel_1 = __webpack_require__(20);
 exports.LogootSDel = logootsdel_1.LogootSDel;
-var textdelete_1 = __webpack_require__(19);
+var textdelete_1 = __webpack_require__(22);
 exports.TextDelete = textdelete_1.TextDelete;
-var textinsert_1 = __webpack_require__(20);
+var textinsert_1 = __webpack_require__(23);
 exports.TextInsert = textinsert_1.TextInsert;
-var textutils_1 = __webpack_require__(21);
+var textutils_1 = __webpack_require__(24);
 exports.insert = textutils_1.insert;
 exports.del = textutils_1.del;
 exports.occurrences = textutils_1.occurrences;
 //# sourceMappingURL=index.js.map
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1216,13 +1265,13 @@ exports.LogootSBlock = LogootSBlock;
 //# sourceMappingURL=logootsblock.js.map
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports) {
 
 module.exports = require("google-protobuf");
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1238,29 +1287,54 @@ exports.Collaborator = Collaborator;
 //# sourceMappingURL=Collaborator.js.map
 
 /***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var Collaborator_1 = __webpack_require__(12);
-exports.Collaborator = Collaborator_1.Collaborator;
-var CollaboratorsService_1 = __webpack_require__(32);
-exports.CollaboratorsService = CollaboratorsService_1.CollaboratorsService;
-//# sourceMappingURL=index.js.map
-
-/***/ }),
 /* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var DocService_1 = __webpack_require__(33);
-exports.DocService = DocService_1.DocService;
+var Collaborator_1 = __webpack_require__(13);
+exports.Collaborator = Collaborator_1.Collaborator;
+var CollaboratorsService_1 = __webpack_require__(34);
+exports.CollaboratorsService = CollaboratorsService_1.CollaboratorsService;
 //# sourceMappingURL=index.js.map
 
 /***/ }),
 /* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var DocService_1 = __webpack_require__(35);
+exports.DocService = DocService_1.DocService;
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var _1 = __webpack_require__(14);
+exports.Collaborator = _1.Collaborator;
+exports.CollaboratorsService = _1.CollaboratorsService;
+var _2 = __webpack_require__(15);
+exports.DocService = _2.DocService;
+var _3 = __webpack_require__(6);
+exports.BroadcastMessage = _3.BroadcastMessage;
+exports.JoinEvent = _3.JoinEvent;
+exports.NetworkMessage = _3.NetworkMessage;
+exports.SendRandomlyMessage = _3.SendRandomlyMessage;
+exports.SendToMessage = _3.SendToMessage;
+exports.AbstractMessage = _3.AbstractMessage;
+var MuteCore_1 = __webpack_require__(33);
+exports.MuteCore = MuteCore_1.MuteCore;
+var _4 = __webpack_require__(18);
+exports.RichLogootSOperation = _4.RichLogootSOperation;
+exports.State = _4.State;
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1276,7 +1350,27 @@ exports.State = State;
 //# sourceMappingURL=State.js.map
 
 /***/ }),
-/* 16 */
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var Interval_1 = __webpack_require__(7);
+exports.Interval = Interval_1.Interval;
+var ReplySyncEvent_1 = __webpack_require__(8);
+exports.ReplySyncEvent = ReplySyncEvent_1.ReplySyncEvent;
+var RichLogootSOperation_1 = __webpack_require__(9);
+exports.RichLogootSOperation = RichLogootSOperation_1.RichLogootSOperation;
+var State_1 = __webpack_require__(17);
+exports.State = State_1.State;
+var SyncService_1 = __webpack_require__(42);
+exports.SyncService = SyncService_1.SyncService;
+var SyncMessageService_1 = __webpack_require__(41);
+exports.SyncMessageService = SyncMessageService_1.SyncMessageService;
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1350,7 +1444,7 @@ exports.LogootSAdd = LogootSAdd;
 //# sourceMappingURL=logootsadd.js.map
 
 /***/ }),
-/* 17 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1430,7 +1524,7 @@ exports.LogootSDel = LogootSDel;
 //# sourceMappingURL=logootsdel.js.map
 
 /***/ }),
-/* 18 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1454,7 +1548,7 @@ exports.LogootSDel = LogootSDel;
  */
 
 var identifierinterval_1 = __webpack_require__(0);
-var logootsblock_1 = __webpack_require__(10);
+var logootsblock_1 = __webpack_require__(11);
 /**
 * @param aNode may be null
 * @returns Height of aNode or 0 if aNode is null
@@ -1655,7 +1749,7 @@ exports.RopesNodes = RopesNodes;
 //# sourceMappingURL=ropesnodes.js.map
 
 /***/ }),
-/* 19 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1710,7 +1804,7 @@ exports.TextDelete = TextDelete;
 //# sourceMappingURL=textdelete.js.map
 
 /***/ }),
-/* 20 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1764,7 +1858,7 @@ exports.TextInsert = TextInsert;
 //# sourceMappingURL=textinsert.js.map
 
 /***/ }),
-/* 21 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1841,7 +1935,7 @@ exports.occurrences = occurrences;
 //# sourceMappingURL=textutils.js.map
 
 /***/ }),
-/* 22 */
+/* 25 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -6064,52 +6158,73 @@ function create(options) {
 
 
 /***/ }),
-/* 23 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 const rxjs_1 = __webpack_require__(1);
-const mute_core_1 = __webpack_require__(34);
-const pb = __webpack_require__(30);
+const mute_core_1 = __webpack_require__(16);
+const log_1 = __webpack_require__(5);
+const pb = __webpack_require__(32);
 // TODO: BotStorage should serialize document in DB
 class BotStorage {
     constructor(webChannel, mongooseAdapter) {
         this.pseudonym = 'Bot Storage';
+        this.joinSubject = new rxjs_1.Subject();
         this.messageSubject = new rxjs_1.ReplaySubject();
         this.peerJoinSubject = new rxjs_1.ReplaySubject();
         this.peerLeaveSubject = new rxjs_1.ReplaySubject();
+        this.stateSubject = new rxjs_1.Subject();
         this.webChannel = webChannel;
-        // FIXME: this.muteCore.joinSource =
-        webChannel.onMessage = (id, msg, isBroadcast) => {
-            const pbMsg = new pb.Message();
-            pbMsg.deserializeBinary();
-            if (pbMsg.service === this.pseudonym) {
-                const pbBotContent = new pb.DocId();
-                pbBotContent.deserializeBinary();
-                this.mongooseAdapter.find(pbBotContent.getId())
-                    .then((data) => this.initMuteCore(data.doc));
-                webChannel.onMessage = (id, msg, isBroadcast) => {
-                    const pbMsg = new pb.Message();
-                    pbMsg.deserializeBinary();
-                    this.messageSubject.next(new mute_core_1.NetworkMessage(pbMsg.service, id, isBroadcast, pbMsg.content));
+        webChannel.onMessage = (id, bytes, isBroadcast) => {
+            const msg = pb.Message.deserializeBinary(bytes);
+            if (msg.getService() === this.pseudonym) {
+                const docKey = pb.BotRequest.deserializeBinary(msg.getContent()).getKey();
+                this.mongooseAdapter.find(docKey)
+                    .then((doc) => {
+                    this.initMuteCore(docKey);
+                    this.joinSubject.next(new mute_core_1.JoinEvent(this.webChannel.myId, docKey, false));
+                    if (doc === null) {
+                        log_1.log.info(`Document ${docKey} was not found in database, thus create a new document`);
+                        this.stateSubject.next(new mute_core_1.State(new Map(), []));
+                    }
+                    else {
+                        log_1.log.info(`Document ${docKey} retreived from database`);
+                        this.stateSubject.next(new mute_core_1.State(new Map(), doc));
+                    }
+                })
+                    .catch((err) => {
+                    log_1.log.error(`Error finding the Document ${docKey}`, err);
+                    const pbRes = new pb.BotResponse();
+                    pbRes.setError(pb.BotResponse.DATABASE);
+                    const msg = this.buildMessage({ service: this.pseudonym, content: pbRes.serializeBinary() });
+                    webChannel.sendTo(id, msg);
+                });
+                webChannel.onMessage = (id, bytes, isBroadcast) => {
+                    const msg = pb.Message.deserializeBinary(bytes);
+                    this.messageSubject.next(new mute_core_1.NetworkMessage(msg.getService(), id, isBroadcast, msg.getContent()));
                 };
+            }
+            else {
+                this.messageSubject.next(new mute_core_1.NetworkMessage(msg.getService(), id, isBroadcast, msg.getContent()));
             }
         };
         webChannel.onPeerJoin = (id) => this.peerJoinSubject.next(id);
         webChannel.onPeerLeave = (id) => this.peerLeaveSubject.next(id);
         this.mongooseAdapter = mongooseAdapter;
     }
-    initMuteCore(doc) {
+    initMuteCore(docKey) {
         // TODO: MuteCore should consume doc Object
         this.muteCore = new mute_core_1.MuteCore(42);
+        this.muteCore.joinSource = this.joinSubject.asObservable();
         this.muteCore.messageSource = this.messageSubject.asObservable();
         this.muteCore.onMsgToBroadcast.subscribe((bm) => {
             this.webChannel.send(this.buildMessage(bm));
         });
         this.muteCore.onMsgToSendRandomly.subscribe((srm) => {
-            const peerId = Math.ceil(Math.random() * this.webChannel.members.length);
-            this.webChannel.sendTo(peerId, this.buildMessage(srm));
+            const index = Math.ceil(Math.random() * this.webChannel.members.length) - 1;
+            this.webChannel.sendTo(this.webChannel.members[index], this.buildMessage(srm));
         });
         this.muteCore.onMsgToSendTo.subscribe((stm) => {
             this.webChannel.sendTo(stm.id, this.buildMessage(stm));
@@ -6119,6 +6234,15 @@ class BotStorage {
         this.muteCore.collaboratorsService.peerLeaveSource = this.peerLeaveSubject.asObservable();
         const pseudoSubject = new rxjs_1.BehaviorSubject(this.pseudonym);
         this.muteCore.collaboratorsService.pseudoSource = pseudoSubject.asObservable();
+        // Sync service config
+        this.muteCore.syncService.onState.subscribe((state) => {
+            // FIXME: Reduce the number of saves
+            this.mongooseAdapter.save(docKey, state.richLogootSOps)
+                .catch((err) => {
+                log_1.log.error(`The document ${docKey} could not be saved into database`, err);
+            });
+        });
+        this.muteCore.syncService.setJoinAndStateSources(this.joinSubject.asObservable(), this.stateSubject.asObservable());
     }
     buildMessage(msg) {
         const pbMsg = new pb.Message();
@@ -6131,150 +6255,88 @@ exports.BotStorage = BotStorage;
 
 
 /***/ }),
-/* 24 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 const mongoose = __webpack_require__(50);
+const mute_core_1 = __webpack_require__(16);
+const log_1 = __webpack_require__(5);
 class MongooseAdapter {
-    constructor(url) {
+    constructor() {
         this.docSchema = new mongoose.Schema({
-            id: {
+            key: {
                 type: String,
                 require: true
             },
             doc: {
-                root: Object,
-                str: String
+                type: Object
             }
         });
         this.docModel = mongoose.model('Doc', this.docSchema);
-        mongoose.connect(`mongodb://${url}/docs`);
-        this.db = mongoose.connection;
-        this.db.on('error', console.error.bind(console, 'connection error:'));
-        this.db.once('open', function () {
-            // we're connected!
-            console.log(`Successfully connected to database ${url}`);
+    }
+    connect(url) {
+        const uri = `mongodb://${url}/docs`;
+        return mongoose.connect(uri)
+            .then(() => {
+            this.db = mongoose.connection;
+            mongoose.connection.on('close', () => {
+                log_1.log.warn(`Connection to the database ${uri} has been closed`);
+            });
         });
     }
-    find(id) {
-        return new Promise((resolve, reject) => {
-            const query = { id: id };
-            this.docModel.findOne(query, function (err, doc) {
-                if (err) {
-                    console.error(err);
-                    reject();
-                }
-                else {
-                    resolve(doc);
-                }
-            });
+    find(key) {
+        return this.docModel.findOne({ key })
+            .then(({ doc }) => {
+            if (doc !== null) {
+                return doc.map((op) => {
+                    return mute_core_1.RichLogootSOperation.fromPlain(op);
+                });
+            }
+            return doc;
         });
     }
     list() {
-        return new Promise((resolve, reject) => {
-            this.docModel.find((err, docs) => {
-                if (err) {
-                    console.error(err);
-                    reject();
-                }
-                else {
-                    resolve(docs);
-                }
-            });
-        });
+        return this.docModel.find()
+            .then((docs) => docs);
     }
-    // FIXME: Limit the number of saves
-    save(id, doc) {
-        const query = { id: id };
-        const update = { doc: { root: doc.root, str: doc.str } };
+    save(key, doc) {
+        const query = { key };
+        const update = { doc };
         const options = { upsert: true, new: true, setDefaultsOnInsert: true };
-        this.docModel.findOneAndUpdate(query, update, options, function (err, result) {
-            if (err) {
-                return console.error(err);
-            }
-        });
+        return this.docModel.findOneAndUpdate(query, update, options).exec();
     }
 }
 exports.MongooseAdapter = MongooseAdapter;
 
 
 /***/ }),
-/* 25 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-const bunyan = __webpack_require__(48);
-function createLogger(logIntoFile, logLevel) {
-    const options = {
-        name: 'mute-bot-storage'
-    };
-    if (logIntoFile) {
-        options.streams = [{
-                type: 'rotating-file',
-                period: '1d',
-                count: 3,
-                path: `./${options.name}.log`
-            }];
-    }
-    exports.log = bunyan.createLogger(options);
-    switch (logLevel) {
-        case 'none':
-            exports.log.level(bunyan.FATAL + 1);
-            break;
-        case 'trace':
-            exports.log.level(bunyan.TRACE);
-            break;
-        case 'debug':
-            exports.log.level(bunyan.DEBUG);
-            break;
-        case 'info':
-            exports.log.level(bunyan.INFO);
-            break;
-        case 'warn':
-            exports.log.level(bunyan.WARN);
-            break;
-        case 'error':
-            exports.log.level(bunyan.ERROR);
-            break;
-        case 'fatal':
-            exports.log.level(bunyan.FATAL);
-            break;
-        default:
-            exports.log.level(bunyan.INFO);
-    }
-}
-exports.createLogger = createLogger;
-
-
-/***/ }),
-/* 26 */
+/* 28 */
 /***/ (function(module, exports) {
 
 module.exports = require("commander");
 
 /***/ }),
-/* 27 */
+/* 29 */
 /***/ (function(module, exports) {
 
 module.exports = require("express");
 
 /***/ }),
-/* 28 */
+/* 30 */
 /***/ (function(module, exports) {
 
 module.exports = require("http");
 
 /***/ }),
-/* 29 */
+/* 31 */
 /***/ (function(module, exports) {
 
 module.exports = require("https");
 
 /***/ }),
-/* 30 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -6284,11 +6346,13 @@ module.exports = require("https");
  */
 // GENERATED CODE -- DO NOT EDIT!
 
-var jspb = __webpack_require__(11);
+var jspb = __webpack_require__(12);
 var goog = jspb;
 var global = Function('return this')();
 
-goog.exportSymbol('proto.DocId', null, global);
+goog.exportSymbol('proto.BotReponse', null, global);
+goog.exportSymbol('proto.BotReponse.ErrorCode', null, global);
+goog.exportSymbol('proto.BotRequest', null, global);
 goog.exportSymbol('proto.Message', null, global);
 
 /**
@@ -6492,12 +6556,12 @@ proto.Message.prototype.setContent = function(value) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.DocId = function(opt_data) {
+proto.BotRequest = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.DocId, jspb.Message);
+goog.inherits(proto.BotRequest, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.DocId.displayName = 'proto.DocId';
+  proto.BotRequest.displayName = 'proto.BotRequest';
 }
 
 
@@ -6512,8 +6576,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.DocId.prototype.toObject = function(opt_includeInstance) {
-  return proto.DocId.toObject(opt_includeInstance, this);
+proto.BotRequest.prototype.toObject = function(opt_includeInstance) {
+  return proto.BotRequest.toObject(opt_includeInstance, this);
 };
 
 
@@ -6522,12 +6586,12 @@ proto.DocId.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.DocId} msg The msg instance to transform.
+ * @param {!proto.BotRequest} msg The msg instance to transform.
  * @return {!Object}
  */
-proto.DocId.toObject = function(includeInstance, msg) {
+proto.BotRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    id: jspb.Message.getFieldWithDefault(msg, 1, "")
+    key: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -6541,23 +6605,23 @@ proto.DocId.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.DocId}
+ * @return {!proto.BotRequest}
  */
-proto.DocId.deserializeBinary = function(bytes) {
+proto.BotRequest.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.DocId;
-  return proto.DocId.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.BotRequest;
+  return proto.BotRequest.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.DocId} msg The message object to deserialize into.
+ * @param {!proto.BotRequest} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.DocId}
+ * @return {!proto.BotRequest}
  */
-proto.DocId.deserializeBinaryFromReader = function(msg, reader) {
+proto.BotRequest.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -6566,7 +6630,7 @@ proto.DocId.deserializeBinaryFromReader = function(msg, reader) {
     switch (field) {
     case 1:
       var value = /** @type {string} */ (reader.readString());
-      msg.setId(value);
+      msg.setKey(value);
       break;
     default:
       reader.skipField();
@@ -6581,9 +6645,9 @@ proto.DocId.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.DocId.prototype.serializeBinary = function() {
+proto.BotRequest.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.DocId.serializeBinaryToWriter(this, writer);
+  proto.BotRequest.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -6591,12 +6655,12 @@ proto.DocId.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.DocId} message
+ * @param {!proto.BotRequest} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.DocId.serializeBinaryToWriter = function(message, writer) {
+proto.BotRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getId();
+  f = message.getKey();
   if (f.length > 0) {
     writer.writeString(
       1,
@@ -6607,16 +6671,163 @@ proto.DocId.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional string id = 1;
+ * optional string key = 1;
  * @return {string}
  */
-proto.DocId.prototype.getId = function() {
+proto.BotRequest.prototype.getKey = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /** @param {string} value */
-proto.DocId.prototype.setId = function(value) {
+proto.BotRequest.prototype.setKey = function(value) {
+  jspb.Message.setField(this, 1, value);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.BotReponse = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.BotReponse, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.BotReponse.displayName = 'proto.BotReponse';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.BotReponse.prototype.toObject = function(opt_includeInstance) {
+  return proto.BotReponse.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.BotReponse} msg The msg instance to transform.
+ * @return {!Object}
+ */
+proto.BotReponse.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    error: jspb.Message.getFieldWithDefault(msg, 1, 0)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.BotReponse}
+ */
+proto.BotReponse.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.BotReponse;
+  return proto.BotReponse.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.BotReponse} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.BotReponse}
+ */
+proto.BotReponse.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {!proto.BotReponse.ErrorCode} */ (reader.readEnum());
+      msg.setError(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.BotReponse.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.BotReponse.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.BotReponse} message
+ * @param {!jspb.BinaryWriter} writer
+ */
+proto.BotReponse.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getError();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * @enum {number}
+ */
+proto.BotReponse.ErrorCode = {
+  ERRRO: 0
+};
+
+/**
+ * optional ErrorCode error = 1;
+ * @return {!proto.BotReponse.ErrorCode}
+ */
+proto.BotReponse.prototype.getError = function() {
+  return /** @type {!proto.BotReponse.ErrorCode} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/** @param {!proto.BotReponse.ErrorCode} value */
+proto.BotReponse.prototype.setError = function(value) {
   jspb.Message.setField(this, 1, value);
 };
 
@@ -6625,15 +6836,15 @@ goog.object.extend(exports, proto);
 
 
 /***/ }),
-/* 31 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var rxjs_1 = __webpack_require__(1);
-var _1 = __webpack_require__(13);
-var _2 = __webpack_require__(14);
-var _3 = __webpack_require__(42);
+var _1 = __webpack_require__(14);
+var _2 = __webpack_require__(15);
+var _3 = __webpack_require__(18);
 var MuteCore = (function () {
     function MuteCore(id) {
         this.collaboratorsService = new _1.CollaboratorsService();
@@ -6653,7 +6864,6 @@ var MuteCore = (function () {
     Object.defineProperty(MuteCore.prototype, "joinSource", {
         set: function (source) {
             this.docService.joinSource = source;
-            this.syncService.joinSource = source;
         },
         enumerable: true,
         configurable: true
@@ -6688,20 +6898,26 @@ var MuteCore = (function () {
         enumerable: true,
         configurable: true
     });
+    MuteCore.prototype.clean = function () {
+        this.collaboratorsService.clean();
+        this.docService.clean();
+        this.syncService.clean();
+        this.syncMessageService.clean();
+    };
     return MuteCore;
 }());
 exports.MuteCore = MuteCore;
 //# sourceMappingURL=MuteCore.js.map
 
 /***/ }),
-/* 32 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var rxjs_1 = __webpack_require__(1);
-var _1 = __webpack_require__(5);
-var Collaborator_1 = __webpack_require__(12);
+var _1 = __webpack_require__(6);
+var Collaborator_1 = __webpack_require__(13);
 var pb = __webpack_require__(46);
 var CollaboratorsService = (function () {
     function CollaboratorsService() {
@@ -6763,7 +6979,7 @@ var CollaboratorsService = (function () {
         set: function (source) {
             var _this = this;
             source
-                .filter(function (msg) { return msg.service === _this.constructor.name; })
+                .filter(function (msg) { return msg.service === CollaboratorsService.ID; })
                 .subscribe(function (msg) {
                 var pbCollaborator = new pb.Collaborator.deserializeBinary(msg.content);
                 var id = msg.id;
@@ -6777,7 +6993,7 @@ var CollaboratorsService = (function () {
     Object.defineProperty(CollaboratorsService.prototype, "peerJoinSource", {
         set: function (source) {
             var _this = this;
-            source.subscribe(function (id) {
+            this.peerJoinSubscription = source.subscribe(function (id) {
                 _this.emitPseudo(_this.pseudonym, id);
                 _this.collaboratorJoinSubject.next(new Collaborator_1.Collaborator(id, 'Anonymous'));
             });
@@ -6788,7 +7004,7 @@ var CollaboratorsService = (function () {
     Object.defineProperty(CollaboratorsService.prototype, "peerLeaveSource", {
         set: function (source) {
             var _this = this;
-            source.subscribe(function (id) {
+            this.peerLeaveSubscription = source.subscribe(function (id) {
                 _this.collaboratorLeaveSubject.next(id);
             });
         },
@@ -6798,7 +7014,7 @@ var CollaboratorsService = (function () {
     Object.defineProperty(CollaboratorsService.prototype, "pseudoSource", {
         set: function (source) {
             var _this = this;
-            source.subscribe(function (pseudo) {
+            this.pseudoSubscription = source.subscribe(function (pseudo) {
                 _this.pseudonym = pseudo;
                 _this.emitPseudo(pseudo);
             });
@@ -6810,27 +7026,39 @@ var CollaboratorsService = (function () {
         var collabMsg = new pb.Collaborator();
         collabMsg.setPseudo(pseudo);
         if (id) {
-            var msg = new _1.SendToMessage(this.constructor.name, id, collabMsg.serializeBinary());
+            var msg = new _1.SendToMessage(CollaboratorsService.ID, id, collabMsg.serializeBinary());
             this.msgToSendToSubject.next(msg);
         }
         else {
-            var msg = new _1.BroadcastMessage(this.constructor.name, collabMsg.serializeBinary());
+            var msg = new _1.BroadcastMessage(CollaboratorsService.ID, collabMsg.serializeBinary());
             this.msgToBroadcastSubject.next(msg);
         }
     };
+    CollaboratorsService.prototype.clean = function () {
+        this.collaboratorChangePseudoSubject.complete();
+        this.collaboratorJoinSubject.complete();
+        this.collaboratorLeaveSubject.complete();
+        this.msgToBroadcastSubject.complete();
+        this.msgToSendRandomlySubject.complete();
+        this.msgToSendToSubject.complete();
+        this.peerJoinSubscription.unsubscribe();
+        this.peerLeaveSubscription.unsubscribe();
+        this.pseudoSubscription.unsubscribe();
+    };
     return CollaboratorsService;
 }());
+CollaboratorsService.ID = 'Collaborators';
 exports.CollaboratorsService = CollaboratorsService;
 //# sourceMappingURL=CollaboratorsService.js.map
 
 /***/ }),
-/* 33 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var rxjs_1 = __webpack_require__(1);
-var mute_structs_1 = __webpack_require__(9);
+var mute_structs_1 = __webpack_require__(10);
 var DocService = (function () {
     function DocService() {
         this.doc = new mute_structs_1.LogootSRopes();
@@ -6851,8 +7079,9 @@ var DocService = (function () {
     Object.defineProperty(DocService.prototype, "remoteLogootSOperationSource", {
         set: function (source) {
             var _this = this;
-            source.subscribe(function (logootSOp) {
+            this.remoteLogootSOperationsSubscription = source.subscribe(function (logootSOp) {
                 _this.remoteTextOperationsSubject.next(_this.handleRemoteOperation(logootSOp));
+                console.log('REmote operation RECEIVED: ', _this.doc.str);
             });
         },
         enumerable: true,
@@ -6892,9 +7121,12 @@ var DocService = (function () {
         configurable: true
     });
     DocService.prototype.clean = function () {
+        this.docValueSubject.complete();
+        this.localLogootSOperationSubject.complete();
+        this.remoteTextOperationsSubject.complete();
         this.joinSubscription.unsubscribe();
         this.localOperationsSubscription.unsubscribe();
-        this.messageSubscription.unsubscribe();
+        this.remoteLogootSOperationsSubscription.unsubscribe();
     };
     DocService.prototype.handleTextOperations = function (array) {
         var _this = this;
@@ -6935,29 +7167,7 @@ exports.DocService = DocService;
 //# sourceMappingURL=DocService.js.map
 
 /***/ }),
-/* 34 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var _1 = __webpack_require__(13);
-exports.Collaborator = _1.Collaborator;
-exports.CollaboratorsService = _1.CollaboratorsService;
-var _2 = __webpack_require__(14);
-exports.DocService = _2.DocService;
-var _3 = __webpack_require__(5);
-exports.BroadcastMessage = _3.BroadcastMessage;
-exports.JoinEvent = _3.JoinEvent;
-exports.NetworkMessage = _3.NetworkMessage;
-exports.SendRandomlyMessage = _3.SendRandomlyMessage;
-exports.SendToMessage = _3.SendToMessage;
-exports.AbstractMessage = _3.AbstractMessage;
-var MuteCore_1 = __webpack_require__(31);
-exports.MuteCore = MuteCore_1.MuteCore;
-//# sourceMappingURL=index.js.map
-
-/***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6984,7 +7194,7 @@ exports.BroadcastMessage = BroadcastMessage;
 //# sourceMappingURL=BroadcastMessage.js.map
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7001,7 +7211,7 @@ exports.JoinEvent = JoinEvent;
 //# sourceMappingURL=JoinEvent.js.map
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7031,7 +7241,7 @@ exports.NetworkMessage = NetworkMessage;
 //# sourceMappingURL=NetworkMessage.js.map
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7058,7 +7268,7 @@ exports.SendRandomlyMessage = SendRandomlyMessage;
 //# sourceMappingURL=SendRandomlyMessage.js.map
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7087,17 +7297,17 @@ exports.SendToMessage = SendToMessage;
 //# sourceMappingURL=SendToMessage.js.map
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var mute_structs_1 = __webpack_require__(9);
+var mute_structs_1 = __webpack_require__(10);
 var rxjs_1 = __webpack_require__(1);
-var Interval_1 = __webpack_require__(6);
-var _1 = __webpack_require__(5);
-var ReplySyncEvent_1 = __webpack_require__(7);
-var RichLogootSOperation_1 = __webpack_require__(8);
+var Interval_1 = __webpack_require__(7);
+var _1 = __webpack_require__(6);
+var ReplySyncEvent_1 = __webpack_require__(8);
+var RichLogootSOperation_1 = __webpack_require__(9);
 var pb = __webpack_require__(47);
 var SyncMessageService = (function () {
     function SyncMessageService() {
@@ -7112,9 +7322,9 @@ var SyncMessageService = (function () {
     Object.defineProperty(SyncMessageService.prototype, "localRichLogootSOperationSource", {
         set: function (source) {
             var _this = this;
-            source.subscribe(function (richLogootSOp) {
+            this.localRichLogootSOperationSubscription = source.subscribe(function (richLogootSOp) {
                 var richLogootSOpMsg = _this.generateRichLogootSOpMsg(richLogootSOp);
-                var msg = new _1.BroadcastMessage(_this.constructor.name, richLogootSOpMsg.serializeBinary());
+                var msg = new _1.BroadcastMessage(SyncMessageService.ID, richLogootSOpMsg.serializeBinary());
                 _this.msgToBroadcastSubject.next(msg);
             });
         },
@@ -7124,9 +7334,10 @@ var SyncMessageService = (function () {
     Object.defineProperty(SyncMessageService.prototype, "messageSource", {
         set: function (source) {
             var _this = this;
-            source
-                .filter(function (msg) { return msg.service === _this.constructor.name; })
+            this.messageSubscription = source
+                .filter(function (msg) { return msg.service === SyncMessageService.ID; })
                 .subscribe(function (msg) {
+                console.log('ON EST ICI');
                 var content = new pb.Sync.deserializeBinary(msg.content);
                 switch (content.getTypeCase()) {
                     case pb.Sync.TypeCase.RICHLOGOOTSOP:
@@ -7148,9 +7359,10 @@ var SyncMessageService = (function () {
     Object.defineProperty(SyncMessageService.prototype, "querySyncSource", {
         set: function (source) {
             var _this = this;
-            source.subscribe(function (vector) {
+            this.querySyncSubscription = source.subscribe(function (vector) {
+                console.log('Si on passe là$$$$$$$$$$$$$$$$$$$');
                 var querySyncMsg = _this.generateQuerySyncMsg(vector);
-                var msg = new _1.SendRandomlyMessage(_this.constructor.name, querySyncMsg.serializeBinary());
+                var msg = new _1.SendRandomlyMessage(SyncMessageService.ID, querySyncMsg.serializeBinary());
                 _this.msgToSendRandomlySubject.next(msg);
             });
         },
@@ -7160,13 +7372,14 @@ var SyncMessageService = (function () {
     Object.defineProperty(SyncMessageService.prototype, "replySyncSource", {
         set: function (source) {
             var _this = this;
-            rxjs_1.Observable.zip(source, this.remoteQuerySyncIdSubject.asObservable(), function (replySyncEvent, id) {
+            this.replySyncSubscription = rxjs_1.Observable.zip(source, this.remoteQuerySyncIdSubject.asObservable(), function (replySyncEvent, id) {
                 return { id: id, replySyncEvent: replySyncEvent };
             })
                 .subscribe(function (_a) {
                 var id = _a.id, replySyncEvent = _a.replySyncEvent;
+                console.log('Dans replySyncSource');
                 var replySyncMsg = _this.generateReplySyncMsg(replySyncEvent.richLogootSOps, replySyncEvent.intervals);
-                var msg = new _1.SendToMessage(_this.constructor.name, id, replySyncMsg.serializeBinary());
+                var msg = new _1.SendToMessage(SyncMessageService.ID, id, replySyncMsg.serializeBinary());
                 _this.msgToSendToSubject.next(msg);
             });
         },
@@ -7215,12 +7428,26 @@ var SyncMessageService = (function () {
         enumerable: true,
         configurable: true
     });
+    SyncMessageService.prototype.clean = function () {
+        this.msgToBroadcastSubject.complete();
+        this.msgToSendRandomlySubject.complete();
+        this.msgToSendToSubject.complete();
+        this.remoteQuerySyncSubject.complete();
+        this.remoteQuerySyncIdSubject.complete();
+        this.remoteRichLogootSOperationSubject.complete();
+        this.remoteReplySyncSubject.complete();
+        this.localRichLogootSOperationSubscription.unsubscribe();
+        this.messageSubscription.unsubscribe();
+        this.querySyncSubscription.unsubscribe();
+        this.replySyncSubscription.unsubscribe();
+    };
     SyncMessageService.prototype.handleRichLogootSOpMsg = function (content) {
         var richLogootSOp = this.deserializeRichLogootSOperation(content);
         this.remoteRichLogootSOperationSubject.next(richLogootSOp);
     };
     SyncMessageService.prototype.handleQuerySyncMsg = function (content) {
         var vector = content.getVectorMap();
+        console.log('Vector: ', vector);
         this.remoteQuerySyncSubject.next(vector);
     };
     SyncMessageService.prototype.handleReplySyncMsg = function (content) {
@@ -7328,20 +7555,21 @@ var SyncMessageService = (function () {
     };
     return SyncMessageService;
 }());
+SyncMessageService.ID = 'SyncMessage';
 exports.SyncMessageService = SyncMessageService;
 //# sourceMappingURL=SyncMessageService.js.map
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var rxjs_1 = __webpack_require__(1);
-var Interval_1 = __webpack_require__(6);
-var ReplySyncEvent_1 = __webpack_require__(7);
-var RichLogootSOperation_1 = __webpack_require__(8);
-var State_1 = __webpack_require__(15);
+var Interval_1 = __webpack_require__(7);
+var ReplySyncEvent_1 = __webpack_require__(8);
+var RichLogootSOperation_1 = __webpack_require__(9);
+var State_1 = __webpack_require__(17);
 var SyncService = (function () {
     function SyncService() {
         this.id = -1;
@@ -7400,14 +7628,9 @@ var SyncService = (function () {
     Object.defineProperty(SyncService.prototype, "joinSource", {
         set: function (source) {
             var _this = this;
-            source.map(function (joinEvent) {
+            this.joinSubscription = source.subscribe(function (joinEvent) {
+                console.log('Si on passe là?????');
                 _this.id = joinEvent.id;
-                return joinEvent;
-            }).subscribe(function (joinEvent) {
-                // TODO: Delay the synchronization process until the stored version has been retrieved
-                if (!joinEvent.created) {
-                    _this.querySyncSubject.next(_this.vector);
-                }
             });
         },
         enumerable: true,
@@ -7416,7 +7639,7 @@ var SyncService = (function () {
     Object.defineProperty(SyncService.prototype, "localLogootSOperationSource", {
         set: function (source) {
             var _this = this;
-            source.subscribe(function (logootSOp) {
+            this.localLogootSOperationSubscription = source.subscribe(function (logootSOp) {
                 var richLogootSOp = new RichLogootSOperation_1.RichLogootSOperation(_this.id, _this.clock, logootSOp);
                 _this.updateState(richLogootSOp);
                 _this.stateSubject.next(_this.state);
@@ -7430,7 +7653,7 @@ var SyncService = (function () {
     Object.defineProperty(SyncService.prototype, "remoteQuerySyncSource", {
         set: function (source) {
             var _this = this;
-            source.subscribe(function (vector) {
+            this.remoteQuerySyncSubscription = source.subscribe(function (vector) {
                 var missingRichLogootSOps = _this.richLogootSOps.filter(function (richLogootSOperation) {
                     var id = richLogootSOperation.id;
                     var clock = richLogootSOperation.clock;
@@ -7438,6 +7661,7 @@ var SyncService = (function () {
                     return v === undefined ? true : v < clock ? true : false;
                 });
                 // TODO: Add sort function to apply LogootSAdd operations before LogootSDel ones
+                console.log('Length of :' + missingRichLogootSOps.length);
                 var missingIntervals = [];
                 vector.forEach(function (clock, id) {
                     var v = _this.vector.get(id);
@@ -7462,7 +7686,8 @@ var SyncService = (function () {
     Object.defineProperty(SyncService.prototype, "remoteReplySyncSource", {
         set: function (source) {
             var _this = this;
-            source.subscribe(function (replySyncEvent) {
+            this.remoteReplySyncSubscription = source.subscribe(function (replySyncEvent) {
+                console.log('Si on passe là !!!!!!!!!!!!!!!!!!?????');
                 replySyncEvent.richLogootSOps.forEach(function (richLogootSOp) {
                     _this.applyRichLogootSOperation(richLogootSOp);
                 });
@@ -7486,7 +7711,7 @@ var SyncService = (function () {
     Object.defineProperty(SyncService.prototype, "remoteRichLogootSOperationSource", {
         set: function (source) {
             var _this = this;
-            source.subscribe(function (richLogootSOp) {
+            this.remoteRichLogootSOperationSubscription = source.subscribe(function (richLogootSOp) {
                 _this.applyRichLogootSOperation(richLogootSOp);
                 _this.stateSubject.next(_this.state);
             });
@@ -7497,10 +7722,9 @@ var SyncService = (function () {
     Object.defineProperty(SyncService.prototype, "storedStateSource", {
         set: function (source) {
             var _this = this;
-            source.subscribe(function (state) {
+            this.storedStateSubscription = source.subscribe(function (state) {
                 _this.vector.clear();
-                _this.richLogootSOps = state.richLogootSOps;
-                _this.richLogootSOps.forEach(function (richLogootSOp) {
+                state.richLogootSOps.forEach(function (richLogootSOp) {
                     _this.applyRichLogootSOperation(richLogootSOp);
                 });
                 _this.isReadySubject.next(undefined);
@@ -7509,6 +7733,39 @@ var SyncService = (function () {
         enumerable: true,
         configurable: true
     });
+    SyncService.prototype.setJoinAndStateSources = function (joinSource, storedStateSource) {
+        var _this = this;
+        this.joinSource = joinSource;
+        var triggerQuerySyncObservable = joinSource;
+        if (storedStateSource) {
+            this.storedStateSource = storedStateSource;
+            triggerQuerySyncObservable = joinSource.zip(this.isReadySubject, function (joinEvent) {
+                return joinEvent;
+            });
+        }
+        this.triggerQuerySyncSubscription = triggerQuerySyncObservable.subscribe(function (joinEvent) {
+            if (!joinEvent.created) {
+                _this.querySyncSubject.next(_this.vector);
+            }
+        });
+    };
+    SyncService.prototype.clean = function () {
+        this.isReadySubject.complete();
+        this.localRichLogootSOperationSubject.complete();
+        this.querySyncSubject.complete();
+        this.remoteLogootSOperationSubject.complete();
+        this.replySyncSubject.complete();
+        this.stateSubject.complete();
+        this.joinSubscription.unsubscribe();
+        this.localLogootSOperationSubscription.unsubscribe();
+        this.remoteQuerySyncSubscription.unsubscribe();
+        this.remoteReplySyncSubscription.unsubscribe();
+        this.remoteRichLogootSOperationSubscription.unsubscribe();
+        if (this.storedStateSubscription !== undefined) {
+            this.storedStateSubscription.unsubscribe();
+        }
+        this.triggerQuerySyncSubscription.unsubscribe();
+    };
     SyncService.prototype.applyRichLogootSOperation = function (richLogootSOp) {
         this.updateState(richLogootSOp);
         this.remoteLogootSOperationSubject.next(richLogootSOp.logootSOp);
@@ -7529,26 +7786,6 @@ var SyncService = (function () {
 }());
 exports.SyncService = SyncService;
 //# sourceMappingURL=SyncService.js.map
-
-/***/ }),
-/* 42 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var Interval_1 = __webpack_require__(6);
-exports.Interval = Interval_1.Interval;
-var ReplySyncEvent_1 = __webpack_require__(7);
-exports.ReplySyncEvent = ReplySyncEvent_1.ReplySyncEvent;
-var RichLogootSOperation_1 = __webpack_require__(8);
-exports.RichLogootSOperation = RichLogootSOperation_1.RichLogootSOperation;
-var State_1 = __webpack_require__(15);
-exports.State = State_1.State;
-var SyncService_1 = __webpack_require__(41);
-exports.SyncService = SyncService_1.SyncService;
-var SyncMessageService_1 = __webpack_require__(40);
-exports.SyncMessageService = SyncMessageService_1.SyncMessageService;
-//# sourceMappingURL=index.js.map
 
 /***/ }),
 /* 43 */
@@ -7777,7 +8014,7 @@ exports.IteratorHelperIdentifier = IteratorHelperIdentifier;
  */
 // GENERATED CODE -- DO NOT EDIT!
 
-var jspb = __webpack_require__(11);
+var jspb = __webpack_require__(12);
 var goog = jspb;
 var global = Function('return this')();
 
@@ -7946,7 +8183,7 @@ goog.object.extend(exports, proto);
  */
 // GENERATED CODE -- DO NOT EDIT!
 
-var jspb = __webpack_require__(11);
+var jspb = __webpack_require__(12);
 var goog = jspb;
 var global = Function('return this')();
 
@@ -9964,52 +10201,60 @@ module.exports = require("ws");
 
 "use strict";
 
-const netflux_1 = __webpack_require__(22);
-const https = __webpack_require__(29);
-const http = __webpack_require__(28);
-const express = __webpack_require__(27);
-const program = __webpack_require__(26);
-const BotStorage_1 = __webpack_require__(23);
-const MongooseAdapter_1 = __webpack_require__(24);
-const log_1 = __webpack_require__(25);
+const netflux_1 = __webpack_require__(25);
+const https = __webpack_require__(31);
+const http = __webpack_require__(30);
+const express = __webpack_require__(29);
+const program = __webpack_require__(28);
+const BotStorage_1 = __webpack_require__(26);
+const MongooseAdapter_1 = __webpack_require__(27);
+const log_1 = __webpack_require__(5);
 // Default options
 const defaults = {
     host: '0.0.0.0',
     port: 8080,
     portBot: 9000,
-    secure: false,
+    signalingURL: 'http://signal2.loria.fr',
+    useHttps: false,
     logLevel: 'info',
     logIntoFile: false
 };
 // Configure command-line interface
 program
-    .option('-h, --host <ip or host name>', `Select host address to bind to, DEFAULT: "${defaults.host}"`, defaults.host)
-    .option('-p, --port <n>', `Select port to use for the server (REST API), DEFAULT: ${defaults.port}`, defaults.port)
-    .option('-b, --portBot <n>', `Select port to use for the peer to peer bot, DEFAULT: ${defaults.portBot}\n`, defaults.portBot)
-    .option('-s, --secure', `If present, the REST API server is listening on HTTPS instead of HTTP`)
+    .option('-h, --host <ip or host name>', `Specify host address to bind to, DEFAULT: "${defaults.host}"`, defaults.host)
+    .option('-p, --port <n>', `Specify port to use for the server (REST API), DEFAULT: ${defaults.port}`, defaults.port)
+    .option('-b, --portBot <n>', `Specify port to use for the peer to peer bot, DEFAULT: ${defaults.portBot}`, defaults.portBot)
+    .option('-s, --signalingURL <url>', `Specify Signaling server url for the peer to peer bot, DEFAULT: ${defaults.signalingURL}\n`, defaults.signalingURL)
+    .option('-t, --https', `If present, the REST API server is listening on HTTPS instead of HTTP`)
     .option('-l, --logLevel <none|trace|debug|info|warn|error|fatal>', `Specify level for logging. DEFAULT: "info". `, /^(none|trace|debug|info|warn|error|fatal)$/i, defaults.logLevel)
     .option('-f, --logFile', `If specified, writes logs into file`)
     .parse(process.argv);
 // Setup settings
-const { host, port, portBot, logLevel } = program;
-const secure = program.secure ? true : false;
+const { host, port, portBot, signalingURL, logLevel } = program;
+const useHttps = program.useHttps ? true : false;
 const logIntoFile = program.logFile ? true : false;
 // Configure logging
 log_1.createLogger(logIntoFile, logLevel);
-log_1.log.info('Starting with the following settings: ', { host, port, portBot, secure, logLevel, logIntoFile });
 // Configure error handling on process
 process.on('uncaughtException', (err) => log_1.log.fatal(err));
 // Connect to MongoDB
-const mongooseAdapter = new MongooseAdapter_1.MongooseAdapter('localhost');
-// Configure & Start Peer To Peer bot
-const bot = new netflux_1.BotServer({ host: host, port: portBot });
-bot.start()
+const mongooseAdapter = new MongooseAdapter_1.MongooseAdapter();
+mongooseAdapter.connect('localhost')
     .then(() => {
-    log_1.log.info(`Bot is listening at ${host}:${portBot}`);
-    bot.onWebChannel = (wc) => new BotStorage_1.BotStorage(wc, mongooseAdapter);
+    log_1.log.info(`Successfully connected to the database`);
+    // Configure & Start Peer To Peer storage bot
+    const bot = new netflux_1.BotServer({ host: host, port: portBot, signalingURL });
+    bot.onWebChannel = (wc) => {
+        log_1.log.info('New peer to peer network invitation received. Waiting for a document key...');
+        new BotStorage_1.BotStorage(wc, mongooseAdapter);
+    };
+    return bot.start();
+})
+    .then(() => {
+    log_1.log.info(`Successfully started the storage bot server at ws://${host}:${portBot}`);
 })
     .catch((err) => {
-    log_1.log.fatal(`An error occurred while starting the bot`, err);
+    log_1.log.fatal(`Error during database/BotStorage initialization`, err);
 });
 // Configure & Start REST server
 const app = express();
@@ -10019,28 +10264,24 @@ app.use(function (req, res, next) {
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     next();
 });
-app.get('/ping', (req, res) => {
-    log_1.log.debug('Request Debug: ');
-    log_1.log.info('Request info: ');
-    res.send('pong');
-});
+app.get('/ping', (req, res) => res.send('pong'));
 app.get('/docs', (req, res) => {
     mongooseAdapter.list()
         .then((docs) => {
-        const data = docs.map((doc) => {
-            // We just want to retrieve the doc's ID and title
-            return { id: doc.key, title: doc.title };
-        });
-        res.json(data);
+        const docList = docs.map((doc) => { return { id: doc.key }; });
+        log_1.log.info('User requested the following document list', docList);
+        res.json(docList);
     })
         .catch((err) => {
+        log_1.log.error('Could not retreive the documents list stored in data base', err);
         res.status(500).json({ error: err });
     });
 });
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-const server = secure ? https.createServer(app) : http.createServer(app);
+// Start listen on http(s)
+const server = useHttps ? https.createServer(app) : http.createServer(app);
 server.listen(port, host, () => {
-    log_1.log.info(`Server (REST API) is listening at http${secure ? 's' : ''}://${host}:${port}`);
+    log_1.log.info('Current settings are\n', { host, port, portBot, signalingURL, useHttps, logLevel, logIntoFile });
+    log_1.log.info(`Successfully started the REST API server at http${useHttps ? 's' : ''}://${host}:${port}`);
 });
 
 

@@ -9,7 +9,9 @@ var jspb = require('google-protobuf');
 var goog = jspb;
 var global = Function('return this')();
 
-goog.exportSymbol('proto.DocId', null, global);
+goog.exportSymbol('proto.BotReponse', null, global);
+goog.exportSymbol('proto.BotReponse.ErrorCode', null, global);
+goog.exportSymbol('proto.BotRequest', null, global);
 goog.exportSymbol('proto.Message', null, global);
 
 /**
@@ -213,12 +215,12 @@ proto.Message.prototype.setContent = function(value) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.DocId = function(opt_data) {
+proto.BotRequest = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.DocId, jspb.Message);
+goog.inherits(proto.BotRequest, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.DocId.displayName = 'proto.DocId';
+  proto.BotRequest.displayName = 'proto.BotRequest';
 }
 
 
@@ -233,8 +235,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.DocId.prototype.toObject = function(opt_includeInstance) {
-  return proto.DocId.toObject(opt_includeInstance, this);
+proto.BotRequest.prototype.toObject = function(opt_includeInstance) {
+  return proto.BotRequest.toObject(opt_includeInstance, this);
 };
 
 
@@ -243,12 +245,12 @@ proto.DocId.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.DocId} msg The msg instance to transform.
+ * @param {!proto.BotRequest} msg The msg instance to transform.
  * @return {!Object}
  */
-proto.DocId.toObject = function(includeInstance, msg) {
+proto.BotRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    id: jspb.Message.getFieldWithDefault(msg, 1, "")
+    key: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -262,23 +264,23 @@ proto.DocId.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.DocId}
+ * @return {!proto.BotRequest}
  */
-proto.DocId.deserializeBinary = function(bytes) {
+proto.BotRequest.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.DocId;
-  return proto.DocId.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.BotRequest;
+  return proto.BotRequest.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.DocId} msg The message object to deserialize into.
+ * @param {!proto.BotRequest} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.DocId}
+ * @return {!proto.BotRequest}
  */
-proto.DocId.deserializeBinaryFromReader = function(msg, reader) {
+proto.BotRequest.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -287,7 +289,7 @@ proto.DocId.deserializeBinaryFromReader = function(msg, reader) {
     switch (field) {
     case 1:
       var value = /** @type {string} */ (reader.readString());
-      msg.setId(value);
+      msg.setKey(value);
       break;
     default:
       reader.skipField();
@@ -302,9 +304,9 @@ proto.DocId.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.DocId.prototype.serializeBinary = function() {
+proto.BotRequest.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.DocId.serializeBinaryToWriter(this, writer);
+  proto.BotRequest.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -312,12 +314,12 @@ proto.DocId.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.DocId} message
+ * @param {!proto.BotRequest} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.DocId.serializeBinaryToWriter = function(message, writer) {
+proto.BotRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getId();
+  f = message.getKey();
   if (f.length > 0) {
     writer.writeString(
       1,
@@ -328,16 +330,163 @@ proto.DocId.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional string id = 1;
+ * optional string key = 1;
  * @return {string}
  */
-proto.DocId.prototype.getId = function() {
+proto.BotRequest.prototype.getKey = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /** @param {string} value */
-proto.DocId.prototype.setId = function(value) {
+proto.BotRequest.prototype.setKey = function(value) {
+  jspb.Message.setField(this, 1, value);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.BotReponse = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.BotReponse, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.BotReponse.displayName = 'proto.BotReponse';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.BotReponse.prototype.toObject = function(opt_includeInstance) {
+  return proto.BotReponse.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.BotReponse} msg The msg instance to transform.
+ * @return {!Object}
+ */
+proto.BotReponse.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    error: jspb.Message.getFieldWithDefault(msg, 1, 0)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.BotReponse}
+ */
+proto.BotReponse.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.BotReponse;
+  return proto.BotReponse.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.BotReponse} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.BotReponse}
+ */
+proto.BotReponse.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {!proto.BotReponse.ErrorCode} */ (reader.readEnum());
+      msg.setError(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.BotReponse.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.BotReponse.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.BotReponse} message
+ * @param {!jspb.BinaryWriter} writer
+ */
+proto.BotReponse.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getError();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * @enum {number}
+ */
+proto.BotReponse.ErrorCode = {
+  DATABASE: 0
+};
+
+/**
+ * optional ErrorCode error = 1;
+ * @return {!proto.BotReponse.ErrorCode}
+ */
+proto.BotReponse.prototype.getError = function() {
+  return /** @type {!proto.BotReponse.ErrorCode} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/** @param {!proto.BotReponse.ErrorCode} value */
+proto.BotReponse.prototype.setError = function(value) {
   jspb.Message.setField(this, 1, value);
 };
 

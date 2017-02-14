@@ -1,70 +1,53 @@
 import * as mongoose from 'mongoose'
-import * as MuteStructs from 'mute-structs'
+import { RichLogootSOperation } from 'mute-core'
+
+import { log } from './log'
 
 export class MongooseAdapter {
 
   private db: mongoose.Connection
+  private docSchema: mongoose.Schema
+  private docModel: mongoose.Model<mongoose.Document>
 
-  private docSchema: mongoose.Schema = new mongoose.Schema({
-    id: {
-      type: String,
-      require: true
-    },
-    doc: {
-      root: Object,
-      str: String
-    }
-  })
-
-  private docModel = mongoose.model('Doc', this.docSchema)
-
-  constructor (url: string) {
-    mongoose.connect(`mongodb://${url}/docs`)
-    this.db = mongoose.connection
-    this.db.on('error', console.error.bind(console, 'connection error:'))
-    this.db.once('open', function() {
-      // we're connected!
-      console.log(`Successfully connected to database ${url}`)
+  constructor () {
+    this.docSchema = new mongoose.Schema({
+      key: { type: String, require: true },
+      doc: { type: Object }
     })
+    this.docModel = mongoose.model('Doc', this.docSchema)
   }
 
-  find (id: string): Promise<any> {
-    return new Promise( (resolve, reject) => {
-      const query = { id: id }
-      this.docModel.findOne(query, function (err, doc) {
-        if (err) {
-          console.error(err)
-          reject()
-        } else {
-          resolve(doc)
-        }
+  connect(url: string): Promise<void> {
+    const uri = `mongodb://${url}/docs`
+    return mongoose.connect(uri)
+      .then(() => {
+        this.db = mongoose.connection
+        mongoose.connection.on('close', () => {
+          log.warn(`Connection to the database ${uri} has been closed`)
+        })
       })
-    })
   }
 
-  list (): Promise<any[]> {
-    return new Promise( (resolve, reject) => {
-      this.docModel.find((err, docs) => {
-        if (err) {
-          console.error(err)
-          reject()
-        } else {
-          resolve(docs)
+  find (key: string): Promise<RichLogootSOperation[]> {
+    return this.docModel.findOne({key})
+      .then(({doc}: any) => {
+        if (doc !== null) {
+          return doc.map((op: RichLogootSOperation) => {
+            return RichLogootSOperation.fromPlain(op)
+          })
         }
+        return doc
       })
-    })
   }
 
-  // FIXME: Limit the number of saves
-  save (id: string, doc: MuteStructs.LogootSRopes) {
-    const query = { id: id }
-    const update = { doc: { root: doc.root, str: doc.str } }
-    const options = { upsert: true, new: true, setDefaultsOnInsert: true }
+  list (): Promise<any> {
+    return this.docModel.find().exec()
+  }
 
-    this.docModel.findOneAndUpdate(query, update, options, function(err, result) {
-        if (err) {
-          return console.error(err)
-        }
-    })
+  save (key: string, doc: RichLogootSOperation[]): Promise<any> {
+    const query = {key}
+    const update = {doc}
+    const options = {upsert: true, new: true, setDefaultsOnInsert: true}
+    return this.docModel.findOneAndUpdate(query, update, options).exec()
   }
 }

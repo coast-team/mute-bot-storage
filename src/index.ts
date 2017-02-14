@@ -49,21 +49,26 @@ createLogger(logIntoFile, logLevel)
 process.on('uncaughtException', (err) => log.fatal(err))
 
 // Connect to MongoDB
-const mongooseAdapter: MongooseAdapter = new MongooseAdapter('localhost')
-
-// Configure & Start Peer To Peer bot
-const bot = new BotServer({host: host, port: portBot, signalingURL})
-
-bot.start()
+let isError = false
+const mongooseAdapter = new MongooseAdapter()
+mongooseAdapter.connect('localhost')
   .then(() => {
-    log.info(`Bot is listening at ${host}:${portBot}`)
+    log.info(`Successfully connected to the database`)
+
+    // Configure & Start Peer To Peer storage bot
+    const bot = new BotServer({host: host, port: portBot, signalingURL})
     bot.onWebChannel = (wc) => {
-      log.info('New peer to peer network invitation. Initializing BotStorage...')
+      log.info('New peer to peer network invitation received. Waiting for a document key...')
       new BotStorage(wc, mongooseAdapter)
     }
+    return bot.start()
+  })
+  .then(() => {
+    log.info(`Successfully started the storage bot server at ws://${host}:${portBot}`)
   })
   .catch((err) => {
-    log.fatal(`An error occurred while starting the bot`, err)
+    isError = true
+    log.fatal(`Error during database/bot initialization`, err)
   })
 
 // Configure & Start REST server
@@ -76,30 +81,26 @@ app.use(function(req, res, next) {
   next()
 })
 
-app.get('/ping', (req, res) => {
-  log.debug('Request Debug: ' )
-  log.info('Request info: ' )
-  res.send('pong')
-})
+app.get('/ping', (req, res) => res.send(isError ? 'error' : 'pong'))
 
 app.get('/docs', (req, res) => {
   mongooseAdapter.list()
-  .then( (docs: any[]) => {
-    const data = docs.map( (doc) => {
-      // We just want to retrieve the doc's ID and title
-      return { id: doc.key, title: doc.title }
+    .then((docs: any[]) => {
+      const docList = docs.map((doc) => { return { id: doc.key }})
+      log.info('User requested the following document list', docList)
+      res.json(docList)
     })
-    res.json(data)
-  })
-  .catch( (err) => {
-    res.status(500).json({ error: err })
-  })
+    .catch( (err) => {
+      log.error('Could not retreive the documents list stored in data base', err)
+      res.status(500).json({ error: err })
+    })
 })
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
+
+// Start listen on http(s)
 const server = useHttps ? https.createServer(app) : http.createServer(app)
 server.listen(port, host, () => {
-  log.info('Starting with the following settings: ',
+  log.info('Current settings are\n',
     {host, port, portBot, signalingURL, useHttps, logLevel, logIntoFile}
   )
-  log.info(`Server (REST API) is listening at http${useHttps ? 's' : ''}://${host}:${port}`)
+  log.info(`Successfully started the REST API server at http${useHttps ? 's' : ''}://${host}:${port}`)
 })

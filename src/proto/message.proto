@@ -5,6 +5,14 @@ message Message {
   bytes content = 2;
 }
 
-message DocId {
-  string id = 1;
+message BotRequest {
+  string key = 1;
+}
+
+message BotReponse {
+  ErrorCode error = 1;
+
+  enum ErrorCode {
+    DATABASE = 0;
+  }
 }
