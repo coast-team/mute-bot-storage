@@ -1009,6 +1009,7 @@ exports.LogootSRopes = LogootSRopes;
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 const bunyan = __webpack_require__(48);
 function createLogger(logIntoFile, logLevel) {
     const options = {
@@ -1940,8 +1941,8 @@ exports.occurrences = occurrences;
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "create", function() { return create; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BotServer", function() { return BotServer; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "create", function() { return create; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WEB_SOCKET", function() { return WEB_SOCKET; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WEB_RTC", function() { return WEB_RTC; });
 var require;var require;var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
@@ -4839,28 +4840,28 @@ var WebChannel = function () {
     /**
      * Invite a peer to join the `WebChannel`.
      *
-     * @param {string|WebSocket} keyOrSocket
+     * @param {string|WebSocket} urlOrSocket
      *
      * @returns {Promise<undefined,string>}
      */
 
   }, {
     key: 'invite',
-    value: function invite(keyOrSocket) {
+    value: function invite(urlOrSocket) {
       var _this3 = this;
 
-      if (typeof keyOrSocket === 'string' || keyOrSocket instanceof String) {
-        if (!Util.isURL(keyOrSocket)) {
-          return Promise.reject(keyOrSocket + ' is not a valid URL');
+      if (typeof urlOrSocket === 'string' || urlOrSocket instanceof String) {
+        if (!Util.isURL(urlOrSocket)) {
+          return Promise.reject(urlOrSocket + ' is not a valid URL');
         }
-        return ServiceFactory.get(WEB_SOCKET).connect(keyOrSocket).then(function (ws) {
+        return ServiceFactory.get(WEB_SOCKET).connect(urlOrSocket).then(function (ws) {
           ws.send(JSON.stringify({ wcId: _this3.id }));
           return _this3.addChannel(ws);
         });
-      } else if (keyOrSocket.constructor.name === 'WebSocket') {
-        return this.addChannel(keyOrSocket);
+      } else if (urlOrSocket.constructor.name === 'WebSocket') {
+        return this.addChannel(urlOrSocket);
       } else {
-        return Promise.reject(keyOrSocket + ' is not a valid URL');
+        return Promise.reject(urlOrSocket + ' is not a valid URL');
       }
     }
 
@@ -4929,11 +4930,13 @@ var WebChannel = function () {
   }, {
     key: 'leave',
     value: function leave() {
+      this.pingTime = 0;
       if (this.channels.size !== 0) {
         this.members = [];
-        this.pingTime = 0;
-        this.gate.close();
         this.manager.leave(this);
+      }
+      if (this.isOpen()) {
+        this.gate.close();
       }
     }
 
@@ -6163,14 +6166,15 @@ function create(options) {
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 const rxjs_1 = __webpack_require__(1);
 const mute_core_1 = __webpack_require__(16);
 const log_1 = __webpack_require__(5);
 const pb = __webpack_require__(32);
 // TODO: BotStorage should serialize document in DB
 class BotStorage {
-    constructor(webChannel, mongooseAdapter) {
-        this.pseudonym = 'Bot Storage';
+    constructor(pseudonym, webChannel, mongooseAdapter) {
+        this.pseudonym = pseudonym;
         this.joinSubject = new rxjs_1.Subject();
         this.messageSubject = new rxjs_1.ReplaySubject();
         this.peerJoinSubject = new rxjs_1.ReplaySubject();
@@ -6260,6 +6264,7 @@ exports.BotStorage = BotStorage;
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose = __webpack_require__(50);
 const mute_core_1 = __webpack_require__(16);
 const log_1 = __webpack_require__(5);
@@ -7075,7 +7080,6 @@ var DocService = (function () {
             var _this = this;
             this.remoteLogootSOperationsSubscription = source.subscribe(function (logootSOp) {
                 _this.remoteTextOperationsSubject.next(_this.handleRemoteOperation(logootSOp));
-                console.log('REmote operation RECEIVED: ', _this.doc.str);
             });
         },
         enumerable: true,
@@ -7331,7 +7335,6 @@ var SyncMessageService = (function () {
             this.messageSubscription = source
                 .filter(function (msg) { return msg.service === SyncMessageService.ID; })
                 .subscribe(function (msg) {
-                console.log('ON EST ICI');
                 var content = new pb.Sync.deserializeBinary(msg.content);
                 switch (content.getTypeCase()) {
                     case pb.Sync.TypeCase.RICHLOGOOTSOP:
@@ -7354,7 +7357,6 @@ var SyncMessageService = (function () {
         set: function (source) {
             var _this = this;
             this.querySyncSubscription = source.subscribe(function (vector) {
-                console.log('Si on passe là$$$$$$$$$$$$$$$$$$$');
                 var querySyncMsg = _this.generateQuerySyncMsg(vector);
                 var msg = new _1.SendRandomlyMessage(SyncMessageService.ID, querySyncMsg.serializeBinary());
                 _this.msgToSendRandomlySubject.next(msg);
@@ -7371,7 +7373,6 @@ var SyncMessageService = (function () {
             })
                 .subscribe(function (_a) {
                 var id = _a.id, replySyncEvent = _a.replySyncEvent;
-                console.log('Dans replySyncSource');
                 var replySyncMsg = _this.generateReplySyncMsg(replySyncEvent.richLogootSOps, replySyncEvent.intervals);
                 var msg = new _1.SendToMessage(SyncMessageService.ID, id, replySyncMsg.serializeBinary());
                 _this.msgToSendToSubject.next(msg);
@@ -7441,7 +7442,6 @@ var SyncMessageService = (function () {
     };
     SyncMessageService.prototype.handleQuerySyncMsg = function (content) {
         var vector = content.getVectorMap();
-        console.log('Vector: ', vector);
         this.remoteQuerySyncSubject.next(vector);
     };
     SyncMessageService.prototype.handleReplySyncMsg = function (content) {
@@ -7623,7 +7623,6 @@ var SyncService = (function () {
         set: function (source) {
             var _this = this;
             this.joinSubscription = source.subscribe(function (joinEvent) {
-                console.log('Si on passe là?????');
                 _this.id = joinEvent.id;
             });
         },
@@ -7655,7 +7654,6 @@ var SyncService = (function () {
                     return v === undefined ? true : v < clock ? true : false;
                 });
                 // TODO: Add sort function to apply LogootSAdd operations before LogootSDel ones
-                console.log('Length of :' + missingRichLogootSOps.length);
                 var missingIntervals = [];
                 vector.forEach(function (clock, id) {
                     var v = _this.vector.get(id);
@@ -7681,7 +7679,6 @@ var SyncService = (function () {
         set: function (source) {
             var _this = this;
             this.remoteReplySyncSubscription = source.subscribe(function (replySyncEvent) {
-                console.log('Si on passe là !!!!!!!!!!!!!!!!!!?????');
                 replySyncEvent.richLogootSOps.forEach(function (richLogootSOp) {
                     _this.applyRichLogootSOperation(richLogootSOp);
                 });
@@ -10195,6 +10192,7 @@ module.exports = require("ws");
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 const netflux_1 = __webpack_require__(25);
 const https = __webpack_require__(31);
 const http = __webpack_require__(30);
@@ -10205,6 +10203,7 @@ const MongooseAdapter_1 = __webpack_require__(27);
 const log_1 = __webpack_require__(5);
 // Default options
 const defaults = {
+    name: 'Repono',
     host: '0.0.0.0',
     port: 8080,
     portBot: 9000,
@@ -10215,6 +10214,7 @@ const defaults = {
 };
 // Configure command-line interface
 program
+    .option('-n, --name <bot name>', `Specify a name for the bot, DEFAULT: "${defaults.name}"`, defaults.name)
     .option('-h, --host <ip or host name>', `Specify host address to bind to, DEFAULT: "${defaults.host}"`, defaults.host)
     .option('-p, --port <n>', `Specify port to use for the server (REST API), DEFAULT: ${defaults.port}`, defaults.port)
     .option('-b, --portBot <n>', `Specify port to use for the peer to peer bot, DEFAULT: ${defaults.portBot}`, defaults.portBot)
@@ -10224,7 +10224,7 @@ program
     .option('-f, --logFile', `If specified, writes logs into file`)
     .parse(process.argv);
 // Setup settings
-const { host, port, portBot, signalingURL, logLevel } = program;
+const { name, host, port, portBot, signalingURL, logLevel } = program;
 const useHttps = program.useHttps ? true : false;
 const logIntoFile = program.logFile ? true : false;
 // Configure logging
@@ -10232,7 +10232,7 @@ log_1.createLogger(logIntoFile, logLevel);
 // Configure error handling on process
 process.on('uncaughtException', (err) => log_1.log.fatal(err));
 // Connect to MongoDB
-let isError = false;
+let error = null;
 const mongooseAdapter = new MongooseAdapter_1.MongooseAdapter();
 mongooseAdapter.connect('localhost')
     .then(() => {
@@ -10241,7 +10241,7 @@ mongooseAdapter.connect('localhost')
     const bot = new netflux_1.BotServer({ host: host, port: portBot, signalingURL });
     bot.onWebChannel = (wc) => {
         log_1.log.info('New peer to peer network invitation received. Waiting for a document key...');
-        new BotStorage_1.BotStorage(wc, mongooseAdapter);
+        new BotStorage_1.BotStorage(name, wc, mongooseAdapter);
     };
     return bot.start();
 })
@@ -10249,7 +10249,7 @@ mongooseAdapter.connect('localhost')
     log_1.log.info(`Successfully started the storage bot server at ws://${host}:${portBot}`);
 })
     .catch((err) => {
-    isError = true;
+    error = err;
     log_1.log.fatal(`Error during database/bot initialization`, err);
 });
 // Configure & Start REST server
@@ -10260,23 +10260,29 @@ app.use(function (req, res, next) {
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     next();
 });
-app.get('/ping', (req, res) => res.send(isError ? 'error' : 'pong'));
+app.get('/name', (req, res) => {
+    if (error === null) {
+        res.send(name);
+    }
+    else {
+        res.status(503).send(error.message);
+    }
+});
 app.get('/docs', (req, res) => {
     mongooseAdapter.list()
         .then((docs) => {
         const docList = docs.map((doc) => { return { id: doc.key }; });
-        log_1.log.info('User requested the following document list', docList);
         res.json(docList);
     })
         .catch((err) => {
-        log_1.log.error('Could not retreive the documents list stored in data base', err);
-        res.status(500).json({ error: err });
+        log_1.log.error('Could not retreive the document list stored in database', err);
+        res.status(500).send(err.message);
     });
 });
 // Start listen on http(s)
 const server = useHttps ? https.createServer(app) : http.createServer(app);
 server.listen(port, host, () => {
-    log_1.log.info('Current settings are\n', { host, port, portBot, signalingURL, useHttps, logLevel, logIntoFile });
+    log_1.log.info('Current settings are\n', { name, host, port, portBot, signalingURL, useHttps, logLevel, logIntoFile });
     log_1.log.info(`Successfully started the REST API server at http${useHttps ? 's' : ''}://${host}:${port}`);
 });
 

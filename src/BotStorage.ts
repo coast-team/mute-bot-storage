@@ -20,7 +20,7 @@ export class BotStorage {
   private mongooseAdapter: MongooseAdapter
   private webChannel
   private muteCore: MuteCore
-  private pseudonym = 'Bot Storage'
+  private pseudonym: string
 
   private joinSubject: Subject<JoinEvent>
   private messageSubject: ReplaySubject<NetworkMessage>
@@ -28,7 +28,8 @@ export class BotStorage {
   private peerLeaveSubject: ReplaySubject<number>
   private stateSubject: Subject<State>
 
-  constructor(webChannel, mongooseAdapter: MongooseAdapter) {
+  constructor(pseudonym, webChannel, mongooseAdapter: MongooseAdapter) {
+    this.pseudonym = pseudonym
     this.joinSubject = new Subject<JoinEvent>()
     this.messageSubject = new ReplaySubject()
     this.peerJoinSubject = new ReplaySubject()

@@ -10,6 +10,7 @@ import { createLogger, log } from './log'
 
 // Default options
 const defaults = {
+  name: 'Repono',
   host: '0.0.0.0',
   port: 8080,
   portBot: 9000,
@@ -21,6 +22,8 @@ const defaults = {
 
 // Configure command-line interface
 program
+  .option('-n, --name <bot name>',
+    `Specify a name for the bot, DEFAULT: "${defaults.name}"`, defaults.name)
   .option('-h, --host <ip or host name>',
     `Specify host address to bind to, DEFAULT: "${defaults.host}"`, defaults.host)
   .option('-p, --port <n>',
@@ -38,7 +41,7 @@ program
   .parse(process.argv)
 
 // Setup settings
-const {host, port, portBot, signalingURL, logLevel} = program
+const {name, host, port, portBot, signalingURL, logLevel} = program
 const useHttps = (program as any).useHttps ? true : false
 const logIntoFile = (program as any).logFile ? true : false
 
@@ -49,7 +52,7 @@ createLogger(logIntoFile, logLevel)
 process.on('uncaughtException', (err) => log.fatal(err))
 
 // Connect to MongoDB
-let isError = false
+let error = null
 const mongooseAdapter = new MongooseAdapter()
 mongooseAdapter.connect('localhost')
   .then(() => {
@@ -59,7 +62,7 @@ mongooseAdapter.connect('localhost')
     const bot = new BotServer({host: host, port: portBot, signalingURL})
     bot.onWebChannel = (wc) => {
       log.info('New peer to peer network invitation received. Waiting for a document key...')
-      new BotStorage(wc, mongooseAdapter)
+      new BotStorage(name, wc, mongooseAdapter)
     }
     return bot.start()
   })
@@ -67,7 +70,7 @@ mongooseAdapter.connect('localhost')
     log.info(`Successfully started the storage bot server at ws://${host}:${portBot}`)
   })
   .catch((err) => {
-    isError = true
+    error = err
     log.fatal(`Error during database/bot initialization`, err)
   })
 
@@ -81,18 +84,23 @@ app.use(function(req, res, next) {
   next()
 })
 
-app.get('/ping', (req, res) => res.send(isError ? 'error' : 'pong'))
+app.get('/name', (req, res) => {
+  if (error === null) {
+    res.send(name)
+  } else {
+    res.status(503).send(error.message)
+  }
+})
 
 app.get('/docs', (req, res) => {
   mongooseAdapter.list()
     .then((docs: any[]) => {
       const docList = docs.map((doc) => { return { id: doc.key }})
-      log.info('User requested the following document list', docList)
       res.json(docList)
     })
     .catch( (err) => {
-      log.error('Could not retreive the documents list stored in data base', err)
-      res.status(500).json({ error: err })
+      log.error('Could not retreive the document list stored in database', err)
+      res.status(500).send(err.message)
     })
 })
 
@@ -100,7 +108,7 @@ app.get('/docs', (req, res) => {
 const server = useHttps ? https.createServer(app) : http.createServer(app)
 server.listen(port, host, () => {
   log.info('Current settings are\n',
-    {host, port, portBot, signalingURL, useHttps, logLevel, logIntoFile}
+    {name, host, port, portBot, signalingURL, useHttps, logLevel, logIntoFile}
   )
   log.info(`Successfully started the REST API server at http${useHttps ? 's' : ''}://${host}:${port}`)
 })
