@@ -21,7 +21,7 @@
     "peer-network"
   ],
   "author": "",
-  "license": "ISC",
+  "license": "AGPL-3.0",
   "dependencies": {
     "bunyan": "^1.8.8",
     "express": "^4.14.0",
