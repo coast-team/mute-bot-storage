@@ -6225,7 +6225,6 @@ class BotStorage {
     initMuteCore(docKey) {
         // TODO: MuteCore should consume doc Object
         this.muteCore = new mute_core_1.MuteCore(42);
-        this.muteCore.joinSource = this.joinSubject.asObservable();
         this.muteCore.messageSource = this.messageSubject.asObservable();
         this.muteCore.onMsgToBroadcast.subscribe((bm) => {
             this.webChannel.send(this.buildMessage(bm));
