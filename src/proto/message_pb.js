@@ -11,7 +11,6 @@ var global = Function('return this')();
 
 goog.exportSymbol('proto.BotProtocol', null, global);
 goog.exportSymbol('proto.BotResponse', null, global);
-goog.exportSymbol('proto.BotResponse.ErrorCode', null, global);
 goog.exportSymbol('proto.Message', null, global);
 
 /**
@@ -390,7 +389,7 @@ proto.BotResponse.prototype.toObject = function(opt_includeInstance) {
  */
 proto.BotResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
-    error: jspb.Message.getFieldWithDefault(msg, 1, 0)
+    url: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -428,8 +427,8 @@ proto.BotResponse.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {!proto.BotResponse.ErrorCode} */ (reader.readEnum());
-      msg.setError(value);
+      var value = /** @type {string} */ (reader.readString());
+      msg.setUrl(value);
       break;
     default:
       reader.skipField();
@@ -459,9 +458,9 @@ proto.BotResponse.prototype.serializeBinary = function() {
  */
 proto.BotResponse.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getError();
-  if (f !== 0.0) {
-    writer.writeEnum(
+  f = message.getUrl();
+  if (f.length > 0) {
+    writer.writeString(
       1,
       f
     );
@@ -470,23 +469,16 @@ proto.BotResponse.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * @enum {number}
+ * optional string url = 1;
+ * @return {string}
  */
-proto.BotResponse.ErrorCode = {
-  DATABASE: 0
-};
-
-/**
- * optional ErrorCode error = 1;
- * @return {!proto.BotResponse.ErrorCode}
- */
-proto.BotResponse.prototype.getError = function() {
-  return /** @type {!proto.BotResponse.ErrorCode} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+proto.BotResponse.prototype.getUrl = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
-/** @param {!proto.BotResponse.ErrorCode} value */
-proto.BotResponse.prototype.setError = function(value) {
+/** @param {string} value */
+proto.BotResponse.prototype.setUrl = function(value) {
   jspb.Message.setField(this, 1, value);
 };
 

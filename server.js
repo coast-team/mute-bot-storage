@@ -1,41 +1,41 @@
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
-
+/******/
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
-
+/******/
 /******/ 		// Check if module is in cache
 /******/ 		if(installedModules[moduleId])
 /******/ 			return installedModules[moduleId].exports;
-
+/******/
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = installedModules[moduleId] = {
 /******/ 			i: moduleId,
 /******/ 			l: false,
 /******/ 			exports: {}
 /******/ 		};
-
+/******/
 /******/ 		// Execute the module function
 /******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-
+/******/
 /******/ 		// Flag the module as loaded
 /******/ 		module.l = true;
-
+/******/
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-
-
+/******/
+/******/
 /******/ 	// expose the modules object (__webpack_modules__)
 /******/ 	__webpack_require__.m = modules;
-
+/******/
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
-
+/******/
 /******/ 	// identity function for calling harmony imports with the correct context
 /******/ 	__webpack_require__.i = function(value) { return value; };
-
+/******/
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		if(!__webpack_require__.o(exports, name)) {
@@ -46,7 +46,7 @@
 /******/ 			});
 /******/ 		}
 /******/ 	};
-
+/******/
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = function(module) {
 /******/ 		var getter = module && module.__esModule ?
@@ -55,13 +55,13 @@
 /******/ 		__webpack_require__.d(getter, 'a', getter);
 /******/ 		return getter;
 /******/ 	};
-
+/******/
 /******/ 	// Object.prototype.hasOwnProperty.call
 /******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-
+/******/
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
-
+/******/
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(__webpack_require__.s = 55);
 /******/ })
@@ -359,8 +359,8 @@ exports.Identifier = Identifier;
 
 var identifier_1 = __webpack_require__(3);
 var identifierinterval_1 = __webpack_require__(0);
-var IDFactory = __webpack_require__(43);
-var iteratorhelperidentifier_1 = __webpack_require__(45);
+var IDFactory = __webpack_require__(44);
+var iteratorhelperidentifier_1 = __webpack_require__(46);
 var logootsadd_1 = __webpack_require__(19);
 var logootsblock_1 = __webpack_require__(11);
 var logootsdel_1 = __webpack_require__(20);
@@ -1059,15 +1059,15 @@ exports.createLogger = createLogger;
 
 "use strict";
 
-var BroadcastMessage_1 = __webpack_require__(36);
+var BroadcastMessage_1 = __webpack_require__(35);
 exports.BroadcastMessage = BroadcastMessage_1.BroadcastMessage;
-var JoinEvent_1 = __webpack_require__(37);
+var JoinEvent_1 = __webpack_require__(36);
 exports.JoinEvent = JoinEvent_1.JoinEvent;
-var NetworkMessage_1 = __webpack_require__(38);
+var NetworkMessage_1 = __webpack_require__(37);
 exports.NetworkMessage = NetworkMessage_1.NetworkMessage;
-var SendRandomlyMessage_1 = __webpack_require__(39);
+var SendRandomlyMessage_1 = __webpack_require__(38);
 exports.SendRandomlyMessage = SendRandomlyMessage_1.SendRandomlyMessage;
-var SendToMessage_1 = __webpack_require__(40);
+var SendToMessage_1 = __webpack_require__(39);
 exports.SendToMessage = SendToMessage_1.SendToMessage;
 var AbstractMessage_1 = __webpack_require__(2);
 exports.AbstractMessage = AbstractMessage_1.AbstractMessage;
@@ -1295,7 +1295,7 @@ exports.Collaborator = Collaborator;
 
 var Collaborator_1 = __webpack_require__(13);
 exports.Collaborator = Collaborator_1.Collaborator;
-var CollaboratorsService_1 = __webpack_require__(34);
+var CollaboratorsService_1 = __webpack_require__(33);
 exports.CollaboratorsService = CollaboratorsService_1.CollaboratorsService;
 //# sourceMappingURL=index.js.map
 
@@ -1305,7 +1305,7 @@ exports.CollaboratorsService = CollaboratorsService_1.CollaboratorsService;
 
 "use strict";
 
-var DocService_1 = __webpack_require__(35);
+var DocService_1 = __webpack_require__(34);
 exports.DocService = DocService_1.DocService;
 //# sourceMappingURL=index.js.map
 
@@ -1327,7 +1327,7 @@ exports.NetworkMessage = _3.NetworkMessage;
 exports.SendRandomlyMessage = _3.SendRandomlyMessage;
 exports.SendToMessage = _3.SendToMessage;
 exports.AbstractMessage = _3.AbstractMessage;
-var MuteCore_1 = __webpack_require__(33);
+var MuteCore_1 = __webpack_require__(32);
 exports.MuteCore = MuteCore_1.MuteCore;
 var _4 = __webpack_require__(18);
 exports.RichLogootSOperation = _4.RichLogootSOperation;
@@ -1364,9 +1364,9 @@ var RichLogootSOperation_1 = __webpack_require__(9);
 exports.RichLogootSOperation = RichLogootSOperation_1.RichLogootSOperation;
 var State_1 = __webpack_require__(17);
 exports.State = State_1.State;
-var SyncService_1 = __webpack_require__(42);
+var SyncService_1 = __webpack_require__(41);
 exports.SyncService = SyncService_1.SyncService;
-var SyncMessageService_1 = __webpack_require__(41);
+var SyncMessageService_1 = __webpack_require__(40);
 exports.SyncMessageService = SyncMessageService_1.SyncMessageService;
 //# sourceMappingURL=index.js.map
 
@@ -6170,7 +6170,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const rxjs_1 = __webpack_require__(1);
 const mute_core_1 = __webpack_require__(16);
 const log_1 = __webpack_require__(5);
-const pb = __webpack_require__(32);
+const pb = __webpack_require__(47);
 // TODO: BotStorage should serialize document in DB
 class BotStorage {
     constructor(pseudonym, webChannel, mongooseAdapter) {
@@ -6187,17 +6187,15 @@ class BotStorage {
                 const docKey = pb.BotProtocol.deserializeBinary(msg.getContent()).getKey();
                 this.mongooseAdapter.find(docKey)
                     .then((doc) => {
-                    if (doc !== null) {
-                        this.initMuteCore(docKey);
-                        this.joinSubject.next(new mute_core_1.JoinEvent(this.webChannel.myId, docKey, false));
-                        if (doc === null) {
-                            log_1.log.info(`Document ${docKey} was not found in database, thus create a new document`);
-                            this.stateSubject.next(new mute_core_1.State(new Map(), []));
-                        }
-                        else {
-                            log_1.log.info(`Document ${docKey} retreived from database`);
-                            this.stateSubject.next(new mute_core_1.State(new Map(), doc));
-                        }
+                    this.initMuteCore(docKey);
+                    this.joinSubject.next(new mute_core_1.JoinEvent(this.webChannel.myId, docKey, false));
+                    if (doc === null) {
+                        log_1.log.info(`Document ${docKey} was not found in database, thus create a new document`);
+                        this.stateSubject.next(new mute_core_1.State(new Map(), []));
+                    }
+                    else {
+                        log_1.log.info(`Document ${docKey} retreived from database`);
+                        this.stateSubject.next(new mute_core_1.State(new Map(), doc));
                     }
                 })
                     .catch((err) => {
@@ -6218,7 +6216,11 @@ class BotStorage {
             service: 'botprotocol',
             content: msg.serializeBinary()
         }));
-        webChannel.onPeerJoin = (id) => this.peerJoinSubject.next(id);
+        // this.sendMyUrl()
+        webChannel.onPeerJoin = (id) => {
+            // this.sendMyUrl(id)
+            this.peerJoinSubject.next(id);
+        };
         webChannel.onPeerLeave = (id) => this.peerLeaveSubject.next(id);
         this.mongooseAdapter = mongooseAdapter;
     }
@@ -6250,6 +6252,23 @@ class BotStorage {
             });
         });
         this.muteCore.syncService.setJoinAndStateSources(this.joinSubject.asObservable(), this.stateSubject.asObservable());
+        this.muteCore.init(docKey);
+    }
+    sendMyUrl(id) {
+        const msg = new pb.BotResponse();
+        msg.setUrl(this.url);
+        if (id !== undefined) {
+            this.webChannel.sendTo(this.webChannel.members[0], this.buildMessage({
+                service: 'botprotocol',
+                content: msg.serializeBinary()
+            }));
+        }
+        else {
+            this.webChannel.send(this.buildMessage({
+                service: 'botprotocol',
+                content: msg.serializeBinary()
+            }));
+        }
     }
     buildMessage(msg) {
         const pbMsg = new pb.Message();
@@ -6292,6 +6311,7 @@ class MongooseAdapter {
     find(key) {
         return this.docModel.findOne({ key })
             .then((response) => {
+            log_1.log.debug('Mongo: ', response);
             if (response !== null) {
                 return response.doc.map((op) => {
                     return mute_core_1.RichLogootSOperation.fromPlain(op);
@@ -6341,506 +6361,6 @@ module.exports = require("https");
 /* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/**
- * @fileoverview
- * @enhanceable
- * @public
- */
-// GENERATED CODE -- DO NOT EDIT!
-
-var jspb = __webpack_require__(12);
-var goog = jspb;
-var global = Function('return this')();
-
-goog.exportSymbol('proto.BotProtocol', null, global);
-goog.exportSymbol('proto.BotResponse', null, global);
-goog.exportSymbol('proto.BotResponse.ErrorCode', null, global);
-goog.exportSymbol('proto.Message', null, global);
-
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.Message = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.Message, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  proto.Message.displayName = 'proto.Message';
-}
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto suitable for use in Soy templates.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
- * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
- *     for transitional soy proto support: http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.Message.prototype.toObject = function(opt_includeInstance) {
-  return proto.Message.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Whether to include the JSPB
- *     instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.Message} msg The msg instance to transform.
- * @return {!Object}
- */
-proto.Message.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    service: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    content: msg.getContent_asB64()
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.Message}
- */
-proto.Message.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.Message;
-  return proto.Message.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.Message} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.Message}
- */
-proto.Message.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setService(value);
-      break;
-    case 2:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setContent(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.Message.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.Message.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.Message} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.Message.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getService();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getContent_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      2,
-      f
-    );
-  }
-};
-
-
-/**
- * optional string service = 1;
- * @return {string}
- */
-proto.Message.prototype.getService = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/** @param {string} value */
-proto.Message.prototype.setService = function(value) {
-  jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * optional bytes content = 2;
- * @return {!(string|Uint8Array)}
- */
-proto.Message.prototype.getContent = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * optional bytes content = 2;
- * This is a type-conversion wrapper around `getContent()`
- * @return {string}
- */
-proto.Message.prototype.getContent_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getContent()));
-};
-
-
-/**
- * optional bytes content = 2;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getContent()`
- * @return {!Uint8Array}
- */
-proto.Message.prototype.getContent_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getContent()));
-};
-
-
-/** @param {!(string|Uint8Array)} value */
-proto.Message.prototype.setContent = function(value) {
-  jspb.Message.setField(this, 2, value);
-};
-
-
-
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.BotProtocol = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.BotProtocol, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  proto.BotProtocol.displayName = 'proto.BotProtocol';
-}
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto suitable for use in Soy templates.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
- * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
- *     for transitional soy proto support: http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.BotProtocol.prototype.toObject = function(opt_includeInstance) {
-  return proto.BotProtocol.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Whether to include the JSPB
- *     instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.BotProtocol} msg The msg instance to transform.
- * @return {!Object}
- */
-proto.BotProtocol.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    key: jspb.Message.getFieldWithDefault(msg, 1, "")
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.BotProtocol}
- */
-proto.BotProtocol.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.BotProtocol;
-  return proto.BotProtocol.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.BotProtocol} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.BotProtocol}
- */
-proto.BotProtocol.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setKey(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.BotProtocol.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.BotProtocol.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.BotProtocol} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.BotProtocol.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getKey();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-};
-
-
-/**
- * optional string key = 1;
- * @return {string}
- */
-proto.BotProtocol.prototype.getKey = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/** @param {string} value */
-proto.BotProtocol.prototype.setKey = function(value) {
-  jspb.Message.setField(this, 1, value);
-};
-
-
-
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.BotResponse = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.BotResponse, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  proto.BotResponse.displayName = 'proto.BotResponse';
-}
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto suitable for use in Soy templates.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
- * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
- *     for transitional soy proto support: http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.BotResponse.prototype.toObject = function(opt_includeInstance) {
-  return proto.BotResponse.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Whether to include the JSPB
- *     instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.BotResponse} msg The msg instance to transform.
- * @return {!Object}
- */
-proto.BotResponse.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    error: jspb.Message.getFieldWithDefault(msg, 1, 0)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.BotResponse}
- */
-proto.BotResponse.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.BotResponse;
-  return proto.BotResponse.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.BotResponse} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.BotResponse}
- */
-proto.BotResponse.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {!proto.BotResponse.ErrorCode} */ (reader.readEnum());
-      msg.setError(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.BotResponse.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.BotResponse.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.BotResponse} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.BotResponse.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getError();
-  if (f !== 0.0) {
-    writer.writeEnum(
-      1,
-      f
-    );
-  }
-};
-
-
-/**
- * @enum {number}
- */
-proto.BotResponse.ErrorCode = {
-  DATABASE: 0
-};
-
-/**
- * optional ErrorCode error = 1;
- * @return {!proto.BotResponse.ErrorCode}
- */
-proto.BotResponse.prototype.getError = function() {
-  return /** @type {!proto.BotResponse.ErrorCode} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
-};
-
-
-/** @param {!proto.BotResponse.ErrorCode} value */
-proto.BotResponse.prototype.setError = function(value) {
-  jspb.Message.setField(this, 1, value);
-};
-
-
-goog.object.extend(exports, proto);
-
-
-/***/ }),
-/* 33 */
-/***/ (function(module, exports, __webpack_require__) {
-
 "use strict";
 
 var rxjs_1 = __webpack_require__(1);
@@ -6849,10 +6369,12 @@ var _2 = __webpack_require__(15);
 var _3 = __webpack_require__(18);
 var MuteCore = (function () {
     function MuteCore(id) {
+        this.initSubject = new rxjs_1.Subject();
         this.collaboratorsService = new _1.CollaboratorsService();
-        this.docService = new _2.DocService();
-        this.syncService = new _3.SyncService();
+        this.docService = new _2.DocService(id);
+        this.syncService = new _3.SyncService(id);
         this.syncMessageService = new _3.SyncMessageService();
+        this.docService.initSource = this.initSubject;
         this.docService.remoteLogootSOperationSource = this.syncService.onRemoteLogootSOperation;
         this.syncService.localLogootSOperationSource = this.docService.onLocalLogootSOperation;
         this.syncService.remoteQuerySyncSource = this.syncMessageService.onRemoteQuerySync;
@@ -6863,18 +6385,17 @@ var MuteCore = (function () {
         this.syncMessageService.querySyncSource = this.syncService.onQuerySync;
         this.syncMessageService.replySyncSource = this.syncService.onReplySync;
     }
-    Object.defineProperty(MuteCore.prototype, "joinSource", {
+    Object.defineProperty(MuteCore.prototype, "messageSource", {
         set: function (source) {
-            this.docService.joinSource = source;
+            this.collaboratorsService.messageSource = source;
+            this.syncMessageService.messageSource = source;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(MuteCore.prototype, "messageSource", {
-        set: function (source) {
-            source.subscribe(function (msg) { console.log('received msg: ', msg); });
-            this.collaboratorsService.messageSource = source;
-            this.syncMessageService.messageSource = source;
+    Object.defineProperty(MuteCore.prototype, "onInit", {
+        get: function () {
+            return this.initSubject.asObservable();
         },
         enumerable: true,
         configurable: true
@@ -6900,6 +6421,9 @@ var MuteCore = (function () {
         enumerable: true,
         configurable: true
     });
+    MuteCore.prototype.init = function (key) {
+        this.initSubject.next(key);
+    };
     MuteCore.prototype.clean = function () {
         this.collaboratorsService.clean();
         this.docService.clean();
@@ -6912,7 +6436,7 @@ exports.MuteCore = MuteCore;
 //# sourceMappingURL=MuteCore.js.map
 
 /***/ }),
-/* 34 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6920,7 +6444,7 @@ exports.MuteCore = MuteCore;
 var rxjs_1 = __webpack_require__(1);
 var _1 = __webpack_require__(6);
 var Collaborator_1 = __webpack_require__(13);
-var pb = __webpack_require__(46);
+var pb = __webpack_require__(42);
 var CollaboratorsService = (function () {
     function CollaboratorsService() {
         this.collaboratorChangePseudoSubject = new rxjs_1.Subject();
@@ -7054,7 +6578,7 @@ exports.CollaboratorsService = CollaboratorsService;
 //# sourceMappingURL=CollaboratorsService.js.map
 
 /***/ }),
-/* 35 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7062,12 +6586,26 @@ exports.CollaboratorsService = CollaboratorsService;
 var rxjs_1 = __webpack_require__(1);
 var mute_structs_1 = __webpack_require__(10);
 var DocService = (function () {
-    function DocService() {
-        this.doc = new mute_structs_1.LogootSRopes();
+    function DocService(id) {
+        this.doc = new mute_structs_1.LogootSRopes(id);
+        this.disposeSubject = new rxjs_1.Subject();
         this.docValueSubject = new rxjs_1.Subject();
         this.localLogootSOperationSubject = new rxjs_1.Subject();
         this.remoteTextOperationsSubject = new rxjs_1.Subject();
     }
+    Object.defineProperty(DocService.prototype, "initSource", {
+        set: function (source) {
+            var _this = this;
+            source
+                .takeUntil(this.disposeSubject)
+                .subscribe(function (key) {
+                _this.docID = key;
+                _this.docValueSubject.next(_this.doc.str);
+            });
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(DocService.prototype, "localTextOperationsSource", {
         set: function (source) {
             var _this = this;
@@ -7081,20 +6619,15 @@ var DocService = (function () {
     Object.defineProperty(DocService.prototype, "remoteLogootSOperationSource", {
         set: function (source) {
             var _this = this;
-            this.remoteLogootSOperationsSubscription = source.subscribe(function (logootSOp) {
-                _this.remoteTextOperationsSubject.next(_this.handleRemoteOperation(logootSOp));
-            });
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(DocService.prototype, "joinSource", {
-        set: function (source) {
-            var _this = this;
-            this.joinSubscription = source.subscribe(function (joinEvent) {
-                _this.docID = joinEvent.key;
-                _this.doc = new mute_structs_1.LogootSRopes(joinEvent.id);
-                _this.docValueSubject.next(_this.doc.str);
+            this.remoteLogootSOperationsSubscription = source.subscribe(function (logootSOps) {
+                var remoteTextOps = logootSOps
+                    .map(function (logootSOp) {
+                    return _this.handleRemoteOperation(logootSOp);
+                })
+                    .reduce(function (acc, textOps) {
+                    return acc.concat(textOps);
+                }, []);
+                _this.remoteTextOperationsSubject.next(remoteTextOps);
             });
         },
         enumerable: true,
@@ -7122,10 +6655,10 @@ var DocService = (function () {
         configurable: true
     });
     DocService.prototype.clean = function () {
+        this.disposeSubject.complete();
         this.docValueSubject.complete();
         this.localLogootSOperationSubject.complete();
         this.remoteTextOperationsSubject.complete();
-        this.joinSubscription.unsubscribe();
         this.localOperationsSubscription.unsubscribe();
         this.remoteLogootSOperationsSubscription.unsubscribe();
     };
@@ -7168,21 +6701,16 @@ exports.DocService = DocService;
 //# sourceMappingURL=DocService.js.map
 
 /***/ }),
-/* 36 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var AbstractMessage_1 = __webpack_require__(2);
 var BroadcastMessage = (function (_super) {
     __extends(BroadcastMessage, _super);
@@ -7195,7 +6723,7 @@ exports.BroadcastMessage = BroadcastMessage;
 //# sourceMappingURL=BroadcastMessage.js.map
 
 /***/ }),
-/* 37 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7212,21 +6740,16 @@ exports.JoinEvent = JoinEvent;
 //# sourceMappingURL=JoinEvent.js.map
 
 /***/ }),
-/* 38 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var AbstractMessage_1 = __webpack_require__(2);
 var NetworkMessage = (function (_super) {
     __extends(NetworkMessage, _super);
@@ -7242,21 +6765,16 @@ exports.NetworkMessage = NetworkMessage;
 //# sourceMappingURL=NetworkMessage.js.map
 
 /***/ }),
-/* 39 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var AbstractMessage_1 = __webpack_require__(2);
 var SendRandomlyMessage = (function (_super) {
     __extends(SendRandomlyMessage, _super);
@@ -7269,21 +6787,16 @@ exports.SendRandomlyMessage = SendRandomlyMessage;
 //# sourceMappingURL=SendRandomlyMessage.js.map
 
 /***/ }),
-/* 40 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var AbstractMessage_1 = __webpack_require__(2);
 var SendToMessage = (function (_super) {
     __extends(SendToMessage, _super);
@@ -7298,7 +6811,7 @@ exports.SendToMessage = SendToMessage;
 //# sourceMappingURL=SendToMessage.js.map
 
 /***/ }),
-/* 41 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7309,7 +6822,7 @@ var Interval_1 = __webpack_require__(7);
 var _1 = __webpack_require__(6);
 var ReplySyncEvent_1 = __webpack_require__(8);
 var RichLogootSOperation_1 = __webpack_require__(9);
-var pb = __webpack_require__(47);
+var pb = __webpack_require__(43);
 var SyncMessageService = (function () {
     function SyncMessageService() {
         this.msgToBroadcastSubject = new rxjs_1.Subject();
@@ -7557,7 +7070,7 @@ exports.SyncMessageService = SyncMessageService;
 //# sourceMappingURL=SyncMessageService.js.map
 
 /***/ }),
-/* 42 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7568,11 +7081,12 @@ var ReplySyncEvent_1 = __webpack_require__(8);
 var RichLogootSOperation_1 = __webpack_require__(9);
 var State_1 = __webpack_require__(17);
 var SyncService = (function () {
-    function SyncService() {
+    function SyncService(id) {
         this.id = -1;
         this.clock = 0;
         this.vector = new Map();
         this.richLogootSOps = [];
+        this.id = id;
         this.isReadySubject = new rxjs_1.Subject();
         this.localRichLogootSOperationSubject = new rxjs_1.Subject();
         this.querySyncSubject = new rxjs_1.Subject();
@@ -7618,16 +7132,6 @@ var SyncService = (function () {
     Object.defineProperty(SyncService.prototype, "state", {
         get: function () {
             return new State_1.State(this.vector, this.richLogootSOps);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SyncService.prototype, "joinSource", {
-        set: function (source) {
-            var _this = this;
-            this.joinSubscription = source.subscribe(function (joinEvent) {
-                _this.id = joinEvent.id;
-            });
         },
         enumerable: true,
         configurable: true
@@ -7682,10 +7186,10 @@ var SyncService = (function () {
         set: function (source) {
             var _this = this;
             this.remoteReplySyncSubscription = source.subscribe(function (replySyncEvent) {
-                replySyncEvent.richLogootSOps.forEach(function (richLogootSOp) {
-                    _this.applyRichLogootSOperation(richLogootSOp);
-                });
-                _this.stateSubject.next(_this.state);
+                if (replySyncEvent.richLogootSOps.length > 0) {
+                    _this.applyRichLogootSOperations(replySyncEvent.richLogootSOps);
+                    _this.stateSubject.next(_this.state);
+                }
                 replySyncEvent.intervals.forEach(function (interval) {
                     _this.richLogootSOps
                         .filter(function (richLogootSOp) {
@@ -7706,7 +7210,7 @@ var SyncService = (function () {
         set: function (source) {
             var _this = this;
             this.remoteRichLogootSOperationSubscription = source.subscribe(function (richLogootSOp) {
-                _this.applyRichLogootSOperation(richLogootSOp);
+                _this.applyRichLogootSOperations([richLogootSOp]);
                 _this.stateSubject.next(_this.state);
             });
         },
@@ -7718,9 +7222,7 @@ var SyncService = (function () {
             var _this = this;
             this.storedStateSubscription = source.subscribe(function (state) {
                 _this.vector.clear();
-                state.richLogootSOps.forEach(function (richLogootSOp) {
-                    _this.applyRichLogootSOperation(richLogootSOp);
-                });
+                _this.applyRichLogootSOperations(state.richLogootSOps);
                 _this.isReadySubject.next(undefined);
             });
         },
@@ -7729,7 +7231,6 @@ var SyncService = (function () {
     });
     SyncService.prototype.setJoinAndStateSources = function (joinSource, storedStateSource) {
         var _this = this;
-        this.joinSource = joinSource;
         var triggerQuerySyncObservable = joinSource;
         if (storedStateSource) {
             this.storedStateSource = storedStateSource;
@@ -7750,7 +7251,6 @@ var SyncService = (function () {
         this.remoteLogootSOperationSubject.complete();
         this.replySyncSubject.complete();
         this.stateSubject.complete();
-        this.joinSubscription.unsubscribe();
         this.localLogootSOperationSubscription.unsubscribe();
         this.remoteQuerySyncSubscription.unsubscribe();
         this.remoteReplySyncSubscription.unsubscribe();
@@ -7760,9 +7260,15 @@ var SyncService = (function () {
         }
         this.triggerQuerySyncSubscription.unsubscribe();
     };
-    SyncService.prototype.applyRichLogootSOperation = function (richLogootSOp) {
-        this.updateState(richLogootSOp);
-        this.remoteLogootSOperationSubject.next(richLogootSOp.logootSOp);
+    SyncService.prototype.applyRichLogootSOperations = function (richLogootSOps) {
+        var _this = this;
+        richLogootSOps.forEach(function (richLogootSOp) {
+            _this.updateState(richLogootSOp);
+        });
+        var logootSOperations = richLogootSOps.map(function (richLogootSOp) {
+            return richLogootSOp.logootSOp;
+        });
+        this.remoteLogootSOperationSubject.next(logootSOperations);
     };
     SyncService.prototype.updateState = function (richLogootSOp) {
         this.updateVector(richLogootSOp.id, richLogootSOp.clock);
@@ -7782,223 +7288,7 @@ exports.SyncService = SyncService;
 //# sourceMappingURL=SyncService.js.map
 
 /***/ }),
-/* 43 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/*
- *  Copyright 2014 Matthieu Nicolas
- *
- *  This file is part of Mute-structs.
- *
- *  Mute-structs is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  Mute-structs is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with Mute-structs.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-var infinitestring_1 = __webpack_require__(44);
-var identifier_1 = __webpack_require__(3);
-function isMine(replica) {
-    return function (base) { return base[base.length - 2] === replica; };
-}
-exports.isMine = isMine;
-/**
- * Holds the minimum value an integer can have.
- */
-var INT_32_MIN_VALUE = -0x80000000;
-/**
- * Holds the maximum value an integer can have.
- */
-var INT_32_MAX_VALUE = 0x7fffffff;
-function createBetweenPosition(id1, id2, replicaNumber, clock) {
-    console.assert(id1 === null || id1 instanceof identifier_1.Identifier, "id1 = " + id1);
-    console.assert(id2 === null || id2 instanceof identifier_1.Identifier, "id2 = ", id2);
-    console.assert(typeof replicaNumber === "number", "replicaNumber = ", replicaNumber);
-    console.assert(typeof clock === "number", "clock = ", clock);
-    var s1 = new infinitestring_1.InfiniteString(id1 !== null ? id1.base.concat(id1.last) : [], INT_32_MIN_VALUE);
-    var s2 = new infinitestring_1.InfiniteString(id2 !== null ? id2.base.concat(id2.last) : [], INT_32_MAX_VALUE);
-    var sb = [];
-    do {
-        var b1 = s1.next();
-        var b2 = s2.next();
-        if (b2 - b1 > 2) {
-            var f = (Math.random() * (b2 - b1 - 2)) + b1 + 1;
-            var i = f | 0; // Truncate the float in order to get a 32bits int
-            sb.push(i);
-            break;
-        }
-        else {
-            sb.push(b1);
-        }
-    } while (true);
-    sb.push(replicaNumber);
-    sb.push(clock);
-    console.assert(isMine(replicaNumber)(sb), "replica = " + replicaNumber + " base = ", sb);
-    return sb;
-}
-exports.createBetweenPosition = createBetweenPosition;
-//# sourceMappingURL=idfactory.js.map
-
-/***/ }),
-/* 44 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/*
- *  Copyright 2014 Matthieu Nicolas
- *
- *  This file is part of Mute-structs.
- *
- *  Mute-structs is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  Mute-structs is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with Mute-structs.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-var InfiniteString = (function () {
-    function InfiniteString(aPrefix, aFiller) {
-        console.assert(aPrefix instanceof Array, "aPrefix = ", aPrefix);
-        console.assert(typeof aFiller !== "undefined");
-        this.filler = aFiller;
-        this.prefix = aPrefix;
-        this.currentIndex = 0;
-    }
-    InfiniteString.prototype.next = function () {
-        if (this.currentIndex < this.prefix.length) {
-            var result = this.prefix[this.currentIndex];
-            this.currentIndex++;
-            return result;
-        }
-        else {
-            return this.filler;
-        }
-    };
-    return InfiniteString;
-}());
-exports.InfiniteString = InfiniteString;
-//# sourceMappingURL=infinitestring.js.map
-
-/***/ }),
-/* 45 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/*
- *  Copyright 2014 Matthieu Nicolas
- *
- *  This file is part of Mute-structs.
- *
- *  Mute-structs is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  Mute-structs is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with Mute-structs.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-var identifierinterval_1 = __webpack_require__(0);
-var IteratorHelperIdentifier = (function () {
-    function IteratorHelperIdentifier(id1, id2) {
-        console.assert(id1 instanceof identifierinterval_1.IdentifierInterval, "id1 = ", id1);
-        console.assert(id2 instanceof identifierinterval_1.IdentifierInterval, "id2 = ", id2);
-        this.id1 = id1;
-        this.id2 = id2;
-        this.nextOffset = -1;
-    }
-    IteratorHelperIdentifier.prototype.compareBase = function () {
-        var b1 = this.id1.base;
-        var b2 = this.id2.base;
-        var minLength = Math.min(b1.length, b2.length);
-        var i = 0;
-        while (i < minLength && b1[i] === b2[i]) {
-            i++;
-        }
-        if (i === minLength) {
-            if (b1.length > minLength) {
-                this.nextOffset = b1[i];
-                if (this.nextOffset < this.id2.begin) {
-                    return 1 /* B1_BEFORE_B2 */;
-                }
-                else if (this.nextOffset >= this.id2.end) {
-                    return 0 /* B1_AFTER_B2 */;
-                }
-                else {
-                    return 2 /* B1_INSIDE_B2 */;
-                }
-            }
-            else if (b2.length > minLength) {
-                this.nextOffset = b2[i];
-                if (this.nextOffset < this.id1.begin) {
-                    return 0 /* B1_AFTER_B2 */;
-                }
-                else if (this.nextOffset >= this.id1.end) {
-                    return 1 /* B1_BEFORE_B2 */;
-                }
-                else {
-                    return 3 /* B2_INSIDE_B1 */;
-                }
-            }
-            else {
-                if (this.id1.begin === this.id2.begin && this.id1.end === this.id2.end) {
-                    return 6 /* B1_EQUALS_B2 */;
-                }
-                else if ((this.id1.end + 1) === this.id2.begin) {
-                    return 4 /* B1_CONCAT_B2 */;
-                }
-                else if (this.id1.begin === (this.id2.end + 1)) {
-                    return 5 /* B2_CONCAT_B1 */;
-                }
-                else if (this.id1.end < this.id2.begin) {
-                    return 1 /* B1_BEFORE_B2 */;
-                }
-                else if (this.id2.end < this.id1.begin) {
-                    return 0 /* B1_AFTER_B2 */;
-                }
-                else {
-                    // This case should not occur
-                    // Only malicious users would generate such operations
-                    console.warn('IteratorHelperIdentifier.compareBase: ', this.id1, this.id2);
-                    return 6 /* B1_EQUALS_B2 */;
-                }
-            }
-        }
-        else if (b1[i] > b2[i]) {
-            return 0 /* B1_AFTER_B2 */;
-        }
-        else {
-            return 1 /* B1_BEFORE_B2 */;
-        }
-    };
-    return IteratorHelperIdentifier;
-}());
-exports.IteratorHelperIdentifier = IteratorHelperIdentifier;
-//# sourceMappingURL=iteratorhelperidentifier.js.map
-
-/***/ }),
-/* 46 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -8167,7 +7457,7 @@ goog.object.extend(exports, proto);
 
 
 /***/ }),
-/* 47 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -10141,6 +9431,714 @@ proto.Interval.prototype.getEnd = function() {
 /** @param {number} value */
 proto.Interval.prototype.setEnd = function(value) {
   jspb.Message.setField(this, 3, value);
+};
+
+
+goog.object.extend(exports, proto);
+
+
+/***/ }),
+/* 44 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/*
+ *  Copyright 2014 Matthieu Nicolas
+ *
+ *  This file is part of Mute-structs.
+ *
+ *  Mute-structs is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Mute-structs is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Mute-structs.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+var infinitestring_1 = __webpack_require__(45);
+var identifier_1 = __webpack_require__(3);
+function isMine(replica) {
+    return function (base) { return base[base.length - 2] === replica; };
+}
+exports.isMine = isMine;
+/**
+ * Holds the minimum value an integer can have.
+ */
+var INT_32_MIN_VALUE = -0x80000000;
+/**
+ * Holds the maximum value an integer can have.
+ */
+var INT_32_MAX_VALUE = 0x7fffffff;
+function createBetweenPosition(id1, id2, replicaNumber, clock) {
+    console.assert(id1 === null || id1 instanceof identifier_1.Identifier, "id1 = " + id1);
+    console.assert(id2 === null || id2 instanceof identifier_1.Identifier, "id2 = ", id2);
+    console.assert(typeof replicaNumber === "number", "replicaNumber = ", replicaNumber);
+    console.assert(typeof clock === "number", "clock = ", clock);
+    var s1 = new infinitestring_1.InfiniteString(id1 !== null ? id1.base.concat(id1.last) : [], INT_32_MIN_VALUE);
+    var s2 = new infinitestring_1.InfiniteString(id2 !== null ? id2.base.concat(id2.last) : [], INT_32_MAX_VALUE);
+    var sb = [];
+    do {
+        var b1 = s1.next();
+        var b2 = s2.next();
+        if (b2 - b1 > 2) {
+            var f = (Math.random() * (b2 - b1 - 2)) + b1 + 1;
+            var i = f | 0; // Truncate the float in order to get a 32bits int
+            sb.push(i);
+            break;
+        }
+        else {
+            sb.push(b1);
+        }
+    } while (true);
+    sb.push(replicaNumber);
+    sb.push(clock);
+    console.assert(isMine(replicaNumber)(sb), "replica = " + replicaNumber + " base = ", sb);
+    return sb;
+}
+exports.createBetweenPosition = createBetweenPosition;
+//# sourceMappingURL=idfactory.js.map
+
+/***/ }),
+/* 45 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/*
+ *  Copyright 2014 Matthieu Nicolas
+ *
+ *  This file is part of Mute-structs.
+ *
+ *  Mute-structs is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Mute-structs is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Mute-structs.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+var InfiniteString = (function () {
+    function InfiniteString(aPrefix, aFiller) {
+        console.assert(aPrefix instanceof Array, "aPrefix = ", aPrefix);
+        console.assert(typeof aFiller !== "undefined");
+        this.filler = aFiller;
+        this.prefix = aPrefix;
+        this.currentIndex = 0;
+    }
+    InfiniteString.prototype.next = function () {
+        if (this.currentIndex < this.prefix.length) {
+            var result = this.prefix[this.currentIndex];
+            this.currentIndex++;
+            return result;
+        }
+        else {
+            return this.filler;
+        }
+    };
+    return InfiniteString;
+}());
+exports.InfiniteString = InfiniteString;
+//# sourceMappingURL=infinitestring.js.map
+
+/***/ }),
+/* 46 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/*
+ *  Copyright 2014 Matthieu Nicolas
+ *
+ *  This file is part of Mute-structs.
+ *
+ *  Mute-structs is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Mute-structs is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Mute-structs.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+var identifierinterval_1 = __webpack_require__(0);
+var IteratorHelperIdentifier = (function () {
+    function IteratorHelperIdentifier(id1, id2) {
+        console.assert(id1 instanceof identifierinterval_1.IdentifierInterval, "id1 = ", id1);
+        console.assert(id2 instanceof identifierinterval_1.IdentifierInterval, "id2 = ", id2);
+        this.id1 = id1;
+        this.id2 = id2;
+        this.nextOffset = -1;
+    }
+    IteratorHelperIdentifier.prototype.compareBase = function () {
+        var b1 = this.id1.base;
+        var b2 = this.id2.base;
+        var minLength = Math.min(b1.length, b2.length);
+        var i = 0;
+        while (i < minLength && b1[i] === b2[i]) {
+            i++;
+        }
+        if (i === minLength) {
+            if (b1.length > minLength) {
+                this.nextOffset = b1[i];
+                if (this.nextOffset < this.id2.begin) {
+                    return 1 /* B1_BEFORE_B2 */;
+                }
+                else if (this.nextOffset >= this.id2.end) {
+                    return 0 /* B1_AFTER_B2 */;
+                }
+                else {
+                    return 2 /* B1_INSIDE_B2 */;
+                }
+            }
+            else if (b2.length > minLength) {
+                this.nextOffset = b2[i];
+                if (this.nextOffset < this.id1.begin) {
+                    return 0 /* B1_AFTER_B2 */;
+                }
+                else if (this.nextOffset >= this.id1.end) {
+                    return 1 /* B1_BEFORE_B2 */;
+                }
+                else {
+                    return 3 /* B2_INSIDE_B1 */;
+                }
+            }
+            else {
+                if (this.id1.begin === this.id2.begin && this.id1.end === this.id2.end) {
+                    return 6 /* B1_EQUALS_B2 */;
+                }
+                else if ((this.id1.end + 1) === this.id2.begin) {
+                    return 4 /* B1_CONCAT_B2 */;
+                }
+                else if (this.id1.begin === (this.id2.end + 1)) {
+                    return 5 /* B2_CONCAT_B1 */;
+                }
+                else if (this.id1.end < this.id2.begin) {
+                    return 1 /* B1_BEFORE_B2 */;
+                }
+                else if (this.id2.end < this.id1.begin) {
+                    return 0 /* B1_AFTER_B2 */;
+                }
+                else {
+                    // This case should not occur
+                    // Only malicious users would generate such operations
+                    console.warn('IteratorHelperIdentifier.compareBase: ', this.id1, this.id2);
+                    return 6 /* B1_EQUALS_B2 */;
+                }
+            }
+        }
+        else if (b1[i] > b2[i]) {
+            return 0 /* B1_AFTER_B2 */;
+        }
+        else {
+            return 1 /* B1_BEFORE_B2 */;
+        }
+    };
+    return IteratorHelperIdentifier;
+}());
+exports.IteratorHelperIdentifier = IteratorHelperIdentifier;
+//# sourceMappingURL=iteratorhelperidentifier.js.map
+
+/***/ }),
+/* 47 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @fileoverview
+ * @enhanceable
+ * @public
+ */
+// GENERATED CODE -- DO NOT EDIT!
+
+var jspb = __webpack_require__(12);
+var goog = jspb;
+var global = Function('return this')();
+
+goog.exportSymbol('proto.BotProtocol', null, global);
+goog.exportSymbol('proto.BotResponse', null, global);
+goog.exportSymbol('proto.Message', null, global);
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.Message = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.Message, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.Message.displayName = 'proto.Message';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.Message.prototype.toObject = function(opt_includeInstance) {
+  return proto.Message.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.Message} msg The msg instance to transform.
+ * @return {!Object}
+ */
+proto.Message.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    service: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    content: msg.getContent_asB64()
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.Message}
+ */
+proto.Message.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.Message;
+  return proto.Message.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.Message} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.Message}
+ */
+proto.Message.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setService(value);
+      break;
+    case 2:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setContent(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.Message.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.Message.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.Message} message
+ * @param {!jspb.BinaryWriter} writer
+ */
+proto.Message.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getService();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+  f = message.getContent_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      2,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string service = 1;
+ * @return {string}
+ */
+proto.Message.prototype.getService = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/** @param {string} value */
+proto.Message.prototype.setService = function(value) {
+  jspb.Message.setField(this, 1, value);
+};
+
+
+/**
+ * optional bytes content = 2;
+ * @return {!(string|Uint8Array)}
+ */
+proto.Message.prototype.getContent = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * optional bytes content = 2;
+ * This is a type-conversion wrapper around `getContent()`
+ * @return {string}
+ */
+proto.Message.prototype.getContent_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getContent()));
+};
+
+
+/**
+ * optional bytes content = 2;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getContent()`
+ * @return {!Uint8Array}
+ */
+proto.Message.prototype.getContent_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getContent()));
+};
+
+
+/** @param {!(string|Uint8Array)} value */
+proto.Message.prototype.setContent = function(value) {
+  jspb.Message.setField(this, 2, value);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.BotProtocol = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.BotProtocol, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.BotProtocol.displayName = 'proto.BotProtocol';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.BotProtocol.prototype.toObject = function(opt_includeInstance) {
+  return proto.BotProtocol.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.BotProtocol} msg The msg instance to transform.
+ * @return {!Object}
+ */
+proto.BotProtocol.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    key: jspb.Message.getFieldWithDefault(msg, 1, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.BotProtocol}
+ */
+proto.BotProtocol.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.BotProtocol;
+  return proto.BotProtocol.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.BotProtocol} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.BotProtocol}
+ */
+proto.BotProtocol.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setKey(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.BotProtocol.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.BotProtocol.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.BotProtocol} message
+ * @param {!jspb.BinaryWriter} writer
+ */
+proto.BotProtocol.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getKey();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string key = 1;
+ * @return {string}
+ */
+proto.BotProtocol.prototype.getKey = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/** @param {string} value */
+proto.BotProtocol.prototype.setKey = function(value) {
+  jspb.Message.setField(this, 1, value);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.BotResponse = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.BotResponse, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.BotResponse.displayName = 'proto.BotResponse';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.BotResponse.prototype.toObject = function(opt_includeInstance) {
+  return proto.BotResponse.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.BotResponse} msg The msg instance to transform.
+ * @return {!Object}
+ */
+proto.BotResponse.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    url: jspb.Message.getFieldWithDefault(msg, 1, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.BotResponse}
+ */
+proto.BotResponse.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.BotResponse;
+  return proto.BotResponse.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.BotResponse} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.BotResponse}
+ */
+proto.BotResponse.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setUrl(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.BotResponse.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.BotResponse.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.BotResponse} message
+ * @param {!jspb.BinaryWriter} writer
+ */
+proto.BotResponse.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getUrl();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string url = 1;
+ * @return {string}
+ */
+proto.BotResponse.prototype.getUrl = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/** @param {string} value */
+proto.BotResponse.prototype.setUrl = function(value) {
+  jspb.Message.setField(this, 1, value);
 };
 
 

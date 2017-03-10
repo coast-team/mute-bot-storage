@@ -31,6 +31,7 @@ export class MongooseAdapter {
   find (key: string): Promise<RichLogootSOperation[]> {
     return this.docModel.findOne({key})
       .then((response: any) => {
+        log.debug('Mongo: ', response)
         if (response !== null) {
           return response.doc.map((op: RichLogootSOperation) => {
             return RichLogootSOperation.fromPlain(op)

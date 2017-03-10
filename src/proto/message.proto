@@ -10,9 +10,5 @@ message BotProtocol {
 }
 
 message BotResponse {
-  ErrorCode error = 1;
-
-  enum ErrorCode {
-    DATABASE = 0;
-  }
+  string url = 1;
 }

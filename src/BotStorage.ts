@@ -21,6 +21,7 @@ export class BotStorage {
   private webChannel
   private muteCore: MuteCore
   private pseudonym: string
+  private url: string
 
   private joinSubject: Subject<JoinEvent>
   private messageSubject: ReplaySubject<NetworkMessage>
@@ -40,22 +41,19 @@ export class BotStorage {
 
     webChannel.onMessage = (id, bytes, isBroadcast) => {
       const msg = pb.Message.deserializeBinary(bytes)
-
       if (msg.getService() === 'botprotocol') {
         const docKey = pb.BotProtocol.deserializeBinary(msg.getContent()).getKey()
 
         this.mongooseAdapter.find(docKey)
           .then((doc: RichLogootSOperation[]) => {
-            if (doc !== null) {
-              this.initMuteCore(docKey)
-              this.joinSubject.next(new JoinEvent(this.webChannel.myId, docKey, false))
-              if (doc === null) {
-                log.info(`Document ${docKey} was not found in database, thus create a new document`)
-                this.stateSubject.next(new State(new Map(), []))
-              } else {
-                log.info(`Document ${docKey} retreived from database`)
-                this.stateSubject.next(new State(new Map(), doc))
-              }
+            this.initMuteCore(docKey)
+            this.joinSubject.next(new JoinEvent(this.webChannel.myId, docKey, false))
+            if (doc === null) {
+              log.info(`Document ${docKey} was not found in database, thus create a new document`)
+              this.stateSubject.next(new State(new Map(), []))
+            } else {
+              log.info(`Document ${docKey} retreived from database`)
+              this.stateSubject.next(new State(new Map(), doc))
             }
           })
           .catch((err) => {
@@ -78,7 +76,11 @@ export class BotStorage {
       content: msg.serializeBinary()
     }))
 
-    webChannel.onPeerJoin = (id) => this.peerJoinSubject.next(id)
+    // this.sendMyUrl()
+    webChannel.onPeerJoin = (id) => {
+      // this.sendMyUrl(id)
+      this.peerJoinSubject.next(id)
+    }
     webChannel.onPeerLeave = (id) => this.peerLeaveSubject.next(id)
 
     this.mongooseAdapter = mongooseAdapter
@@ -114,6 +116,23 @@ export class BotStorage {
         })
     })
     this.muteCore.syncService.setJoinAndStateSources(this.joinSubject.asObservable() as any, this.stateSubject.asObservable() as any)
+    this.muteCore.init(docKey)
+  }
+
+  private sendMyUrl (id?: number) {
+    const msg = new pb.BotResponse()
+    msg.setUrl(this.url)
+    if (id !== undefined) {
+      this.webChannel.sendTo(this.webChannel.members[0], this.buildMessage({
+        service: 'botprotocol',
+        content: msg.serializeBinary()
+      }))
+    } else {
+      this.webChannel.send(this.buildMessage({
+        service: 'botprotocol',
+        content: msg.serializeBinary()
+      }))
+    }
   }
 
   private buildMessage (msg: AbstractMessage) {
