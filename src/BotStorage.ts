@@ -41,27 +41,25 @@ export class BotStorage {
     webChannel.onMessage = (id, bytes, isBroadcast) => {
       const msg = pb.Message.deserializeBinary(bytes)
 
-      if (msg.getService() === this.pseudonym) {
-        const docKey = pb.BotRequest.deserializeBinary(msg.getContent()).getKey()
+      if (msg.getService() === 'botprotocol') {
+        const docKey = pb.BotProtocol.deserializeBinary(msg.getContent()).getKey()
 
         this.mongooseAdapter.find(docKey)
           .then((doc: RichLogootSOperation[]) => {
-            this.initMuteCore(docKey)
-            this.joinSubject.next(new JoinEvent(this.webChannel.myId, docKey, false))
-            if (doc === null) {
-              log.info(`Document ${docKey} was not found in database, thus create a new document`)
-              this.stateSubject.next(new State(new Map(), []))
-            } else {
-              log.info(`Document ${docKey} retreived from database`)
-              this.stateSubject.next(new State(new Map(), doc))
+            if (doc !== null) {
+              this.initMuteCore(docKey)
+              this.joinSubject.next(new JoinEvent(this.webChannel.myId, docKey, false))
+              if (doc === null) {
+                log.info(`Document ${docKey} was not found in database, thus create a new document`)
+                this.stateSubject.next(new State(new Map(), []))
+              } else {
+                log.info(`Document ${docKey} retreived from database`)
+                this.stateSubject.next(new State(new Map(), doc))
+              }
             }
           })
           .catch((err) => {
-            log.error(`Error finding the Document ${docKey}`, err)
-            const pbRes = new pb.BotResponse()
-            pbRes.setError(pb.BotResponse.DATABASE)
-            const msg = this.buildMessage({service: this.pseudonym, content: pbRes.serializeBinary()})
-            webChannel.sendTo(id, msg)
+            log.error(`Error when searching for the document ${docKey}`, err)
           })
 
         webChannel.onMessage = (id, bytes, isBroadcast) => {
@@ -72,6 +70,13 @@ export class BotStorage {
         this.messageSubject.next(new NetworkMessage(msg.getService(), id, isBroadcast, msg.getContent()))
       }
     }
+
+    const msg = new pb.BotProtocol()
+    msg.setKey('')
+    webChannel.sendTo(webChannel.members[0], this.buildMessage({
+      service: 'botprotocol',
+      content: msg.serializeBinary()
+    }))
 
     webChannel.onPeerJoin = (id) => this.peerJoinSubject.next(id)
     webChannel.onPeerLeave = (id) => this.peerLeaveSubject.next(id)

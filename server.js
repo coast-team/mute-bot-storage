@@ -6183,27 +6183,25 @@ class BotStorage {
         this.webChannel = webChannel;
         webChannel.onMessage = (id, bytes, isBroadcast) => {
             const msg = pb.Message.deserializeBinary(bytes);
-            if (msg.getService() === this.pseudonym) {
-                const docKey = pb.BotRequest.deserializeBinary(msg.getContent()).getKey();
+            if (msg.getService() === 'botprotocol') {
+                const docKey = pb.BotProtocol.deserializeBinary(msg.getContent()).getKey();
                 this.mongooseAdapter.find(docKey)
                     .then((doc) => {
-                    this.initMuteCore(docKey);
-                    this.joinSubject.next(new mute_core_1.JoinEvent(this.webChannel.myId, docKey, false));
-                    if (doc === null) {
-                        log_1.log.info(`Document ${docKey} was not found in database, thus create a new document`);
-                        this.stateSubject.next(new mute_core_1.State(new Map(), []));
-                    }
-                    else {
-                        log_1.log.info(`Document ${docKey} retreived from database`);
-                        this.stateSubject.next(new mute_core_1.State(new Map(), doc));
+                    if (doc !== null) {
+                        this.initMuteCore(docKey);
+                        this.joinSubject.next(new mute_core_1.JoinEvent(this.webChannel.myId, docKey, false));
+                        if (doc === null) {
+                            log_1.log.info(`Document ${docKey} was not found in database, thus create a new document`);
+                            this.stateSubject.next(new mute_core_1.State(new Map(), []));
+                        }
+                        else {
+                            log_1.log.info(`Document ${docKey} retreived from database`);
+                            this.stateSubject.next(new mute_core_1.State(new Map(), doc));
+                        }
                     }
                 })
                     .catch((err) => {
-                    log_1.log.error(`Error finding the Document ${docKey}`, err);
-                    const pbRes = new pb.BotResponse();
-                    pbRes.setError(pb.BotResponse.DATABASE);
-                    const msg = this.buildMessage({ service: this.pseudonym, content: pbRes.serializeBinary() });
-                    webChannel.sendTo(id, msg);
+                    log_1.log.error(`Error when searching for the document ${docKey}`, err);
                 });
                 webChannel.onMessage = (id, bytes, isBroadcast) => {
                     const msg = pb.Message.deserializeBinary(bytes);
@@ -6214,6 +6212,12 @@ class BotStorage {
                 this.messageSubject.next(new mute_core_1.NetworkMessage(msg.getService(), id, isBroadcast, msg.getContent()));
             }
         };
+        const msg = new pb.BotProtocol();
+        msg.setKey('');
+        webChannel.sendTo(webChannel.members[0], this.buildMessage({
+            service: 'botprotocol',
+            content: msg.serializeBinary()
+        }));
         webChannel.onPeerJoin = (id) => this.peerJoinSubject.next(id);
         webChannel.onPeerLeave = (id) => this.peerLeaveSubject.next(id);
         this.mongooseAdapter = mongooseAdapter;
@@ -6288,13 +6292,13 @@ class MongooseAdapter {
     }
     find(key) {
         return this.docModel.findOne({ key })
-            .then(({ doc }) => {
-            if (doc !== null) {
-                return doc.map((op) => {
+            .then((response) => {
+            if (response !== null) {
+                return response.doc.map((op) => {
                     return mute_core_1.RichLogootSOperation.fromPlain(op);
                 });
             }
-            return doc;
+            return response;
         });
     }
     list() {
@@ -6349,9 +6353,9 @@ var jspb = __webpack_require__(12);
 var goog = jspb;
 var global = Function('return this')();
 
-goog.exportSymbol('proto.BotReponse', null, global);
-goog.exportSymbol('proto.BotReponse.ErrorCode', null, global);
-goog.exportSymbol('proto.BotRequest', null, global);
+goog.exportSymbol('proto.BotProtocol', null, global);
+goog.exportSymbol('proto.BotResponse', null, global);
+goog.exportSymbol('proto.BotResponse.ErrorCode', null, global);
 goog.exportSymbol('proto.Message', null, global);
 
 /**
@@ -6555,12 +6559,12 @@ proto.Message.prototype.setContent = function(value) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.BotRequest = function(opt_data) {
+proto.BotProtocol = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.BotRequest, jspb.Message);
+goog.inherits(proto.BotProtocol, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.BotRequest.displayName = 'proto.BotRequest';
+  proto.BotProtocol.displayName = 'proto.BotProtocol';
 }
 
 
@@ -6575,8 +6579,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.BotRequest.prototype.toObject = function(opt_includeInstance) {
-  return proto.BotRequest.toObject(opt_includeInstance, this);
+proto.BotProtocol.prototype.toObject = function(opt_includeInstance) {
+  return proto.BotProtocol.toObject(opt_includeInstance, this);
 };
 
 
@@ -6585,10 +6589,10 @@ proto.BotRequest.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.BotRequest} msg The msg instance to transform.
+ * @param {!proto.BotProtocol} msg The msg instance to transform.
  * @return {!Object}
  */
-proto.BotRequest.toObject = function(includeInstance, msg) {
+proto.BotProtocol.toObject = function(includeInstance, msg) {
   var f, obj = {
     key: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
@@ -6604,23 +6608,23 @@ proto.BotRequest.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.BotRequest}
+ * @return {!proto.BotProtocol}
  */
-proto.BotRequest.deserializeBinary = function(bytes) {
+proto.BotProtocol.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.BotRequest;
-  return proto.BotRequest.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.BotProtocol;
+  return proto.BotProtocol.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.BotRequest} msg The message object to deserialize into.
+ * @param {!proto.BotProtocol} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.BotRequest}
+ * @return {!proto.BotProtocol}
  */
-proto.BotRequest.deserializeBinaryFromReader = function(msg, reader) {
+proto.BotProtocol.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -6644,9 +6648,9 @@ proto.BotRequest.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.BotRequest.prototype.serializeBinary = function() {
+proto.BotProtocol.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.BotRequest.serializeBinaryToWriter(this, writer);
+  proto.BotProtocol.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -6654,10 +6658,10 @@ proto.BotRequest.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.BotRequest} message
+ * @param {!proto.BotProtocol} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.BotRequest.serializeBinaryToWriter = function(message, writer) {
+proto.BotProtocol.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getKey();
   if (f.length > 0) {
@@ -6673,13 +6677,13 @@ proto.BotRequest.serializeBinaryToWriter = function(message, writer) {
  * optional string key = 1;
  * @return {string}
  */
-proto.BotRequest.prototype.getKey = function() {
+proto.BotProtocol.prototype.getKey = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /** @param {string} value */
-proto.BotRequest.prototype.setKey = function(value) {
+proto.BotProtocol.prototype.setKey = function(value) {
   jspb.Message.setField(this, 1, value);
 };
 
@@ -6695,12 +6699,12 @@ proto.BotRequest.prototype.setKey = function(value) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.BotReponse = function(opt_data) {
+proto.BotResponse = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.BotReponse, jspb.Message);
+goog.inherits(proto.BotResponse, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.BotReponse.displayName = 'proto.BotReponse';
+  proto.BotResponse.displayName = 'proto.BotResponse';
 }
 
 
@@ -6715,8 +6719,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.BotReponse.prototype.toObject = function(opt_includeInstance) {
-  return proto.BotReponse.toObject(opt_includeInstance, this);
+proto.BotResponse.prototype.toObject = function(opt_includeInstance) {
+  return proto.BotResponse.toObject(opt_includeInstance, this);
 };
 
 
@@ -6725,10 +6729,10 @@ proto.BotReponse.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.BotReponse} msg The msg instance to transform.
+ * @param {!proto.BotResponse} msg The msg instance to transform.
  * @return {!Object}
  */
-proto.BotReponse.toObject = function(includeInstance, msg) {
+proto.BotResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
     error: jspb.Message.getFieldWithDefault(msg, 1, 0)
   };
@@ -6744,23 +6748,23 @@ proto.BotReponse.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.BotReponse}
+ * @return {!proto.BotResponse}
  */
-proto.BotReponse.deserializeBinary = function(bytes) {
+proto.BotResponse.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.BotReponse;
-  return proto.BotReponse.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.BotResponse;
+  return proto.BotResponse.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.BotReponse} msg The message object to deserialize into.
+ * @param {!proto.BotResponse} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.BotReponse}
+ * @return {!proto.BotResponse}
  */
-proto.BotReponse.deserializeBinaryFromReader = function(msg, reader) {
+proto.BotResponse.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -6768,7 +6772,7 @@ proto.BotReponse.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {!proto.BotReponse.ErrorCode} */ (reader.readEnum());
+      var value = /** @type {!proto.BotResponse.ErrorCode} */ (reader.readEnum());
       msg.setError(value);
       break;
     default:
@@ -6784,9 +6788,9 @@ proto.BotReponse.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.BotReponse.prototype.serializeBinary = function() {
+proto.BotResponse.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.BotReponse.serializeBinaryToWriter(this, writer);
+  proto.BotResponse.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -6794,10 +6798,10 @@ proto.BotReponse.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.BotReponse} message
+ * @param {!proto.BotResponse} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.BotReponse.serializeBinaryToWriter = function(message, writer) {
+proto.BotResponse.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getError();
   if (f !== 0.0) {
@@ -6812,21 +6816,21 @@ proto.BotReponse.serializeBinaryToWriter = function(message, writer) {
 /**
  * @enum {number}
  */
-proto.BotReponse.ErrorCode = {
+proto.BotResponse.ErrorCode = {
   DATABASE: 0
 };
 
 /**
  * optional ErrorCode error = 1;
- * @return {!proto.BotReponse.ErrorCode}
+ * @return {!proto.BotResponse.ErrorCode}
  */
-proto.BotReponse.prototype.getError = function() {
-  return /** @type {!proto.BotReponse.ErrorCode} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+proto.BotResponse.prototype.getError = function() {
+  return /** @type {!proto.BotResponse.ErrorCode} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
-/** @param {!proto.BotReponse.ErrorCode} value */
-proto.BotReponse.prototype.setError = function(value) {
+/** @param {!proto.BotResponse.ErrorCode} value */
+proto.BotResponse.prototype.setError = function(value) {
   jspb.Message.setField(this, 1, value);
 };
 

@@ -5,11 +5,11 @@ message Message {
   bytes content = 2;
 }
 
-message BotRequest {
+message BotProtocol {
   string key = 1;
 }
 
-message BotReponse {
+message BotResponse {
   ErrorCode error = 1;
 
   enum ErrorCode {

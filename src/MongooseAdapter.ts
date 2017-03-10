@@ -30,13 +30,13 @@ export class MongooseAdapter {
 
   find (key: string): Promise<RichLogootSOperation[]> {
     return this.docModel.findOne({key})
-      .then(({doc}: any) => {
-        if (doc !== null) {
-          return doc.map((op: RichLogootSOperation) => {
+      .then((response: any) => {
+        if (response !== null) {
+          return response.doc.map((op: RichLogootSOperation) => {
             return RichLogootSOperation.fromPlain(op)
           })
         }
-        return doc
+        return response
       })
   }
 
