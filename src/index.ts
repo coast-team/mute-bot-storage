@@ -11,7 +11,7 @@ import { createLogger, log } from './log'
 // Default options
 const defaults = {
   name: 'Repono',
-  host: '0.0.0.0',
+  host: '',
   port: 8080,
   portBot: 9000,
   signalingURL: 'ws://vps387425.ovh.net:8000',
@@ -25,7 +25,7 @@ program
   .option('-n, --name <bot name>',
     `Specify a name for the bot, DEFAULT: "${defaults.name}"`, defaults.name)
   .option('-h, --host <ip or host name>',
-    `Specify host address to bind to, DEFAULT: "${defaults.host}"`, defaults.host)
+    `Specify host address to bind to, DEFAULT: "${defaults.host}"`)
   .option('-p, --port <n>',
     `Specify port to use for the server (REST API), DEFAULT: ${defaults.port}`, defaults.port)
   .option('-b, --portBot <n>',
@@ -39,6 +39,10 @@ program
     /^(none|trace|debug|info|warn|error|fatal)$/i, defaults.logLevel)
   .option('-f, --logFile', `If specified, writes logs into file`)
   .parse(process.argv)
+
+if (!program.host) {
+  throw new Error('-h, --host options is required')
+}
 
 // Setup settings
 const {name, host, port, portBot, signalingURL, logLevel} = program
