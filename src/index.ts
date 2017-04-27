@@ -14,7 +14,7 @@ const defaults = {
   host: '0.0.0.0',
   port: 8080,
   portBot: 9000,
-  signalingURL: 'http://signal2.loria.fr',
+  signalingURL: 'ws://vps387425.ovh.net:8000',
   useHttps: false,
   logLevel: 'info',
   logIntoFile: false
