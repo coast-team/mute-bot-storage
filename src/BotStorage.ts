@@ -69,13 +69,6 @@ export class BotStorage {
       }
     }
 
-    const msg = new pb.BotProtocol()
-    msg.setKey('')
-    webChannel.sendTo(webChannel.members[0], this.buildMessage({
-      service: 'botprotocol',
-      content: msg.serializeBinary()
-    }))
-
     // this.sendMyUrl()
     webChannel.onPeerJoin = (id) => {
       // this.sendMyUrl(id)
@@ -84,6 +77,15 @@ export class BotStorage {
     webChannel.onPeerLeave = (id) => this.peerLeaveSubject.next(id)
 
     this.mongooseAdapter = mongooseAdapter
+  }
+
+  sendKeyRequest (webChannel) {
+    const msg = new pb.BotProtocol()
+    msg.setKey('')
+    webChannel.sendTo(webChannel.members[0], this.buildMessage({
+      service: 'botprotocol',
+      content: msg.serializeBinary()
+    }))
   }
 
   initMuteCore (docKey: string): void {
