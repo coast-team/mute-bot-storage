@@ -33,9 +33,6 @@
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
 /******/
-/******/ 	// identity function for calling harmony imports with the correct context
-/******/ 	__webpack_require__.i = function(value) { return value; };
-/******/
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		if(!__webpack_require__.o(exports, name)) {
@@ -63,11 +60,17 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 51);
+/******/ 	return __webpack_require__(__webpack_require__.s = 26);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports) {
+
+module.exports = require("rxjs");
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -141,12 +144,6 @@ var IdentifierInterval = (function () {
 }());
 exports.IdentifierInterval = IdentifierInterval;
 //# sourceMappingURL=identifierinterval.js.map
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports) {
-
-module.exports = require("rxjs");
 
 /***/ }),
 /* 2 */
@@ -359,16 +356,16 @@ exports.Identifier = Identifier;
  */
 
 var identifier_1 = __webpack_require__(3);
-var identifierinterval_1 = __webpack_require__(0);
-var IDFactory = __webpack_require__(48);
-var iteratorhelperidentifier_1 = __webpack_require__(50);
-var logootsadd_1 = __webpack_require__(19);
-var logootsblock_1 = __webpack_require__(11);
-var logootsdel_1 = __webpack_require__(20);
-var ropesnodes_1 = __webpack_require__(21);
-var textdelete_1 = __webpack_require__(22);
-var textinsert_1 = __webpack_require__(23);
-var TextUtils = __webpack_require__(24);
+var identifierinterval_1 = __webpack_require__(1);
+var IDFactory = __webpack_require__(47);
+var iteratorhelperidentifier_1 = __webpack_require__(49);
+var logootsadd_1 = __webpack_require__(18);
+var logootsblock_1 = __webpack_require__(8);
+var logootsdel_1 = __webpack_require__(19);
+var ropesnodes_1 = __webpack_require__(20);
+var textdelete_1 = __webpack_require__(21);
+var textinsert_1 = __webpack_require__(22);
+var TextUtils = __webpack_require__(23);
 function leftChildOf(aNode) {
     console.assert(aNode instanceof ropesnodes_1.RopesNodes, "aNode = ", aNode);
     return aNode.left;
@@ -1011,137 +1008,28 @@ exports.LogootSRopes = LogootSRopes;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const bunyan = __webpack_require__(53);
-function createLogger(logIntoFile, logLevel) {
-    const options = {
-        name: 'mute-bot-storage'
-    };
-    if (logIntoFile) {
-        options.streams = [{
-                type: 'rotating-file',
-                period: '1d',
-                count: 3,
-                path: `./${options.name}.log`
-            }];
-    }
-    exports.log = bunyan.createLogger(options);
-    switch (logLevel) {
-        case 'none':
-            exports.log.level(bunyan.FATAL + 1);
-            break;
-        case 'trace':
-            exports.log.level(bunyan.TRACE);
-            break;
-        case 'debug':
-            exports.log.level(bunyan.DEBUG);
-            break;
-        case 'info':
-            exports.log.level(bunyan.INFO);
-            break;
-        case 'warn':
-            exports.log.level(bunyan.WARN);
-            break;
-        case 'error':
-            exports.log.level(bunyan.ERROR);
-            break;
-        case 'fatal':
-            exports.log.level(bunyan.FATAL);
-            break;
-        default:
-            exports.log.level(bunyan.INFO);
-    }
-}
-exports.createLogger = createLogger;
-
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var BroadcastMessage_1 = __webpack_require__(39);
+var BroadcastMessage_1 = __webpack_require__(40);
 exports.BroadcastMessage = BroadcastMessage_1.BroadcastMessage;
-var JoinEvent_1 = __webpack_require__(40);
+var JoinEvent_1 = __webpack_require__(41);
 exports.JoinEvent = JoinEvent_1.JoinEvent;
-var NetworkMessage_1 = __webpack_require__(41);
+var NetworkMessage_1 = __webpack_require__(42);
 exports.NetworkMessage = NetworkMessage_1.NetworkMessage;
-var SendRandomlyMessage_1 = __webpack_require__(42);
+var SendRandomlyMessage_1 = __webpack_require__(43);
 exports.SendRandomlyMessage = SendRandomlyMessage_1.SendRandomlyMessage;
-var SendToMessage_1 = __webpack_require__(43);
+var SendToMessage_1 = __webpack_require__(44);
 exports.SendToMessage = SendToMessage_1.SendToMessage;
 var AbstractMessage_1 = __webpack_require__(2);
 exports.AbstractMessage = AbstractMessage_1.AbstractMessage;
 //# sourceMappingURL=index.js.map
 
 /***/ }),
+/* 6 */
+/***/ (function(module, exports) {
+
+module.exports = require("google-protobuf");
+
+/***/ }),
 /* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var Interval = (function () {
-    function Interval(id, begin, end) {
-        this.id = id;
-        this.begin = begin;
-        this.end = end;
-    }
-    return Interval;
-}());
-exports.Interval = Interval;
-//# sourceMappingURL=Interval.js.map
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var ReplySyncEvent = (function () {
-    function ReplySyncEvent(richLogootSOps, intervals) {
-        this.richLogootSOps = richLogootSOps;
-        this.intervals = intervals;
-    }
-    return ReplySyncEvent;
-}());
-exports.ReplySyncEvent = ReplySyncEvent;
-//# sourceMappingURL=ReplySyncEvent.js.map
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var mute_structs_1 = __webpack_require__(10);
-var RichLogootSOperation = (function () {
-    function RichLogootSOperation(id, clock, logootSOp) {
-        this.id = id;
-        this.clock = clock;
-        this.logootSOp = logootSOp;
-    }
-    RichLogootSOperation.fromPlain = function (o) {
-        var logootSAdd = mute_structs_1.LogootSAdd.fromPlain(o.logootSOp);
-        if (logootSAdd instanceof mute_structs_1.LogootSAdd) {
-            return new RichLogootSOperation(o.id, o.clock, logootSAdd);
-        }
-        var logootSDel = mute_structs_1.LogootSDel.fromPlain(o.logootSOp);
-        if (logootSDel instanceof mute_structs_1.LogootSDel) {
-            return new RichLogootSOperation(o.id, o.clock, logootSDel);
-        }
-        return null;
-    };
-    return RichLogootSOperation;
-}());
-exports.RichLogootSOperation = RichLogootSOperation;
-//# sourceMappingURL=RichLogootSOperation.js.map
-
-/***/ }),
-/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1166,30 +1054,30 @@ exports.RichLogootSOperation = RichLogootSOperation;
 
 var identifier_1 = __webpack_require__(3);
 exports.Identifier = identifier_1.Identifier;
-var identifierinterval_1 = __webpack_require__(0);
+var identifierinterval_1 = __webpack_require__(1);
 exports.IdentifierInterval = identifierinterval_1.IdentifierInterval;
-var logootsblock_1 = __webpack_require__(11);
+var logootsblock_1 = __webpack_require__(8);
 exports.LogootSBlock = logootsblock_1.LogootSBlock;
 var logootsropes_1 = __webpack_require__(4);
 exports.LogootSRopes = logootsropes_1.LogootSRopes;
-var ropesnodes_1 = __webpack_require__(21);
+var ropesnodes_1 = __webpack_require__(20);
 exports.RopesNodes = ropesnodes_1.RopesNodes;
-var logootsadd_1 = __webpack_require__(19);
+var logootsadd_1 = __webpack_require__(18);
 exports.LogootSAdd = logootsadd_1.LogootSAdd;
-var logootsdel_1 = __webpack_require__(20);
+var logootsdel_1 = __webpack_require__(19);
 exports.LogootSDel = logootsdel_1.LogootSDel;
-var textdelete_1 = __webpack_require__(22);
+var textdelete_1 = __webpack_require__(21);
 exports.TextDelete = textdelete_1.TextDelete;
-var textinsert_1 = __webpack_require__(23);
+var textinsert_1 = __webpack_require__(22);
 exports.TextInsert = textinsert_1.TextInsert;
-var textutils_1 = __webpack_require__(24);
+var textutils_1 = __webpack_require__(23);
 exports.insert = textutils_1.insert;
 exports.del = textutils_1.del;
 exports.occurrences = textutils_1.occurrences;
 //# sourceMappingURL=index.js.map
 
 /***/ }),
-/* 11 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1212,7 +1100,7 @@ exports.occurrences = textutils_1.occurrences;
  *  along with Mute-structs.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-var identifierinterval_1 = __webpack_require__(0);
+var identifierinterval_1 = __webpack_require__(1);
 var LogootSBlock = (function () {
     // Creation
     function LogootSBlock(id, nbElt, mine) {
@@ -1271,13 +1159,167 @@ exports.LogootSBlock = LogootSBlock;
 //# sourceMappingURL=logootsblock.js.map
 
 /***/ }),
-/* 12 */
-/***/ (function(module, exports) {
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = require("google-protobuf");
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var Interval = (function () {
+    function Interval(id, begin, end) {
+        this.id = id;
+        this.begin = begin;
+        this.end = end;
+    }
+    return Interval;
+}());
+exports.Interval = Interval;
+//# sourceMappingURL=Interval.js.map
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var ReplySyncEvent = (function () {
+    function ReplySyncEvent(richLogootSOps, intervals) {
+        this.richLogootSOps = richLogootSOps;
+        this.intervals = intervals;
+    }
+    return ReplySyncEvent;
+}());
+exports.ReplySyncEvent = ReplySyncEvent;
+//# sourceMappingURL=ReplySyncEvent.js.map
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var mute_structs_1 = __webpack_require__(7);
+var RichLogootSOperation = (function () {
+    function RichLogootSOperation(id, clock, logootSOp) {
+        this.id = id;
+        this.clock = clock;
+        this.logootSOp = logootSOp;
+    }
+    RichLogootSOperation.fromPlain = function (o) {
+        var logootSAdd = mute_structs_1.LogootSAdd.fromPlain(o.logootSOp);
+        if (logootSAdd instanceof mute_structs_1.LogootSAdd) {
+            return new RichLogootSOperation(o.id, o.clock, logootSAdd);
+        }
+        var logootSDel = mute_structs_1.LogootSDel.fromPlain(o.logootSOp);
+        if (logootSDel instanceof mute_structs_1.LogootSDel) {
+            return new RichLogootSOperation(o.id, o.clock, logootSDel);
+        }
+        return null;
+    };
+    return RichLogootSOperation;
+}());
+exports.RichLogootSOperation = RichLogootSOperation;
+//# sourceMappingURL=RichLogootSOperation.js.map
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const bunyan = __webpack_require__(54);
+function createLogger(logIntoFile, logLevel) {
+    const options = {
+        name: 'mute-bot-storage'
+    };
+    if (logIntoFile) {
+        options.streams = [{
+                type: 'rotating-file',
+                period: '1d',
+                count: 3,
+                path: `./${options.name}.log`
+            }];
+    }
+    exports.log = bunyan.createLogger(options);
+    switch (logLevel) {
+        case 'none':
+            exports.log.level(bunyan.FATAL + 1);
+            break;
+        case 'trace':
+            exports.log.level(bunyan.TRACE);
+            break;
+        case 'debug':
+            exports.log.level(bunyan.DEBUG);
+            break;
+        case 'info':
+            exports.log.level(bunyan.INFO);
+            break;
+        case 'warn':
+            exports.log.level(bunyan.WARN);
+            break;
+        case 'error':
+            exports.log.level(bunyan.ERROR);
+            break;
+        case 'fatal':
+            exports.log.level(bunyan.FATAL);
+            break;
+        default:
+            exports.log.level(bunyan.INFO);
+    }
+}
+exports.createLogger = createLogger;
+
 
 /***/ }),
 /* 13 */
+/***/ (function(module, exports) {
+
+module.exports = require("uws");
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var _1 = __webpack_require__(15);
+exports.Collaborator = _1.Collaborator;
+exports.CollaboratorsService = _1.CollaboratorsService;
+var _2 = __webpack_require__(17);
+exports.DocService = _2.DocService;
+var _3 = __webpack_require__(5);
+exports.BroadcastMessage = _3.BroadcastMessage;
+exports.JoinEvent = _3.JoinEvent;
+exports.NetworkMessage = _3.NetworkMessage;
+exports.SendRandomlyMessage = _3.SendRandomlyMessage;
+exports.SendToMessage = _3.SendToMessage;
+exports.AbstractMessage = _3.AbstractMessage;
+var MuteCore_1 = __webpack_require__(50);
+exports.MuteCore = MuteCore_1.MuteCore;
+var _4 = __webpack_require__(24);
+exports.RichLogootSOperation = _4.RichLogootSOperation;
+exports.State = _4.State;
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var Collaborator_1 = __webpack_require__(16);
+exports.Collaborator = Collaborator_1.Collaborator;
+var CollaboratorsService_1 = __webpack_require__(39);
+exports.CollaboratorsService = CollaboratorsService_1.CollaboratorsService;
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1294,95 +1336,18 @@ exports.Collaborator = Collaborator;
 //# sourceMappingURL=Collaborator.js.map
 
 /***/ }),
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var Collaborator_1 = __webpack_require__(13);
-exports.Collaborator = Collaborator_1.Collaborator;
-var CollaboratorsService_1 = __webpack_require__(37);
-exports.CollaboratorsService = CollaboratorsService_1.CollaboratorsService;
-//# sourceMappingURL=index.js.map
-
-/***/ }),
-/* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var DocService_1 = __webpack_require__(38);
-exports.DocService = DocService_1.DocService;
-//# sourceMappingURL=index.js.map
-
-/***/ }),
-/* 16 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var _1 = __webpack_require__(14);
-exports.Collaborator = _1.Collaborator;
-exports.CollaboratorsService = _1.CollaboratorsService;
-var _2 = __webpack_require__(15);
-exports.DocService = _2.DocService;
-var _3 = __webpack_require__(6);
-exports.BroadcastMessage = _3.BroadcastMessage;
-exports.JoinEvent = _3.JoinEvent;
-exports.NetworkMessage = _3.NetworkMessage;
-exports.SendRandomlyMessage = _3.SendRandomlyMessage;
-exports.SendToMessage = _3.SendToMessage;
-exports.AbstractMessage = _3.AbstractMessage;
-var MuteCore_1 = __webpack_require__(36);
-exports.MuteCore = MuteCore_1.MuteCore;
-var _4 = __webpack_require__(18);
-exports.RichLogootSOperation = _4.RichLogootSOperation;
-exports.State = _4.State;
-//# sourceMappingURL=index.js.map
-
-/***/ }),
 /* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var State = (function () {
-    function State(vector, richLogootSOps) {
-        this.vector = vector;
-        this.richLogootSOps = richLogootSOps;
-    }
-    return State;
-}());
-exports.State = State;
-//# sourceMappingURL=State.js.map
-
-/***/ }),
-/* 18 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var Interval_1 = __webpack_require__(7);
-exports.Interval = Interval_1.Interval;
-var ReplySyncEvent_1 = __webpack_require__(8);
-exports.ReplySyncEvent = ReplySyncEvent_1.ReplySyncEvent;
-var RichLogootSOperation_1 = __webpack_require__(9);
-exports.RichLogootSOperation = RichLogootSOperation_1.RichLogootSOperation;
-var State_1 = __webpack_require__(17);
-exports.State = State_1.State;
-var SyncService_1 = __webpack_require__(45);
-exports.SyncService = SyncService_1.SyncService;
-var SyncMessageService_1 = __webpack_require__(44);
-exports.SyncMessageService = SyncMessageService_1.SyncMessageService;
+var DocService_1 = __webpack_require__(46);
+exports.DocService = DocService_1.DocService;
 //# sourceMappingURL=index.js.map
 
 /***/ }),
-/* 19 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1456,7 +1421,7 @@ exports.LogootSAdd = LogootSAdd;
 //# sourceMappingURL=logootsadd.js.map
 
 /***/ }),
-/* 20 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1479,7 +1444,7 @@ exports.LogootSAdd = LogootSAdd;
  *  along with Mute-structs.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-var identifierinterval_1 = __webpack_require__(0);
+var identifierinterval_1 = __webpack_require__(1);
 var logootsropes_1 = __webpack_require__(4);
 var arrayConcat = Array.prototype.concat;
 /**
@@ -1536,7 +1501,7 @@ exports.LogootSDel = LogootSDel;
 //# sourceMappingURL=logootsdel.js.map
 
 /***/ }),
-/* 21 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1559,8 +1524,8 @@ exports.LogootSDel = LogootSDel;
  *  along with Mute-structs.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-var identifierinterval_1 = __webpack_require__(0);
-var logootsblock_1 = __webpack_require__(11);
+var identifierinterval_1 = __webpack_require__(1);
+var logootsblock_1 = __webpack_require__(8);
 /**
 * @param aNode may be null
 * @returns Height of aNode or 0 if aNode is null
@@ -1761,7 +1726,7 @@ exports.RopesNodes = RopesNodes;
 //# sourceMappingURL=ropesnodes.js.map
 
 /***/ }),
-/* 22 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1816,7 +1781,7 @@ exports.TextDelete = TextDelete;
 //# sourceMappingURL=textdelete.js.map
 
 /***/ }),
-/* 23 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1870,7 +1835,7 @@ exports.TextInsert = TextInsert;
 //# sourceMappingURL=textinsert.js.map
 
 /***/ }),
-/* 24 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1947,10 +1912,42 @@ exports.occurrences = occurrences;
 //# sourceMappingURL=textutils.js.map
 
 /***/ }),
-/* 25 */
-/***/ (function(module, exports) {
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = require("uws");
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var Interval_1 = __webpack_require__(9);
+exports.Interval = Interval_1.Interval;
+var ReplySyncEvent_1 = __webpack_require__(10);
+exports.ReplySyncEvent = ReplySyncEvent_1.ReplySyncEvent;
+var RichLogootSOperation_1 = __webpack_require__(11);
+exports.RichLogootSOperation = RichLogootSOperation_1.RichLogootSOperation;
+var State_1 = __webpack_require__(25);
+exports.State = State_1.State;
+var SyncService_1 = __webpack_require__(51);
+exports.SyncService = SyncService_1.SyncService;
+var SyncMessageService_1 = __webpack_require__(52);
+exports.SyncMessageService = SyncMessageService_1.SyncMessageService;
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var State = (function () {
+    function State(vector, richLogootSOps) {
+        this.vector = vector;
+        this.richLogootSOps = richLogootSOps;
+    }
+    return State;
+}());
+exports.State = State;
+//# sourceMappingURL=State.js.map
 
 /***/ }),
 /* 26 */
@@ -1958,176 +1955,133 @@ module.exports = require("uws");
 
 "use strict";
 
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const rxjs_1 = __webpack_require__(1);
-const mute_core_1 = __webpack_require__(16);
-const log_1 = __webpack_require__(5);
-const pb = __webpack_require__(52);
-// TODO: BotStorage should serialize document in DB
-class BotStorage {
-    constructor(pseudonym, webChannel, mongooseAdapter) {
-        this.pseudonym = pseudonym;
-        this.joinSubject = new rxjs_1.Subject();
-        this.messageSubject = new rxjs_1.ReplaySubject();
-        this.peerJoinSubject = new rxjs_1.ReplaySubject();
-        this.peerLeaveSubject = new rxjs_1.ReplaySubject();
-        this.stateSubject = new rxjs_1.Subject();
-        this.webChannel = webChannel;
-        webChannel.onMessage = (id, bytes, isBroadcast) => {
-            const msg = pb.Message.deserializeBinary(bytes);
-            if (msg.getService() === 'botprotocol') {
-                const docKey = pb.BotProtocol.deserializeBinary(msg.getContent()).getKey();
-                this.mongooseAdapter.find(docKey)
-                    .then((doc) => {
-                    this.initMuteCore(docKey);
-                    this.joinSubject.next(new mute_core_1.JoinEvent(this.webChannel.myId, docKey, false));
-                    if (doc === null) {
-                        log_1.log.info(`Document ${docKey} was not found in database, thus create a new document`);
-                        this.stateSubject.next(new mute_core_1.State(new Map(), []));
-                    }
-                    else {
-                        log_1.log.info(`Document ${docKey} retreived from database`);
-                        this.stateSubject.next(new mute_core_1.State(new Map(), doc));
-                    }
-                })
-                    .catch((err) => {
-                    log_1.log.error(`Error when searching for the document ${docKey}`, err);
-                });
-                webChannel.onMessage = (id, bytes, isBroadcast) => {
-                    const msg = pb.Message.deserializeBinary(bytes);
-                    this.messageSubject.next(new mute_core_1.NetworkMessage(msg.getService(), id, isBroadcast, msg.getContent()));
-                };
-            }
-            else {
-                this.messageSubject.next(new mute_core_1.NetworkMessage(msg.getService(), id, isBroadcast, msg.getContent()));
-            }
-        };
-        // this.sendMyUrl()
-        webChannel.onPeerJoin = (id) => {
-            // this.sendMyUrl(id)
-            this.peerJoinSubject.next(id);
-        };
-        webChannel.onPeerLeave = (id) => this.peerLeaveSubject.next(id);
-        this.mongooseAdapter = mongooseAdapter;
-    }
-    sendKeyRequest(webChannel) {
-        const msg = new pb.BotProtocol();
-        msg.setKey('');
-        webChannel.sendTo(webChannel.members[0], this.buildMessage({
-            service: 'botprotocol',
-            content: msg.serializeBinary()
-        }));
-    }
-    initMuteCore(docKey) {
-        // TODO: MuteCore should consume doc Object
-        this.muteCore = new mute_core_1.MuteCore(42);
-        this.muteCore.messageSource = this.messageSubject.asObservable();
-        this.muteCore.onMsgToBroadcast.subscribe((bm) => {
-            this.webChannel.send(this.buildMessage(bm));
-        });
-        this.muteCore.onMsgToSendRandomly.subscribe((srm) => {
-            const index = Math.ceil(Math.random() * this.webChannel.members.length) - 1;
-            this.webChannel.sendTo(this.webChannel.members[index], this.buildMessage(srm));
-        });
-        this.muteCore.onMsgToSendTo.subscribe((stm) => {
-            this.webChannel.sendTo(stm.id, this.buildMessage(stm));
-        });
-        // Collaborators config
-        this.muteCore.collaboratorsService.peerJoinSource = this.peerJoinSubject.asObservable();
-        this.muteCore.collaboratorsService.peerLeaveSource = this.peerLeaveSubject.asObservable();
-        const pseudoSubject = new rxjs_1.BehaviorSubject(this.pseudonym);
-        this.muteCore.collaboratorsService.pseudoSource = pseudoSubject.asObservable();
-        // Sync service config
-        this.muteCore.syncService.onState.subscribe((state) => {
-            // FIXME: Reduce the number of saves
-            this.mongooseAdapter.save(docKey, state.richLogootSOps)
-                .catch((err) => {
-                log_1.log.error(`The document ${docKey} could not be saved into database`, err);
-            });
-        });
-        this.muteCore.syncService.setJoinAndStateSources(this.joinSubject.asObservable(), this.stateSubject.asObservable());
-        this.muteCore.init(docKey);
-    }
-    sendMyUrl(id) {
-        const msg = new pb.BotResponse();
-        msg.setUrl(this.url);
-        if (id !== undefined) {
-            this.webChannel.sendTo(this.webChannel.members[0], this.buildMessage({
-                service: 'botprotocol',
-                content: msg.serializeBinary()
-            }));
-        }
-        else {
-            this.webChannel.send(this.buildMessage({
-                service: 'botprotocol',
-                content: msg.serializeBinary()
-            }));
-        }
-    }
-    buildMessage(msg) {
-        const pbMsg = new pb.Message();
-        pbMsg.setService(msg.service);
-        pbMsg.setContent(msg.content);
-        return pbMsg.serializeBinary();
-    }
+const netflux_1 = __webpack_require__(27);
+const http = __webpack_require__(33);
+const Koa = __webpack_require__(34);
+const KoaRouter = __webpack_require__(35);
+const koaCors = __webpack_require__(36);
+const program = __webpack_require__(37);
+const BotStorage_1 = __webpack_require__(38);
+const MongooseAdapter_1 = __webpack_require__(56);
+const log_1 = __webpack_require__(12);
+// Default options
+const defaults = {
+    name: 'Repono',
+    host: '0.0.0.0',
+    port: 20000,
+    botURL: 'ws://localhost:20000',
+    signalingURL: 'ws://localhost:10000',
+    useHttps: false,
+    key: '',
+    cert: '',
+    ca: '',
+    logLevel: 'info',
+    logIntoFile: false
+};
+// Configure command-line interface
+program
+    .option('-n, --name <bot name>', `Bot name. Default: "${defaults.name}"`, defaults.name)
+    .option('-h, --host <ip or host name>', `Host address to bind to, Default: "${defaults.host}"`, defaults.host)
+    .option('-p, --port <n>', `Port to use for the server. Default: ${defaults.port}`, defaults.port)
+    .option('-b, --botURL <n>', `Bot public URL, to be shared on the p2p network. Default: ${defaults.botURL}`, defaults.botURL)
+    .option('-s, --signalingURL <url>', `Signaling server url. Default: ${defaults.signalingURL}\n`, defaults.signalingURL)
+    .option('-t, --https', `If present, the REST API server is listening on HTTPS instead of HTTP`)
+    .option('-k, --key <value>', `Private key for the certificate`)
+    .option('-c, --cert <value>', `The server certificate`)
+    .option('-a, --ca <value>', `The additional intermediate certificate or certificates that web browsers will need in order to validate the server certificate.`)
+    .option('-l, --logLevel <none|trace|debug|info|warn|error|fatal>', `Logging level. Default: "info". `, /^(none|trace|debug|info|warn|error|fatal)$/i, defaults.logLevel)
+    .option('-f, --logFile', `If specified, writes logs into file`)
+    .parse(process.argv);
+if (!program.host) {
+    throw new Error('-h, --host options is required');
 }
-exports.BotStorage = BotStorage;
+// Command line parameters
+const { name, host, port, botURL, signalingURL, key, cert, ca, logLevel } = program;
+const useHttps = program.useHttps ? true : false;
+const logIntoFile = program.logFile ? true : false;
+// Configure logging
+log_1.createLogger(logIntoFile, logLevel);
+// Configure error handling on process
+process.on('uncaughtException', (err) => log_1.log.fatal(err));
+// Connect to MongoDB
+let error = null;
+const mongooseAdapter = new MongooseAdapter_1.MongooseAdapter();
+mongooseAdapter.connect('localhost')
+    .then(() => {
+    log_1.log.info(`Connected to the database  ✓`);
+    // Configure routes
+    // Instantiate main objects
+    const app = new Koa();
+    const router = new KoaRouter();
+    router
+        .get('/name', (ctx, next) => {
+        ctx.body = name;
+    })
+        .get('/docs', (ctx, next) => __awaiter(this, void 0, void 0, function* () {
+        yield mongooseAdapter.list()
+            .then((docs) => {
+            const docList = docs.map((doc) => { return { id: doc.key }; });
+            ctx.body = docList;
+        })
+            .catch((err) => {
+            log_1.log.error('Could not retreive the document list stored in database', err);
+            ctx.status = 500;
+        });
+    }));
+    // Apply router and cors middlewares
+    return app
+        .use(koaCors())
+        .use(router.routes())
+        .use(router.allowedMethods());
+})
+    .then((app) => {
+    log_1.log.info(`Configured routes  ✓`);
+    // Create server
+    if (useHttps) {
+        const fs = __webpack_require__(58);
+        return __webpack_require__(59).createServer({
+            key: fs.readFileSync(key),
+            cert: fs.readFileSync(cert),
+            ca: fs.readFileSync(ca)
+        }, app.callback());
+    }
+    else {
+        return http.createServer(app.callback());
+    }
+})
+    .then((server) => {
+    log_1.log.info(`Configured server  ✓`);
+    // Configure storage bot
+    const bot = new netflux_1.BotServer({ signalingURL, bot: { url: botURL, server } });
+    bot.onWebChannel = (wc) => {
+        log_1.log.info('New peer to peer network invitation received. Waiting for a document key...');
+        const botStorage = new BotStorage_1.BotStorage(name, wc, mongooseAdapter);
+        bot.onWebChannelReady = (wc) => { botStorage.sendKeyRequest(wc); };
+    };
+    return new Promise((resolve, reject) => {
+        // Start the server
+        server.listen(port, host, resolve);
+    });
+})
+    .then(() => {
+    log_1.log.info(`Successfully started the storage bot server at ${host}:${port} with the following settings`, { name, host, port, botURL, signalingURL, useHttps, logLevel, logIntoFile });
+})
+    .catch((err) => {
+    log_1.log.fatal(err);
+});
 
 
 /***/ }),
 /* 27 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose = __webpack_require__(55);
-const mute_core_1 = __webpack_require__(16);
-const log_1 = __webpack_require__(5);
-class MongooseAdapter {
-    constructor() {
-        this.docSchema = new mongoose.Schema({
-            key: { type: String, require: true },
-            doc: { type: Object }
-        });
-        this.docModel = mongoose.model('Doc', this.docSchema);
-    }
-    connect(url) {
-        const uri = `mongodb://${url}/docs`;
-        return mongoose.connect(uri)
-            .then(() => {
-            this.db = mongoose.connection;
-            mongoose.connection.on('close', () => {
-                log_1.log.warn(`Connection to the database ${uri} has been closed`);
-            });
-        });
-    }
-    find(key) {
-        return this.docModel.findOne({ key })
-            .then((response) => {
-            if (response !== null) {
-                return response.doc.map((op) => {
-                    return mute_core_1.RichLogootSOperation.fromPlain(op);
-                });
-            }
-            return response;
-        });
-    }
-    list() {
-        return this.docModel.find().exec();
-    }
-    save(key, doc) {
-        const query = { key };
-        const update = { doc };
-        const options = { upsert: true, new: true, setDefaultsOnInsert: true };
-        return this.docModel.findOneAndUpdate(query, update, options).exec();
-    }
-}
-exports.MongooseAdapter = MongooseAdapter;
-
-
-/***/ }),
-/* 28 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -4234,7 +4188,8 @@ module.exports = function(dependencies) {
   var adapter = {
     browserDetails: browserDetails,
     extractVersion: utils.extractVersion,
-    disableLog: utils.disableLog
+    disableLog: utils.disableLog,
+    disableWarnings: utils.disableWarnings
   };
 
   // Uncomment the line below if you want logging to occur, including logging
@@ -4307,6 +4262,7 @@ module.exports = function(dependencies) {
       adapter.browserShim = safariShim;
       // shim window.URL.createObjectURL Safari (technical preview)
       utils.shimCreateObjectURL(window);
+      safariShim.shimRTCIceServerUrls(window);
       safariShim.shimCallbacksAPI(window);
       safariShim.shimLocalStreamsAPI(window);
       safariShim.shimRemoteStreamsAPI(window);
@@ -5432,6 +5388,8 @@ module.exports = function(window) {
  *  tree.
  */
 'use strict';
+var utils = require('../utils');
+
 var safariShim = {
   // TODO: DrAlex, should be here, double check against LayoutTests
 
@@ -5629,6 +5587,37 @@ var safariShim = {
         }.bind(navigator);
       }
     }
+  },
+  shimRTCIceServerUrls: function(window) {
+    // migrate from non-spec RTCIceServer.url to RTCIceServer.urls
+    var OrigPeerConnection = window.RTCPeerConnection;
+    window.RTCPeerConnection = function(pcConfig, pcConstraints) {
+      if (pcConfig && pcConfig.iceServers) {
+        var newIceServers = [];
+        for (var i = 0; i < pcConfig.iceServers.length; i++) {
+          var server = pcConfig.iceServers[i];
+          if (!server.hasOwnProperty('urls') &&
+              server.hasOwnProperty('url')) {
+            utils.deprecated('RTCIceServer.url', 'RTCIceServer.urls');
+            server = JSON.parse(JSON.stringify(server));
+            server.urls = server.url;
+            delete server.url;
+            newIceServers.push(server);
+          } else {
+            newIceServers.push(pcConfig.iceServers[i]);
+          }
+        }
+        pcConfig.iceServers = newIceServers;
+      }
+      return new OrigPeerConnection(pcConfig, pcConstraints);
+    };
+    window.RTCPeerConnection.prototype = OrigPeerConnection.prototype;
+    // wrap static methods. Currently just generateCertificate.
+    Object.defineProperty(window.RTCPeerConnection, 'generateCertificate', {
+      get: function() {
+        return OrigPeerConnection.generateCertificate;
+      }
+    });
   }
 };
 
@@ -5637,12 +5626,13 @@ module.exports = {
   shimCallbacksAPI: safariShim.shimCallbacksAPI,
   shimLocalStreamsAPI: safariShim.shimLocalStreamsAPI,
   shimRemoteStreamsAPI: safariShim.shimRemoteStreamsAPI,
-  shimGetUserMedia: safariShim.shimGetUserMedia
+  shimGetUserMedia: safariShim.shimGetUserMedia,
+  shimRTCIceServerUrls: safariShim.shimRTCIceServerUrls
   // TODO
   // shimPeerConnection: safariShim.shimPeerConnection
 };
 
-},{}],9:[function(require,module,exports){
+},{"../utils":9}],9:[function(require,module,exports){
 /*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
@@ -5654,6 +5644,7 @@ module.exports = {
 'use strict';
 
 var logDisabled_ = true;
+var deprecationWarnings_ = true;
 
 // Utility methods.
 var utils = {
@@ -5667,6 +5658,19 @@ var utils = {
         'adapter.js logging enabled';
   },
 
+  /**
+   * Disable or enable deprecation warnings
+   * @param {!boolean} bool set to true to disable warnings.
+   */
+  disableWarnings: function(bool) {
+    if (typeof bool !== 'boolean') {
+      return new Error('Argument type: ' + typeof bool +
+          '. Please use a boolean.');
+    }
+    deprecationWarnings_ = !bool;
+    return 'adapter.js deprecation warnings ' + (bool ? 'disabled' : 'enabled');
+  },
+
   log: function() {
     if (typeof window === 'object') {
       if (logDisabled_) {
@@ -5676,6 +5680,17 @@ var utils = {
         console.log.apply(console, arguments);
       }
     }
+  },
+
+  /**
+   * Shows a deprecation warning suggesting the modern and spec-compatible API.
+   */
+  deprecated: function(oldMethod, newMethod) {
+    if (!deprecationWarnings_) {
+      return;
+    }
+    console.warn(oldMethod + ' is deprecated, please use ' + newMethod +
+        ' instead.');
   },
 
   /**
@@ -5771,8 +5786,8 @@ var utils = {
       if ('getTracks' in stream) {
         var url = 'polyblob:' + (++newId);
         streams.set(url, stream);
-        console.log('URL.createObjectURL(stream) is deprecated! ' +
-                    'Use elem.srcObject = stream instead!');
+        utils.deprecated('URL.createObjectURL(stream)',
+            'elem.srcObject = stream');
         return url;
       }
       return nativeCreateObjectURL(stream);
@@ -5808,7 +5823,9 @@ var utils = {
 // Export.
 module.exports = {
   log: utils.log,
+  deprecated: utils.deprecated,
   disableLog: utils.disableLog,
+  disableWarnings: utils.disableWarnings,
   extractVersion: utils.extractVersion,
   shimCreateObjectURL: utils.shimCreateObjectURL,
   detectBrowser: utils.detectBrowser.bind(utils)
@@ -6788,15 +6805,15 @@ var Util = function () {
       try {
         switch (libConst) {
           case Util.WEB_RTC:
-            return __webpack_require__(59);
+            return __webpack_require__(28);
           case Util.WEB_SOCKET:
-            return __webpack_require__(25);
+            return __webpack_require__(13);
           case Util.TEXT_ENCODING:
-            return __webpack_require__(57);
+            return __webpack_require__(29);
           case Util.EVENT_SOURCE:
-            return __webpack_require__(54);
+            return __webpack_require__(30);
           case Util.FETCH:
-            return __webpack_require__(56);
+            return __webpack_require__(31);
           case Util.CLOSE_EVENT:
             return Util.isBrowser() ? window.CloseEvent : NodeCloseEvent;
           default:
@@ -7498,165 +7515,6 @@ var BotHelper = function () {
   return BotHelper;
 }();
 
-var EventSource = Util.require(Util.EVENT_SOURCE);
-var fetch = Util.require(Util.FETCH);
-var CloseEvent$1 = Util.require(Util.CLOSE_EVENT);
-
-var CONNECT_TIMEOUT$1 = 5000;
-
-/**
- * Service class responsible to establish connections between peers via
- * `WebSocket`.
- */
-var EventSourceService = function (_Service) {
-  inherits(EventSourceService, _Service);
-
-  function EventSourceService() {
-    classCallCheck(this, EventSourceService);
-    return possibleConstructorReturn(this, (EventSourceService.__proto__ || Object.getPrototypeOf(EventSourceService)).apply(this, arguments));
-  }
-
-  createClass(EventSourceService, [{
-    key: 'connect',
-
-    /**
-     * Creates RichEventSource object.
-     *
-     * @param {string} url - Server url
-     * @returns {Promise<EventSource, string>} It is resolved once the WebSocket has been created and rejected otherwise
-     */
-    value: function connect(url) {
-      return new Promise(function (resolve, reject) {
-        try {
-          var res = new RichEventSource(url);
-          res.onopen = function () {
-            return resolve(res);
-          };
-          res.onerror = function (err) {
-            return reject(err.message
-            // Timeout if "auth" event has not been received.
-            );
-          };setTimeout(function () {
-            reject(new Error('Authentication event has not been received from ' + url + ' within ' + CONNECT_TIMEOUT$1 + 'ms'));
-          }, CONNECT_TIMEOUT$1);
-        } catch (err) {
-          reject(err.message);
-        }
-      });
-    }
-  }]);
-  return EventSourceService;
-}(Service);
-
-var RichEventSource = function () {
-  function RichEventSource(url) {
-    var _this2 = this;
-
-    classCallCheck(this, RichEventSource);
-
-    this.auth = '';
-    this._onopen = function () {};
-    this._onerror = function () {};
-    this._onclose = function () {};
-    this.es = new EventSource(url);
-    this.es.addEventListener('auth', function (evtMsg) {
-      _this2.auth = evtMsg.data;
-      _this2._onopen();
-    });
-    this.es.addEventListener('close', function (evtMsg) {
-      var data = JSON.parse(evtMsg.data);
-      _this2.es.close();
-      _this2._onclose(new CloseEvent$1('close', {
-        wasClean: true,
-        code: data.code,
-        reason: data.reason
-      }));
-    });
-    this.es.onerror = this._onerror;
-  }
-
-  createClass(RichEventSource, [{
-    key: 'close',
-    value: function close() {
-      this.es.close();
-      this._onclose(new CloseEvent$1('close', { wasClean: true, code: 1000 }));
-    }
-  }, {
-    key: 'send',
-    value: function send() {
-      var _this3 = this;
-
-      var str = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-
-      fetch(this.url, { method: 'POST', body: this.auth + '@' + str }).then(function (response) {
-        if (response.status !== 200) {
-          _this3._onerror(new Error(response.status + ': ' + response.statusText));
-        }
-      }).catch(function (err) {
-        return _this3._onerror(err);
-      });
-    }
-  }, {
-    key: 'CONNECTING',
-    get: function get$$1() {
-      return this.es.OPEN !== undefined ? this.es.OPEN : 0;
-    }
-  }, {
-    key: 'OPEN',
-    get: function get$$1() {
-      return this.es.OPEN !== undefined ? this.es.OPEN : 1;
-    }
-  }, {
-    key: 'CLOSED',
-    get: function get$$1() {
-      return this.es.OPEN !== undefined ? this.es.OPEN : 2;
-    }
-  }, {
-    key: 'url',
-    get: function get$$1() {
-      return this.es.url;
-    }
-  }, {
-    key: 'readyState',
-    get: function get$$1() {
-      return this.es.readyState;
-    }
-  }, {
-    key: 'onopen',
-    get: function get$$1() {
-      return this._onopen;
-    },
-    set: function set$$1(cb) {
-      this._onopen = cb;
-    }
-  }, {
-    key: 'onmessage',
-    get: function get$$1() {
-      return this.es.onmessage;
-    },
-    set: function set$$1(cb) {
-      this.es.onmessage = cb;
-    }
-  }, {
-    key: 'onclose',
-    get: function get$$1() {
-      return this._onclose;
-    },
-    set: function set$$1(cb) {
-      this._onclose = cb;
-    }
-  }, {
-    key: 'onerror',
-    get: function get$$1() {
-      return this._onerror;
-    },
-    set: function set$$1(cb) {
-      this._onerror = cb;
-    }
-  }]);
-  return RichEventSource;
-}();
-
 var ListenFlags = {
   none: 0, // 0
   ws: 1, // 1
@@ -8309,6 +8167,7 @@ var Buffer = function () {
   return Buffer;
 }();
 
+// import { EventSourceService } from 'service/EventSourceService'
 /**
  * {@link WebRTCService} identifier.
  * @type {number}
@@ -8386,10 +8245,10 @@ var ServiceFactory = function () {
           service = new WebSocketService(WEB_SOCKET);
           services.set(id, service);
           return service;
-        case EVENT_SOURCE:
-          service = new EventSourceService(EVENT_SOURCE);
-          services.set(id, service);
-          return service;
+        // case EVENT_SOURCE:
+        //   service = new EventSourceService(EVENT_SOURCE)
+        //   services.set(id, service)
+        //   return service
         case CHANNEL_BUILDER:
           service = new ChannelBuilderService(CHANNEL_BUILDER);
           services.set(id, service);
@@ -9553,7 +9412,7 @@ function create(options) {
   return new WebChannel(mySettings);
 }
 
-var url$1 = __webpack_require__(58
+var url$1 = __webpack_require__(32
 
 /**
  * BotServer can listen on web socket. A peer can invite bot to join his `WebChannel`.
@@ -9627,7 +9486,7 @@ var url$1 = __webpack_require__(58
     value: function init() {
       var _this2 = this;
 
-      var WebSocketServer = this.selectWebSocketServer();
+      var WebSocketServer = __webpack_require__(13).Server;
       this.server = new WebSocketServer(this.serverSettings);
       var serverListening = this.serverSettings.server || this.server;
       serverListening.on('listening', function () {
@@ -9758,19 +9617,6 @@ var url$1 = __webpack_require__(58
       }
     }
   }, {
-    key: 'selectWebSocketServer',
-    value: function selectWebSocketServer() {
-      var WebSocketServer = void 0;
-      try {
-        WebSocketServer = __webpack_require__(25).Server;
-        return WebSocketServer;
-      } catch (err) {
-        console.log(err.message + '. Try to use ws module.');
-        WebSocketServer = Util.require('ws').Server;
-        return WebSocketServer;
-      }
-    }
-  }, {
     key: 'url',
     get: function get$$1() {
       if (this.botSettings.url !== '') {
@@ -9788,34 +9634,40 @@ var url$1 = __webpack_require__(58
 
 
 /***/ }),
+/* 28 */
+/***/ (function(module, exports) {
+
+module.exports = require("wrtc");
+
+/***/ }),
 /* 29 */
 /***/ (function(module, exports) {
 
-module.exports = require("commander");
+module.exports = require("text-encoding");
 
 /***/ }),
 /* 30 */
 /***/ (function(module, exports) {
 
-module.exports = require("fs");
+module.exports = require("eventsource");
 
 /***/ }),
 /* 31 */
 /***/ (function(module, exports) {
 
-module.exports = require("http");
+module.exports = require("node-fetch");
 
 /***/ }),
 /* 32 */
 /***/ (function(module, exports) {
 
-module.exports = require("https");
+module.exports = require("url");
 
 /***/ }),
 /* 33 */
 /***/ (function(module, exports) {
 
-module.exports = require("kcors");
+module.exports = require("http");
 
 /***/ }),
 /* 34 */
@@ -9831,94 +9683,149 @@ module.exports = require("koa-router");
 
 /***/ }),
 /* 36 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var rxjs_1 = __webpack_require__(1);
-var _1 = __webpack_require__(14);
-var _2 = __webpack_require__(15);
-var _3 = __webpack_require__(18);
-var MuteCore = (function () {
-    function MuteCore(id) {
-        this.initSubject = new rxjs_1.Subject();
-        this.collaboratorsService = new _1.CollaboratorsService();
-        this.docService = new _2.DocService(id);
-        this.syncService = new _3.SyncService(id);
-        this.syncMessageService = new _3.SyncMessageService();
-        this.docService.initSource = this.initSubject;
-        this.docService.remoteLogootSOperationSource = this.syncService.onRemoteLogootSOperation;
-        this.syncService.localLogootSOperationSource = this.docService.onLocalLogootSOperation;
-        this.syncService.remoteQuerySyncSource = this.syncMessageService.onRemoteQuerySync;
-        this.syncService.remoteReplySyncSource = this.syncMessageService.onRemoteReplySync;
-        this.syncService.remoteRichLogootSOperationSource = this.syncMessageService.onRemoteRichLogootSOperation;
-        // this.syncService.storedStateSource = this.syncStorage.onStoredState
-        this.syncMessageService.localRichLogootSOperationSource = this.syncService.onLocalRichLogootSOperation;
-        this.syncMessageService.querySyncSource = this.syncService.onQuerySync;
-        this.syncMessageService.replySyncSource = this.syncService.onReplySync;
-    }
-    Object.defineProperty(MuteCore.prototype, "messageSource", {
-        set: function (source) {
-            this.collaboratorsService.messageSource = source;
-            this.syncMessageService.messageSource = source;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(MuteCore.prototype, "onInit", {
-        get: function () {
-            return this.initSubject.asObservable();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(MuteCore.prototype, "onMsgToBroadcast", {
-        get: function () {
-            return rxjs_1.Observable.merge(this.collaboratorsService.onMsgToBroadcast, this.syncMessageService.onMsgToBroadcast);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(MuteCore.prototype, "onMsgToSendRandomly", {
-        get: function () {
-            return rxjs_1.Observable.merge(this.collaboratorsService.onMsgToSendRandomly, this.syncMessageService.onMsgToSendRandomly);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(MuteCore.prototype, "onMsgToSendTo", {
-        get: function () {
-            return rxjs_1.Observable.merge(this.collaboratorsService.onMsgToSendTo, this.syncMessageService.onMsgToSendTo);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    MuteCore.prototype.init = function (key) {
-        this.initSubject.next(key);
-    };
-    MuteCore.prototype.clean = function () {
-        this.collaboratorsService.clean();
-        this.docService.clean();
-        this.syncService.clean();
-        this.syncMessageService.clean();
-    };
-    return MuteCore;
-}());
-exports.MuteCore = MuteCore;
-//# sourceMappingURL=MuteCore.js.map
+module.exports = require("kcors");
 
 /***/ }),
 /* 37 */
+/***/ (function(module, exports) {
+
+module.exports = require("commander");
+
+/***/ }),
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var rxjs_1 = __webpack_require__(1);
-var _1 = __webpack_require__(6);
-var Collaborator_1 = __webpack_require__(13);
-var pb = __webpack_require__(46);
+const rxjs_1 = __webpack_require__(0);
+const mute_core_1 = __webpack_require__(14);
+const log_1 = __webpack_require__(12);
+const pb = __webpack_require__(55);
+// TODO: BotStorage should serialize document in DB
+class BotStorage {
+    constructor(pseudonym, webChannel, mongooseAdapter) {
+        this.pseudonym = pseudonym;
+        this.joinSubject = new rxjs_1.Subject();
+        this.messageSubject = new rxjs_1.ReplaySubject();
+        this.peerJoinSubject = new rxjs_1.ReplaySubject();
+        this.peerLeaveSubject = new rxjs_1.ReplaySubject();
+        this.stateSubject = new rxjs_1.Subject();
+        this.webChannel = webChannel;
+        webChannel.onMessage = (id, bytes, isBroadcast) => {
+            const msg = pb.Message.deserializeBinary(bytes);
+            if (msg.getService() === 'botprotocol') {
+                const docKey = pb.BotProtocol.deserializeBinary(msg.getContent()).getKey();
+                this.mongooseAdapter.find(docKey)
+                    .then((doc) => {
+                    this.initMuteCore(docKey);
+                    this.joinSubject.next(new mute_core_1.JoinEvent(this.webChannel.myId, docKey, false));
+                    if (doc === null) {
+                        log_1.log.info(`Document ${docKey} was not found in database, thus create a new document`);
+                        this.stateSubject.next(new mute_core_1.State(new Map(), []));
+                    }
+                    else {
+                        log_1.log.info(`Document ${docKey} retreived from database`);
+                        this.stateSubject.next(new mute_core_1.State(new Map(), doc));
+                    }
+                })
+                    .catch((err) => {
+                    log_1.log.error(`Error when searching for the document ${docKey}`, err);
+                });
+                webChannel.onMessage = (id, bytes, isBroadcast) => {
+                    const msg = pb.Message.deserializeBinary(bytes);
+                    this.messageSubject.next(new mute_core_1.NetworkMessage(msg.getService(), id, isBroadcast, msg.getContent()));
+                };
+            }
+            else {
+                this.messageSubject.next(new mute_core_1.NetworkMessage(msg.getService(), id, isBroadcast, msg.getContent()));
+            }
+        };
+        // this.sendMyUrl()
+        webChannel.onPeerJoin = (id) => {
+            // this.sendMyUrl(id)
+            this.peerJoinSubject.next(id);
+        };
+        webChannel.onPeerLeave = (id) => this.peerLeaveSubject.next(id);
+        this.mongooseAdapter = mongooseAdapter;
+    }
+    sendKeyRequest(webChannel) {
+        const msg = new pb.BotProtocol();
+        msg.setKey('');
+        webChannel.sendTo(webChannel.members[0], this.buildMessage({
+            service: 'botprotocol',
+            content: msg.serializeBinary()
+        }));
+    }
+    initMuteCore(docKey) {
+        // TODO: MuteCore should consume doc Object
+        this.muteCore = new mute_core_1.MuteCore(42);
+        this.muteCore.messageSource = this.messageSubject.asObservable();
+        this.muteCore.onMsgToBroadcast.subscribe((bm) => {
+            this.webChannel.send(this.buildMessage(bm));
+        });
+        this.muteCore.onMsgToSendRandomly.subscribe((srm) => {
+            const index = Math.ceil(Math.random() * this.webChannel.members.length) - 1;
+            this.webChannel.sendTo(this.webChannel.members[index], this.buildMessage(srm));
+        });
+        this.muteCore.onMsgToSendTo.subscribe((stm) => {
+            this.webChannel.sendTo(stm.id, this.buildMessage(stm));
+        });
+        // Collaborators config
+        this.muteCore.collaboratorsService.peerJoinSource = this.peerJoinSubject.asObservable();
+        this.muteCore.collaboratorsService.peerLeaveSource = this.peerLeaveSubject.asObservable();
+        const pseudoSubject = new rxjs_1.BehaviorSubject(this.pseudonym);
+        this.muteCore.collaboratorsService.pseudoSource = pseudoSubject.asObservable();
+        // Sync service config
+        this.muteCore.syncService.onState.subscribe((state) => {
+            // FIXME: Reduce the number of saves
+            this.mongooseAdapter.save(docKey, state.richLogootSOps)
+                .catch((err) => {
+                log_1.log.error(`The document ${docKey} could not be saved into database`, err);
+            });
+        });
+        this.muteCore.syncService.setJoinAndStateSources(this.joinSubject.asObservable(), this.stateSubject.asObservable());
+        this.muteCore.init(docKey);
+    }
+    sendMyUrl(id) {
+        const msg = new pb.BotResponse();
+        msg.setUrl(this.url);
+        if (id !== undefined) {
+            this.webChannel.sendTo(this.webChannel.members[0], this.buildMessage({
+                service: 'botprotocol',
+                content: msg.serializeBinary()
+            }));
+        }
+        else {
+            this.webChannel.send(this.buildMessage({
+                service: 'botprotocol',
+                content: msg.serializeBinary()
+            }));
+        }
+    }
+    buildMessage(msg) {
+        const pbMsg = new pb.Message();
+        pbMsg.setService(msg.service);
+        pbMsg.setContent(msg.content);
+        return pbMsg.serializeBinary();
+    }
+}
+exports.BotStorage = BotStorage;
+
+
+/***/ }),
+/* 39 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var rxjs_1 = __webpack_require__(0);
+var _1 = __webpack_require__(5);
+var Collaborator_1 = __webpack_require__(16);
+var pb = __webpack_require__(45);
 var CollaboratorsService = (function () {
     function CollaboratorsService() {
         this.collaboratorChangePseudoSubject = new rxjs_1.Subject();
@@ -10052,14 +9959,318 @@ exports.CollaboratorsService = CollaboratorsService;
 //# sourceMappingURL=CollaboratorsService.js.map
 
 /***/ }),
-/* 38 */
+/* 40 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var AbstractMessage_1 = __webpack_require__(2);
+var BroadcastMessage = (function (_super) {
+    __extends(BroadcastMessage, _super);
+    function BroadcastMessage() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return BroadcastMessage;
+}(AbstractMessage_1.AbstractMessage));
+exports.BroadcastMessage = BroadcastMessage;
+//# sourceMappingURL=BroadcastMessage.js.map
+
+/***/ }),
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var rxjs_1 = __webpack_require__(1);
-var mute_structs_1 = __webpack_require__(10);
+var JoinEvent = (function () {
+    function JoinEvent(id, key, created) {
+        this.id = id;
+        this.key = key;
+        this.created = created;
+    }
+    return JoinEvent;
+}());
+exports.JoinEvent = JoinEvent;
+//# sourceMappingURL=JoinEvent.js.map
+
+/***/ }),
+/* 42 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var AbstractMessage_1 = __webpack_require__(2);
+var NetworkMessage = (function (_super) {
+    __extends(NetworkMessage, _super);
+    function NetworkMessage(service, id, isBroadcast, content) {
+        var _this = _super.call(this, service, content) || this;
+        _this.id = id;
+        _this.isBroadcast = isBroadcast;
+        return _this;
+    }
+    return NetworkMessage;
+}(AbstractMessage_1.AbstractMessage));
+exports.NetworkMessage = NetworkMessage;
+//# sourceMappingURL=NetworkMessage.js.map
+
+/***/ }),
+/* 43 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var AbstractMessage_1 = __webpack_require__(2);
+var SendRandomlyMessage = (function (_super) {
+    __extends(SendRandomlyMessage, _super);
+    function SendRandomlyMessage() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return SendRandomlyMessage;
+}(AbstractMessage_1.AbstractMessage));
+exports.SendRandomlyMessage = SendRandomlyMessage;
+//# sourceMappingURL=SendRandomlyMessage.js.map
+
+/***/ }),
+/* 44 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var AbstractMessage_1 = __webpack_require__(2);
+var SendToMessage = (function (_super) {
+    __extends(SendToMessage, _super);
+    function SendToMessage(service, id, msg) {
+        var _this = _super.call(this, service, msg) || this;
+        _this.id = id;
+        return _this;
+    }
+    return SendToMessage;
+}(AbstractMessage_1.AbstractMessage));
+exports.SendToMessage = SendToMessage;
+//# sourceMappingURL=SendToMessage.js.map
+
+/***/ }),
+/* 45 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @fileoverview
+ * @enhanceable
+ * @public
+ */
+// GENERATED CODE -- DO NOT EDIT!
+
+var jspb = __webpack_require__(6);
+var goog = jspb;
+var global = Function('return this')();
+
+goog.exportSymbol('proto.Collaborator', null, global);
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.Collaborator = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.Collaborator, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.Collaborator.displayName = 'proto.Collaborator';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.Collaborator.prototype.toObject = function(opt_includeInstance) {
+  return proto.Collaborator.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.Collaborator} msg The msg instance to transform.
+ * @return {!Object}
+ */
+proto.Collaborator.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    pseudo: jspb.Message.getFieldWithDefault(msg, 1, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.Collaborator}
+ */
+proto.Collaborator.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.Collaborator;
+  return proto.Collaborator.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.Collaborator} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.Collaborator}
+ */
+proto.Collaborator.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setPseudo(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Class method variant: serializes the given message to binary data
+ * (in protobuf wire format), writing to the given BinaryWriter.
+ * @param {!proto.Collaborator} message
+ * @param {!jspb.BinaryWriter} writer
+ */
+proto.Collaborator.serializeBinaryToWriter = function(message, writer) {
+  message.serializeBinaryToWriter(writer);
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.Collaborator.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  this.serializeBinaryToWriter(writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format),
+ * writing to the given BinaryWriter.
+ * @param {!jspb.BinaryWriter} writer
+ */
+proto.Collaborator.prototype.serializeBinaryToWriter = function (writer) {
+  var f = undefined;
+  f = this.getPseudo();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string pseudo = 1;
+ * @return {string}
+ */
+proto.Collaborator.prototype.getPseudo = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/** @param {string} value */
+proto.Collaborator.prototype.setPseudo = function(value) {
+  jspb.Message.setField(this, 1, value);
+};
+
+
+goog.object.extend(exports, proto);
+
+
+/***/ }),
+/* 46 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var rxjs_1 = __webpack_require__(0);
+var mute_structs_1 = __webpack_require__(7);
 var DocService = (function () {
     function DocService(id) {
         this.doc = new mute_structs_1.LogootSRopes(id);
@@ -10206,412 +10417,312 @@ exports.DocService = DocService;
 //# sourceMappingURL=DocService.js.map
 
 /***/ }),
-/* 39 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+/*
+ *  Copyright 2014 Matthieu Nicolas
+ *
+ *  This file is part of Mute-structs.
+ *
+ *  Mute-structs is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Mute-structs is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Mute-structs.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-var AbstractMessage_1 = __webpack_require__(2);
-var BroadcastMessage = (function (_super) {
-    __extends(BroadcastMessage, _super);
-    function BroadcastMessage() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    return BroadcastMessage;
-}(AbstractMessage_1.AbstractMessage));
-exports.BroadcastMessage = BroadcastMessage;
-//# sourceMappingURL=BroadcastMessage.js.map
-
-/***/ }),
-/* 40 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var JoinEvent = (function () {
-    function JoinEvent(id, key, created) {
-        this.id = id;
-        this.key = key;
-        this.created = created;
-    }
-    return JoinEvent;
-}());
-exports.JoinEvent = JoinEvent;
-//# sourceMappingURL=JoinEvent.js.map
-
-/***/ }),
-/* 41 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-var AbstractMessage_1 = __webpack_require__(2);
-var NetworkMessage = (function (_super) {
-    __extends(NetworkMessage, _super);
-    function NetworkMessage(service, id, isBroadcast, content) {
-        var _this = _super.call(this, service, content) || this;
-        _this.id = id;
-        _this.isBroadcast = isBroadcast;
-        return _this;
-    }
-    return NetworkMessage;
-}(AbstractMessage_1.AbstractMessage));
-exports.NetworkMessage = NetworkMessage;
-//# sourceMappingURL=NetworkMessage.js.map
-
-/***/ }),
-/* 42 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-var AbstractMessage_1 = __webpack_require__(2);
-var SendRandomlyMessage = (function (_super) {
-    __extends(SendRandomlyMessage, _super);
-    function SendRandomlyMessage() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    return SendRandomlyMessage;
-}(AbstractMessage_1.AbstractMessage));
-exports.SendRandomlyMessage = SendRandomlyMessage;
-//# sourceMappingURL=SendRandomlyMessage.js.map
-
-/***/ }),
-/* 43 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-var AbstractMessage_1 = __webpack_require__(2);
-var SendToMessage = (function (_super) {
-    __extends(SendToMessage, _super);
-    function SendToMessage(service, id, msg) {
-        var _this = _super.call(this, service, msg) || this;
-        _this.id = id;
-        return _this;
-    }
-    return SendToMessage;
-}(AbstractMessage_1.AbstractMessage));
-exports.SendToMessage = SendToMessage;
-//# sourceMappingURL=SendToMessage.js.map
-
-/***/ }),
-/* 44 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var mute_structs_1 = __webpack_require__(10);
-var rxjs_1 = __webpack_require__(1);
-var Interval_1 = __webpack_require__(7);
-var _1 = __webpack_require__(6);
-var ReplySyncEvent_1 = __webpack_require__(8);
-var RichLogootSOperation_1 = __webpack_require__(9);
-var pb = __webpack_require__(47);
-var SyncMessageService = (function () {
-    function SyncMessageService() {
-        this.msgToBroadcastSubject = new rxjs_1.Subject();
-        this.msgToSendRandomlySubject = new rxjs_1.Subject();
-        this.msgToSendToSubject = new rxjs_1.Subject();
-        this.remoteQuerySyncSubject = new rxjs_1.Subject();
-        this.remoteQuerySyncIdSubject = new rxjs_1.Subject();
-        this.remoteRichLogootSOperationSubject = new rxjs_1.Subject();
-        this.remoteReplySyncSubject = new rxjs_1.Subject();
-    }
-    Object.defineProperty(SyncMessageService.prototype, "localRichLogootSOperationSource", {
-        set: function (source) {
-            var _this = this;
-            this.localRichLogootSOperationSubscription = source.subscribe(function (richLogootSOp) {
-                var richLogootSOpMsg = _this.generateRichLogootSOpMsg(richLogootSOp);
-                var msg = new _1.BroadcastMessage(SyncMessageService.ID, richLogootSOpMsg.serializeBinary());
-                _this.msgToBroadcastSubject.next(msg);
-            });
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SyncMessageService.prototype, "messageSource", {
-        set: function (source) {
-            var _this = this;
-            this.messageSubscription = source
-                .filter(function (msg) { return msg.service === SyncMessageService.ID; })
-                .subscribe(function (msg) {
-                var content = new pb.Sync.deserializeBinary(msg.content);
-                switch (content.getTypeCase()) {
-                    case pb.Sync.TypeCase.RICHLOGOOTSOP:
-                        _this.handleRichLogootSOpMsg(content.getRichlogootsop());
-                        break;
-                    case pb.Sync.TypeCase.QUERYSYNC:
-                        _this.remoteQuerySyncIdSubject.next(msg.id); // Register the id of the peer
-                        _this.handleQuerySyncMsg(content.getQuerysync());
-                        break;
-                    case pb.Sync.TypeCase.REPLYSYNC:
-                        _this.handleReplySyncMsg(content.getReplysync());
-                        break;
-                }
-            });
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SyncMessageService.prototype, "querySyncSource", {
-        set: function (source) {
-            var _this = this;
-            this.querySyncSubscription = source.subscribe(function (vector) {
-                var querySyncMsg = _this.generateQuerySyncMsg(vector);
-                var msg = new _1.SendRandomlyMessage(SyncMessageService.ID, querySyncMsg.serializeBinary());
-                _this.msgToSendRandomlySubject.next(msg);
-            });
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SyncMessageService.prototype, "replySyncSource", {
-        set: function (source) {
-            var _this = this;
-            this.replySyncSubscription = rxjs_1.Observable.zip(source, this.remoteQuerySyncIdSubject.asObservable(), function (replySyncEvent, id) {
-                return { id: id, replySyncEvent: replySyncEvent };
-            })
-                .subscribe(function (_a) {
-                var id = _a.id, replySyncEvent = _a.replySyncEvent;
-                var replySyncMsg = _this.generateReplySyncMsg(replySyncEvent.richLogootSOps, replySyncEvent.intervals);
-                var msg = new _1.SendToMessage(SyncMessageService.ID, id, replySyncMsg.serializeBinary());
-                _this.msgToSendToSubject.next(msg);
-            });
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SyncMessageService.prototype, "onMsgToBroadcast", {
-        get: function () {
-            return this.msgToBroadcastSubject.asObservable();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SyncMessageService.prototype, "onMsgToSendRandomly", {
-        get: function () {
-            return this.msgToSendRandomlySubject.asObservable();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SyncMessageService.prototype, "onMsgToSendTo", {
-        get: function () {
-            return this.msgToSendToSubject.asObservable();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SyncMessageService.prototype, "onRemoteRichLogootSOperation", {
-        get: function () {
-            return this.remoteRichLogootSOperationSubject.asObservable();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SyncMessageService.prototype, "onRemoteQuerySync", {
-        get: function () {
-            return this.remoteQuerySyncSubject.asObservable();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SyncMessageService.prototype, "onRemoteReplySync", {
-        get: function () {
-            return this.remoteReplySyncSubject.asObservable();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    SyncMessageService.prototype.clean = function () {
-        this.msgToBroadcastSubject.complete();
-        this.msgToSendRandomlySubject.complete();
-        this.msgToSendToSubject.complete();
-        this.remoteQuerySyncSubject.complete();
-        this.remoteQuerySyncIdSubject.complete();
-        this.remoteRichLogootSOperationSubject.complete();
-        this.remoteReplySyncSubject.complete();
-        this.localRichLogootSOperationSubscription.unsubscribe();
-        this.messageSubscription.unsubscribe();
-        this.querySyncSubscription.unsubscribe();
-        this.replySyncSubscription.unsubscribe();
-    };
-    SyncMessageService.prototype.handleRichLogootSOpMsg = function (content) {
-        var richLogootSOp = this.deserializeRichLogootSOperation(content);
-        this.remoteRichLogootSOperationSubject.next(richLogootSOp);
-    };
-    SyncMessageService.prototype.handleQuerySyncMsg = function (content) {
-        var vector = content.getVectorMap();
-        this.remoteQuerySyncSubject.next(vector);
-    };
-    SyncMessageService.prototype.handleReplySyncMsg = function (content) {
-        var _this = this;
-        var richLogootSOpsList = content.getRichlogootsopsList();
-        var richLogootSOps = richLogootSOpsList.map(function (richLogootSOpMsg) {
-            return _this.deserializeRichLogootSOperation(richLogootSOpMsg);
-        });
-        var intervals = content.getIntervalsList().map(function (interval) {
-            return new Interval_1.Interval(interval.getId(), interval.getBegin(), interval.getEnd());
-        });
-        var replySyncEvent = new ReplySyncEvent_1.ReplySyncEvent(richLogootSOps, intervals);
-        this.remoteReplySyncSubject.next(replySyncEvent);
-    };
-    SyncMessageService.prototype.generateRichLogootSOpMsg = function (richLogootSOp) {
-        var richLogootSOperationMsg = this.serializeRichLogootSOperation(richLogootSOp);
-        var msg = new pb.Sync();
-        msg.setRichlogootsop(richLogootSOperationMsg);
-        return msg;
-    };
-    SyncMessageService.prototype.serializeRichLogootSOperation = function (richLogootSOp) {
-        var richLogootSOperationMsg = new pb.RichLogootSOperation();
-        richLogootSOperationMsg.setId(richLogootSOp.id);
-        richLogootSOperationMsg.setClock(richLogootSOp.clock);
-        var logootSOp = richLogootSOp.logootSOp;
-        if (logootSOp instanceof mute_structs_1.LogootSAdd) {
-            richLogootSOperationMsg.setLogootsadd(this.generateLogootSAddMsg(logootSOp));
-        }
-        else if (logootSOp instanceof mute_structs_1.LogootSDel) {
-            richLogootSOperationMsg.setLogootsdel(this.generateLogootSDelMsg(logootSOp));
-        }
-        return richLogootSOperationMsg;
-    };
-    SyncMessageService.prototype.deserializeRichLogootSOperation = function (content) {
-        var id = content.getId();
-        var clock = content.getClock();
-        var logootSOp;
-        if (content.hasLogootsadd()) {
-            var logootSAddMsg = content.getLogootsadd();
-            var identifier = new mute_structs_1.Identifier(logootSAddMsg.getId().getBaseList(), logootSAddMsg.getId().getLast());
-            logootSOp = new mute_structs_1.LogootSAdd(identifier, logootSAddMsg.getContent());
+var infinitestring_1 = __webpack_require__(48);
+var identifier_1 = __webpack_require__(3);
+function isMine(replica) {
+    return function (base) { return base[base.length - 2] === replica; };
+}
+exports.isMine = isMine;
+/**
+ * Holds the minimum value an integer can have.
+ */
+var INT_32_MIN_VALUE = -0x80000000;
+/**
+ * Holds the maximum value an integer can have.
+ */
+var INT_32_MAX_VALUE = 0x7fffffff;
+function createBetweenPosition(id1, id2, replicaNumber, clock) {
+    console.assert(id1 === null || id1 instanceof identifier_1.Identifier, "id1 = " + id1);
+    console.assert(id2 === null || id2 instanceof identifier_1.Identifier, "id2 = ", id2);
+    console.assert(typeof replicaNumber === "number", "replicaNumber = ", replicaNumber);
+    console.assert(typeof clock === "number", "clock = ", clock);
+    var s1 = new infinitestring_1.InfiniteString(id1 !== null ? id1.base.concat(id1.last) : [], INT_32_MIN_VALUE);
+    var s2 = new infinitestring_1.InfiniteString(id2 !== null ? id2.base.concat(id2.last) : [], INT_32_MAX_VALUE);
+    var sb = [];
+    do {
+        var b1 = s1.next();
+        var b2 = s2.next();
+        if (b2 - b1 > 2) {
+            var f = (Math.random() * (b2 - b1 - 2)) + b1 + 1;
+            var i = f | 0; // Truncate the float in order to get a 32bits int
+            sb.push(i);
+            break;
         }
         else {
-            var logootSDelMsg = content.getLogootsdel();
-            var lid = logootSDelMsg.getLidList().map(function (identifier) {
-                return new mute_structs_1.IdentifierInterval(identifier.getBaseList(), identifier.getBegin(), identifier.getEnd());
-            });
-            logootSOp = new mute_structs_1.LogootSDel(lid);
+            sb.push(b1);
         }
-        return new RichLogootSOperation_1.RichLogootSOperation(id, clock, logootSOp);
-    };
-    SyncMessageService.prototype.generateLogootSAddMsg = function (logootSAdd) {
-        var identifier = new pb.Identifier();
-        identifier.setBaseList(logootSAdd.id.base);
-        identifier.setLast(logootSAdd.id.last);
-        var logootSAddMsg = new pb.LogootSAdd();
-        logootSAddMsg.setId(identifier);
-        logootSAddMsg.setContent(logootSAdd.l);
-        return logootSAddMsg;
-    };
-    SyncMessageService.prototype.generateLogootSDelMsg = function (logootSDel) {
-        var _this = this;
-        var lid = logootSDel.lid.map(function (id) {
-            var identifierInterval = _this.generateIdentifierIntervalMsg(id);
-            return identifierInterval;
-        });
-        var logootSDelMsg = new pb.LogootSDel();
-        logootSDelMsg.setLidList(lid);
-        return logootSDelMsg;
-    };
-    SyncMessageService.prototype.generateIdentifierIntervalMsg = function (id) {
-        var identifierIntervalMsg = new pb.IdentifierInterval();
-        identifierIntervalMsg.setBaseList(id.base);
-        identifierIntervalMsg.setBegin(id.begin);
-        identifierIntervalMsg.setEnd(id.end);
-        return identifierIntervalMsg;
-    };
-    SyncMessageService.prototype.generateQuerySyncMsg = function (vector) {
-        var querySyncMsg = new pb.QuerySync();
-        var map = querySyncMsg.getVectorMap();
-        vector.forEach(function (clock, id) {
-            map.set(id, clock);
-        });
-        var msg = new pb.Sync();
-        msg.setQuerysync(querySyncMsg);
-        return msg;
-    };
-    SyncMessageService.prototype.generateReplySyncMsg = function (richLogootSOps, intervals) {
-        var _this = this;
-        var replySyncMsg = new pb.ReplySync();
-        replySyncMsg.setRichlogootsopsList(richLogootSOps.map(function (richLogootSOp) {
-            return _this.serializeRichLogootSOperation(richLogootSOp);
-        }));
-        var intervalsMsg = intervals.map(function (interval) {
-            var intervalMsg = new pb.Interval();
-            intervalMsg.setId(interval.id);
-            intervalMsg.setBegin(interval.begin);
-            intervalMsg.setEnd(interval.end);
-            return intervalMsg;
-        });
-        replySyncMsg.setIntervalsList(intervalsMsg);
-        var msg = new pb.Sync();
-        msg.setReplysync(replySyncMsg);
-        return msg;
-    };
-    return SyncMessageService;
-}());
-SyncMessageService.ID = 'SyncMessage';
-exports.SyncMessageService = SyncMessageService;
-//# sourceMappingURL=SyncMessageService.js.map
+    } while (true);
+    sb.push(replicaNumber);
+    sb.push(clock);
+    console.assert(isMine(replicaNumber)(sb), "replica = " + replicaNumber + " base = ", sb);
+    return sb;
+}
+exports.createBetweenPosition = createBetweenPosition;
+//# sourceMappingURL=idfactory.js.map
 
 /***/ }),
-/* 45 */
+/* 48 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/*
+ *  Copyright 2014 Matthieu Nicolas
+ *
+ *  This file is part of Mute-structs.
+ *
+ *  Mute-structs is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Mute-structs is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Mute-structs.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+var InfiniteString = (function () {
+    function InfiniteString(aPrefix, aFiller) {
+        console.assert(aPrefix instanceof Array, "aPrefix = ", aPrefix);
+        console.assert(typeof aFiller !== "undefined");
+        this.filler = aFiller;
+        this.prefix = aPrefix;
+        this.currentIndex = 0;
+    }
+    InfiniteString.prototype.next = function () {
+        if (this.currentIndex < this.prefix.length) {
+            var result = this.prefix[this.currentIndex];
+            this.currentIndex++;
+            return result;
+        }
+        else {
+            return this.filler;
+        }
+    };
+    return InfiniteString;
+}());
+exports.InfiniteString = InfiniteString;
+//# sourceMappingURL=infinitestring.js.map
+
+/***/ }),
+/* 49 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/*
+ *  Copyright 2014 Matthieu Nicolas
+ *
+ *  This file is part of Mute-structs.
+ *
+ *  Mute-structs is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Mute-structs is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Mute-structs.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+var identifierinterval_1 = __webpack_require__(1);
+var IteratorHelperIdentifier = (function () {
+    function IteratorHelperIdentifier(id1, id2) {
+        console.assert(id1 instanceof identifierinterval_1.IdentifierInterval, "id1 = ", id1);
+        console.assert(id2 instanceof identifierinterval_1.IdentifierInterval, "id2 = ", id2);
+        this.id1 = id1;
+        this.id2 = id2;
+        this.nextOffset = -1;
+    }
+    IteratorHelperIdentifier.prototype.compareBase = function () {
+        var b1 = this.id1.base;
+        var b2 = this.id2.base;
+        var minLength = Math.min(b1.length, b2.length);
+        var i = 0;
+        while (i < minLength && b1[i] === b2[i]) {
+            i++;
+        }
+        if (i === minLength) {
+            if (b1.length > minLength) {
+                this.nextOffset = b1[i];
+                if (this.nextOffset < this.id2.begin) {
+                    return 1 /* B1_BEFORE_B2 */;
+                }
+                else if (this.nextOffset >= this.id2.end) {
+                    return 0 /* B1_AFTER_B2 */;
+                }
+                else {
+                    return 2 /* B1_INSIDE_B2 */;
+                }
+            }
+            else if (b2.length > minLength) {
+                this.nextOffset = b2[i];
+                if (this.nextOffset < this.id1.begin) {
+                    return 0 /* B1_AFTER_B2 */;
+                }
+                else if (this.nextOffset >= this.id1.end) {
+                    return 1 /* B1_BEFORE_B2 */;
+                }
+                else {
+                    return 3 /* B2_INSIDE_B1 */;
+                }
+            }
+            else {
+                if (this.id1.begin === this.id2.begin && this.id1.end === this.id2.end) {
+                    return 6 /* B1_EQUALS_B2 */;
+                }
+                else if ((this.id1.end + 1) === this.id2.begin) {
+                    return 4 /* B1_CONCAT_B2 */;
+                }
+                else if (this.id1.begin === (this.id2.end + 1)) {
+                    return 5 /* B2_CONCAT_B1 */;
+                }
+                else if (this.id1.end < this.id2.begin) {
+                    return 1 /* B1_BEFORE_B2 */;
+                }
+                else if (this.id2.end < this.id1.begin) {
+                    return 0 /* B1_AFTER_B2 */;
+                }
+                else {
+                    // This case should not occur
+                    // Only malicious users would generate such operations
+                    console.warn('IteratorHelperIdentifier.compareBase: ', this.id1, this.id2);
+                    return 6 /* B1_EQUALS_B2 */;
+                }
+            }
+        }
+        else if (b1[i] > b2[i]) {
+            return 0 /* B1_AFTER_B2 */;
+        }
+        else {
+            return 1 /* B1_BEFORE_B2 */;
+        }
+    };
+    return IteratorHelperIdentifier;
+}());
+exports.IteratorHelperIdentifier = IteratorHelperIdentifier;
+//# sourceMappingURL=iteratorhelperidentifier.js.map
+
+/***/ }),
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var rxjs_1 = __webpack_require__(1);
-var Interval_1 = __webpack_require__(7);
-var ReplySyncEvent_1 = __webpack_require__(8);
-var RichLogootSOperation_1 = __webpack_require__(9);
-var State_1 = __webpack_require__(17);
+var rxjs_1 = __webpack_require__(0);
+var _1 = __webpack_require__(15);
+var _2 = __webpack_require__(17);
+var _3 = __webpack_require__(24);
+var MuteCore = (function () {
+    function MuteCore(id) {
+        this.initSubject = new rxjs_1.Subject();
+        this.collaboratorsService = new _1.CollaboratorsService();
+        this.docService = new _2.DocService(id);
+        this.syncService = new _3.SyncService(id);
+        this.syncMessageService = new _3.SyncMessageService();
+        this.docService.initSource = this.initSubject;
+        this.docService.remoteLogootSOperationSource = this.syncService.onRemoteLogootSOperation;
+        this.syncService.localLogootSOperationSource = this.docService.onLocalLogootSOperation;
+        this.syncService.remoteQuerySyncSource = this.syncMessageService.onRemoteQuerySync;
+        this.syncService.remoteReplySyncSource = this.syncMessageService.onRemoteReplySync;
+        this.syncService.remoteRichLogootSOperationSource = this.syncMessageService.onRemoteRichLogootSOperation;
+        // this.syncService.storedStateSource = this.syncStorage.onStoredState
+        this.syncMessageService.localRichLogootSOperationSource = this.syncService.onLocalRichLogootSOperation;
+        this.syncMessageService.querySyncSource = this.syncService.onQuerySync;
+        this.syncMessageService.replySyncSource = this.syncService.onReplySync;
+    }
+    Object.defineProperty(MuteCore.prototype, "messageSource", {
+        set: function (source) {
+            this.collaboratorsService.messageSource = source;
+            this.syncMessageService.messageSource = source;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(MuteCore.prototype, "onInit", {
+        get: function () {
+            return this.initSubject.asObservable();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(MuteCore.prototype, "onMsgToBroadcast", {
+        get: function () {
+            return rxjs_1.Observable.merge(this.collaboratorsService.onMsgToBroadcast, this.syncMessageService.onMsgToBroadcast);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(MuteCore.prototype, "onMsgToSendRandomly", {
+        get: function () {
+            return rxjs_1.Observable.merge(this.collaboratorsService.onMsgToSendRandomly, this.syncMessageService.onMsgToSendRandomly);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(MuteCore.prototype, "onMsgToSendTo", {
+        get: function () {
+            return rxjs_1.Observable.merge(this.collaboratorsService.onMsgToSendTo, this.syncMessageService.onMsgToSendTo);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    MuteCore.prototype.init = function (key) {
+        this.initSubject.next(key);
+    };
+    MuteCore.prototype.clean = function () {
+        this.collaboratorsService.clean();
+        this.docService.clean();
+        this.syncService.clean();
+        this.syncMessageService.clean();
+    };
+    return MuteCore;
+}());
+exports.MuteCore = MuteCore;
+//# sourceMappingURL=MuteCore.js.map
+
+/***/ }),
+/* 51 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var rxjs_1 = __webpack_require__(0);
+var Interval_1 = __webpack_require__(9);
+var ReplySyncEvent_1 = __webpack_require__(10);
+var RichLogootSOperation_1 = __webpack_require__(11);
+var State_1 = __webpack_require__(25);
 var SyncService = (function () {
     function SyncService(id) {
         this.id = -1;
@@ -10884,176 +10995,267 @@ exports.SyncService = SyncService;
 //# sourceMappingURL=SyncService.js.map
 
 /***/ }),
-/* 46 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/**
- * @fileoverview
- * @enhanceable
- * @public
- */
-// GENERATED CODE -- DO NOT EDIT!
+"use strict";
 
-var jspb = __webpack_require__(12);
-var goog = jspb;
-var global = Function('return this')();
-
-goog.exportSymbol('proto.Collaborator', null, global);
-
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.Collaborator = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.Collaborator, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  proto.Collaborator.displayName = 'proto.Collaborator';
-}
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto suitable for use in Soy templates.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
- * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
- *     for transitional soy proto support: http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.Collaborator.prototype.toObject = function(opt_includeInstance) {
-  return proto.Collaborator.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Whether to include the JSPB
- *     instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.Collaborator} msg The msg instance to transform.
- * @return {!Object}
- */
-proto.Collaborator.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    pseudo: jspb.Message.getFieldWithDefault(msg, 1, "")
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.Collaborator}
- */
-proto.Collaborator.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.Collaborator;
-  return proto.Collaborator.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.Collaborator} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.Collaborator}
- */
-proto.Collaborator.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
+Object.defineProperty(exports, "__esModule", { value: true });
+var mute_structs_1 = __webpack_require__(7);
+var rxjs_1 = __webpack_require__(0);
+var Interval_1 = __webpack_require__(9);
+var _1 = __webpack_require__(5);
+var ReplySyncEvent_1 = __webpack_require__(10);
+var RichLogootSOperation_1 = __webpack_require__(11);
+var pb = __webpack_require__(53);
+var SyncMessageService = (function () {
+    function SyncMessageService() {
+        this.msgToBroadcastSubject = new rxjs_1.Subject();
+        this.msgToSendRandomlySubject = new rxjs_1.Subject();
+        this.msgToSendToSubject = new rxjs_1.Subject();
+        this.remoteQuerySyncSubject = new rxjs_1.Subject();
+        this.remoteQuerySyncIdSubject = new rxjs_1.Subject();
+        this.remoteRichLogootSOperationSubject = new rxjs_1.Subject();
+        this.remoteReplySyncSubject = new rxjs_1.Subject();
     }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setPseudo(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.Collaborator} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.Collaborator.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.Collaborator.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
- * @param {!jspb.BinaryWriter} writer
- */
-proto.Collaborator.prototype.serializeBinaryToWriter = function (writer) {
-  var f = undefined;
-  f = this.getPseudo();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-};
-
-
-/**
- * optional string pseudo = 1;
- * @return {string}
- */
-proto.Collaborator.prototype.getPseudo = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/** @param {string} value */
-proto.Collaborator.prototype.setPseudo = function(value) {
-  jspb.Message.setField(this, 1, value);
-};
-
-
-goog.object.extend(exports, proto);
-
+    Object.defineProperty(SyncMessageService.prototype, "localRichLogootSOperationSource", {
+        set: function (source) {
+            var _this = this;
+            this.localRichLogootSOperationSubscription = source.subscribe(function (richLogootSOp) {
+                var richLogootSOpMsg = _this.generateRichLogootSOpMsg(richLogootSOp);
+                var msg = new _1.BroadcastMessage(SyncMessageService.ID, richLogootSOpMsg.serializeBinary());
+                _this.msgToBroadcastSubject.next(msg);
+            });
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SyncMessageService.prototype, "messageSource", {
+        set: function (source) {
+            var _this = this;
+            this.messageSubscription = source
+                .filter(function (msg) { return msg.service === SyncMessageService.ID; })
+                .subscribe(function (msg) {
+                var content = new pb.Sync.deserializeBinary(msg.content);
+                switch (content.getTypeCase()) {
+                    case pb.Sync.TypeCase.RICHLOGOOTSOP:
+                        _this.handleRichLogootSOpMsg(content.getRichlogootsop());
+                        break;
+                    case pb.Sync.TypeCase.QUERYSYNC:
+                        _this.remoteQuerySyncIdSubject.next(msg.id); // Register the id of the peer
+                        _this.handleQuerySyncMsg(content.getQuerysync());
+                        break;
+                    case pb.Sync.TypeCase.REPLYSYNC:
+                        _this.handleReplySyncMsg(content.getReplysync());
+                        break;
+                }
+            });
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SyncMessageService.prototype, "querySyncSource", {
+        set: function (source) {
+            var _this = this;
+            this.querySyncSubscription = source.subscribe(function (vector) {
+                var querySyncMsg = _this.generateQuerySyncMsg(vector);
+                var msg = new _1.SendRandomlyMessage(SyncMessageService.ID, querySyncMsg.serializeBinary());
+                _this.msgToSendRandomlySubject.next(msg);
+            });
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SyncMessageService.prototype, "replySyncSource", {
+        set: function (source) {
+            var _this = this;
+            this.replySyncSubscription = rxjs_1.Observable.zip(source, this.remoteQuerySyncIdSubject.asObservable(), function (replySyncEvent, id) {
+                return { id: id, replySyncEvent: replySyncEvent };
+            })
+                .subscribe(function (_a) {
+                var id = _a.id, replySyncEvent = _a.replySyncEvent;
+                var replySyncMsg = _this.generateReplySyncMsg(replySyncEvent.richLogootSOps, replySyncEvent.intervals);
+                var msg = new _1.SendToMessage(SyncMessageService.ID, id, replySyncMsg.serializeBinary());
+                _this.msgToSendToSubject.next(msg);
+            });
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SyncMessageService.prototype, "onMsgToBroadcast", {
+        get: function () {
+            return this.msgToBroadcastSubject.asObservable();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SyncMessageService.prototype, "onMsgToSendRandomly", {
+        get: function () {
+            return this.msgToSendRandomlySubject.asObservable();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SyncMessageService.prototype, "onMsgToSendTo", {
+        get: function () {
+            return this.msgToSendToSubject.asObservable();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SyncMessageService.prototype, "onRemoteRichLogootSOperation", {
+        get: function () {
+            return this.remoteRichLogootSOperationSubject.asObservable();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SyncMessageService.prototype, "onRemoteQuerySync", {
+        get: function () {
+            return this.remoteQuerySyncSubject.asObservable();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SyncMessageService.prototype, "onRemoteReplySync", {
+        get: function () {
+            return this.remoteReplySyncSubject.asObservable();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    SyncMessageService.prototype.clean = function () {
+        this.msgToBroadcastSubject.complete();
+        this.msgToSendRandomlySubject.complete();
+        this.msgToSendToSubject.complete();
+        this.remoteQuerySyncSubject.complete();
+        this.remoteQuerySyncIdSubject.complete();
+        this.remoteRichLogootSOperationSubject.complete();
+        this.remoteReplySyncSubject.complete();
+        this.localRichLogootSOperationSubscription.unsubscribe();
+        this.messageSubscription.unsubscribe();
+        this.querySyncSubscription.unsubscribe();
+        this.replySyncSubscription.unsubscribe();
+    };
+    SyncMessageService.prototype.handleRichLogootSOpMsg = function (content) {
+        var richLogootSOp = this.deserializeRichLogootSOperation(content);
+        this.remoteRichLogootSOperationSubject.next(richLogootSOp);
+    };
+    SyncMessageService.prototype.handleQuerySyncMsg = function (content) {
+        var vector = content.getVectorMap();
+        this.remoteQuerySyncSubject.next(vector);
+    };
+    SyncMessageService.prototype.handleReplySyncMsg = function (content) {
+        var _this = this;
+        var richLogootSOpsList = content.getRichlogootsopsList();
+        var richLogootSOps = richLogootSOpsList.map(function (richLogootSOpMsg) {
+            return _this.deserializeRichLogootSOperation(richLogootSOpMsg);
+        });
+        var intervals = content.getIntervalsList().map(function (interval) {
+            return new Interval_1.Interval(interval.getId(), interval.getBegin(), interval.getEnd());
+        });
+        var replySyncEvent = new ReplySyncEvent_1.ReplySyncEvent(richLogootSOps, intervals);
+        this.remoteReplySyncSubject.next(replySyncEvent);
+    };
+    SyncMessageService.prototype.generateRichLogootSOpMsg = function (richLogootSOp) {
+        var richLogootSOperationMsg = this.serializeRichLogootSOperation(richLogootSOp);
+        var msg = new pb.Sync();
+        msg.setRichlogootsop(richLogootSOperationMsg);
+        return msg;
+    };
+    SyncMessageService.prototype.serializeRichLogootSOperation = function (richLogootSOp) {
+        var richLogootSOperationMsg = new pb.RichLogootSOperation();
+        richLogootSOperationMsg.setId(richLogootSOp.id);
+        richLogootSOperationMsg.setClock(richLogootSOp.clock);
+        var logootSOp = richLogootSOp.logootSOp;
+        if (logootSOp instanceof mute_structs_1.LogootSAdd) {
+            richLogootSOperationMsg.setLogootsadd(this.generateLogootSAddMsg(logootSOp));
+        }
+        else if (logootSOp instanceof mute_structs_1.LogootSDel) {
+            richLogootSOperationMsg.setLogootsdel(this.generateLogootSDelMsg(logootSOp));
+        }
+        return richLogootSOperationMsg;
+    };
+    SyncMessageService.prototype.deserializeRichLogootSOperation = function (content) {
+        var id = content.getId();
+        var clock = content.getClock();
+        var logootSOp;
+        if (content.hasLogootsadd()) {
+            var logootSAddMsg = content.getLogootsadd();
+            var identifier = new mute_structs_1.Identifier(logootSAddMsg.getId().getBaseList(), logootSAddMsg.getId().getLast());
+            logootSOp = new mute_structs_1.LogootSAdd(identifier, logootSAddMsg.getContent());
+        }
+        else {
+            var logootSDelMsg = content.getLogootsdel();
+            var lid = logootSDelMsg.getLidList().map(function (identifier) {
+                return new mute_structs_1.IdentifierInterval(identifier.getBaseList(), identifier.getBegin(), identifier.getEnd());
+            });
+            logootSOp = new mute_structs_1.LogootSDel(lid);
+        }
+        return new RichLogootSOperation_1.RichLogootSOperation(id, clock, logootSOp);
+    };
+    SyncMessageService.prototype.generateLogootSAddMsg = function (logootSAdd) {
+        var identifier = new pb.Identifier();
+        identifier.setBaseList(logootSAdd.id.base);
+        identifier.setLast(logootSAdd.id.last);
+        var logootSAddMsg = new pb.LogootSAdd();
+        logootSAddMsg.setId(identifier);
+        logootSAddMsg.setContent(logootSAdd.l);
+        return logootSAddMsg;
+    };
+    SyncMessageService.prototype.generateLogootSDelMsg = function (logootSDel) {
+        var _this = this;
+        var lid = logootSDel.lid.map(function (id) {
+            var identifierInterval = _this.generateIdentifierIntervalMsg(id);
+            return identifierInterval;
+        });
+        var logootSDelMsg = new pb.LogootSDel();
+        logootSDelMsg.setLidList(lid);
+        return logootSDelMsg;
+    };
+    SyncMessageService.prototype.generateIdentifierIntervalMsg = function (id) {
+        var identifierIntervalMsg = new pb.IdentifierInterval();
+        identifierIntervalMsg.setBaseList(id.base);
+        identifierIntervalMsg.setBegin(id.begin);
+        identifierIntervalMsg.setEnd(id.end);
+        return identifierIntervalMsg;
+    };
+    SyncMessageService.prototype.generateQuerySyncMsg = function (vector) {
+        var querySyncMsg = new pb.QuerySync();
+        var map = querySyncMsg.getVectorMap();
+        vector.forEach(function (clock, id) {
+            map.set(id, clock);
+        });
+        var msg = new pb.Sync();
+        msg.setQuerysync(querySyncMsg);
+        return msg;
+    };
+    SyncMessageService.prototype.generateReplySyncMsg = function (richLogootSOps, intervals) {
+        var _this = this;
+        var replySyncMsg = new pb.ReplySync();
+        replySyncMsg.setRichlogootsopsList(richLogootSOps.map(function (richLogootSOp) {
+            return _this.serializeRichLogootSOperation(richLogootSOp);
+        }));
+        var intervalsMsg = intervals.map(function (interval) {
+            var intervalMsg = new pb.Interval();
+            intervalMsg.setId(interval.id);
+            intervalMsg.setBegin(interval.begin);
+            intervalMsg.setEnd(interval.end);
+            return intervalMsg;
+        });
+        replySyncMsg.setIntervalsList(intervalsMsg);
+        var msg = new pb.Sync();
+        msg.setReplysync(replySyncMsg);
+        return msg;
+    };
+    return SyncMessageService;
+}());
+SyncMessageService.ID = 'SyncMessage';
+exports.SyncMessageService = SyncMessageService;
+//# sourceMappingURL=SyncMessageService.js.map
 
 /***/ }),
-/* 47 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -11063,7 +11265,7 @@ goog.object.extend(exports, proto);
  */
 // GENERATED CODE -- DO NOT EDIT!
 
-var jspb = __webpack_require__(12);
+var jspb = __webpack_require__(6);
 var goog = jspb;
 var global = Function('return this')();
 
@@ -13034,354 +13236,13 @@ goog.object.extend(exports, proto);
 
 
 /***/ }),
-/* 48 */
-/***/ (function(module, exports, __webpack_require__) {
+/* 54 */
+/***/ (function(module, exports) {
 
-"use strict";
-/*
- *  Copyright 2014 Matthieu Nicolas
- *
- *  This file is part of Mute-structs.
- *
- *  Mute-structs is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  Mute-structs is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with Mute-structs.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-var infinitestring_1 = __webpack_require__(49);
-var identifier_1 = __webpack_require__(3);
-function isMine(replica) {
-    return function (base) { return base[base.length - 2] === replica; };
-}
-exports.isMine = isMine;
-/**
- * Holds the minimum value an integer can have.
- */
-var INT_32_MIN_VALUE = -0x80000000;
-/**
- * Holds the maximum value an integer can have.
- */
-var INT_32_MAX_VALUE = 0x7fffffff;
-function createBetweenPosition(id1, id2, replicaNumber, clock) {
-    console.assert(id1 === null || id1 instanceof identifier_1.Identifier, "id1 = " + id1);
-    console.assert(id2 === null || id2 instanceof identifier_1.Identifier, "id2 = ", id2);
-    console.assert(typeof replicaNumber === "number", "replicaNumber = ", replicaNumber);
-    console.assert(typeof clock === "number", "clock = ", clock);
-    var s1 = new infinitestring_1.InfiniteString(id1 !== null ? id1.base.concat(id1.last) : [], INT_32_MIN_VALUE);
-    var s2 = new infinitestring_1.InfiniteString(id2 !== null ? id2.base.concat(id2.last) : [], INT_32_MAX_VALUE);
-    var sb = [];
-    do {
-        var b1 = s1.next();
-        var b2 = s2.next();
-        if (b2 - b1 > 2) {
-            var f = (Math.random() * (b2 - b1 - 2)) + b1 + 1;
-            var i = f | 0; // Truncate the float in order to get a 32bits int
-            sb.push(i);
-            break;
-        }
-        else {
-            sb.push(b1);
-        }
-    } while (true);
-    sb.push(replicaNumber);
-    sb.push(clock);
-    console.assert(isMine(replicaNumber)(sb), "replica = " + replicaNumber + " base = ", sb);
-    return sb;
-}
-exports.createBetweenPosition = createBetweenPosition;
-//# sourceMappingURL=idfactory.js.map
+module.exports = require("bunyan");
 
 /***/ }),
-/* 49 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/*
- *  Copyright 2014 Matthieu Nicolas
- *
- *  This file is part of Mute-structs.
- *
- *  Mute-structs is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  Mute-structs is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with Mute-structs.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-var InfiniteString = (function () {
-    function InfiniteString(aPrefix, aFiller) {
-        console.assert(aPrefix instanceof Array, "aPrefix = ", aPrefix);
-        console.assert(typeof aFiller !== "undefined");
-        this.filler = aFiller;
-        this.prefix = aPrefix;
-        this.currentIndex = 0;
-    }
-    InfiniteString.prototype.next = function () {
-        if (this.currentIndex < this.prefix.length) {
-            var result = this.prefix[this.currentIndex];
-            this.currentIndex++;
-            return result;
-        }
-        else {
-            return this.filler;
-        }
-    };
-    return InfiniteString;
-}());
-exports.InfiniteString = InfiniteString;
-//# sourceMappingURL=infinitestring.js.map
-
-/***/ }),
-/* 50 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/*
- *  Copyright 2014 Matthieu Nicolas
- *
- *  This file is part of Mute-structs.
- *
- *  Mute-structs is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  Mute-structs is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with Mute-structs.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-var identifierinterval_1 = __webpack_require__(0);
-var IteratorHelperIdentifier = (function () {
-    function IteratorHelperIdentifier(id1, id2) {
-        console.assert(id1 instanceof identifierinterval_1.IdentifierInterval, "id1 = ", id1);
-        console.assert(id2 instanceof identifierinterval_1.IdentifierInterval, "id2 = ", id2);
-        this.id1 = id1;
-        this.id2 = id2;
-        this.nextOffset = -1;
-    }
-    IteratorHelperIdentifier.prototype.compareBase = function () {
-        var b1 = this.id1.base;
-        var b2 = this.id2.base;
-        var minLength = Math.min(b1.length, b2.length);
-        var i = 0;
-        while (i < minLength && b1[i] === b2[i]) {
-            i++;
-        }
-        if (i === minLength) {
-            if (b1.length > minLength) {
-                this.nextOffset = b1[i];
-                if (this.nextOffset < this.id2.begin) {
-                    return 1 /* B1_BEFORE_B2 */;
-                }
-                else if (this.nextOffset >= this.id2.end) {
-                    return 0 /* B1_AFTER_B2 */;
-                }
-                else {
-                    return 2 /* B1_INSIDE_B2 */;
-                }
-            }
-            else if (b2.length > minLength) {
-                this.nextOffset = b2[i];
-                if (this.nextOffset < this.id1.begin) {
-                    return 0 /* B1_AFTER_B2 */;
-                }
-                else if (this.nextOffset >= this.id1.end) {
-                    return 1 /* B1_BEFORE_B2 */;
-                }
-                else {
-                    return 3 /* B2_INSIDE_B1 */;
-                }
-            }
-            else {
-                if (this.id1.begin === this.id2.begin && this.id1.end === this.id2.end) {
-                    return 6 /* B1_EQUALS_B2 */;
-                }
-                else if ((this.id1.end + 1) === this.id2.begin) {
-                    return 4 /* B1_CONCAT_B2 */;
-                }
-                else if (this.id1.begin === (this.id2.end + 1)) {
-                    return 5 /* B2_CONCAT_B1 */;
-                }
-                else if (this.id1.end < this.id2.begin) {
-                    return 1 /* B1_BEFORE_B2 */;
-                }
-                else if (this.id2.end < this.id1.begin) {
-                    return 0 /* B1_AFTER_B2 */;
-                }
-                else {
-                    // This case should not occur
-                    // Only malicious users would generate such operations
-                    console.warn('IteratorHelperIdentifier.compareBase: ', this.id1, this.id2);
-                    return 6 /* B1_EQUALS_B2 */;
-                }
-            }
-        }
-        else if (b1[i] > b2[i]) {
-            return 0 /* B1_AFTER_B2 */;
-        }
-        else {
-            return 1 /* B1_BEFORE_B2 */;
-        }
-    };
-    return IteratorHelperIdentifier;
-}());
-exports.IteratorHelperIdentifier = IteratorHelperIdentifier;
-//# sourceMappingURL=iteratorhelperidentifier.js.map
-
-/***/ }),
-/* 51 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const netflux_1 = __webpack_require__(28);
-const http = __webpack_require__(31);
-const Koa = __webpack_require__(34);
-const KoaRouter = __webpack_require__(35);
-const koaCors = __webpack_require__(33);
-const program = __webpack_require__(29);
-const BotStorage_1 = __webpack_require__(26);
-const MongooseAdapter_1 = __webpack_require__(27);
-const log_1 = __webpack_require__(5);
-// Default options
-const defaults = {
-    name: 'Repono',
-    host: '0.0.0.0',
-    port: 20000,
-    botURL: 'ws://localhost:20000',
-    signalingURL: 'ws://localhost:10000',
-    useHttps: false,
-    key: '',
-    cert: '',
-    ca: '',
-    logLevel: 'info',
-    logIntoFile: false
-};
-// Configure command-line interface
-program
-    .option('-n, --name <bot name>', `Bot name. Default: "${defaults.name}"`, defaults.name)
-    .option('-h, --host <ip or host name>', `Host address to bind to, Default: "${defaults.host}"`, defaults.host)
-    .option('-p, --port <n>', `Port to use for the server. Default: ${defaults.port}`, defaults.port)
-    .option('-b, --botURL <n>', `Bot public URL, to be shared on the p2p network. Default: ${defaults.botURL}`, defaults.botURL)
-    .option('-s, --signalingURL <url>', `Signaling server url. Default: ${defaults.signalingURL}\n`, defaults.signalingURL)
-    .option('-t, --https', `If present, the REST API server is listening on HTTPS instead of HTTP`)
-    .option('-k, --key <value>', `Private key for the certificate`)
-    .option('-c, --cert <value>', `The server certificate`)
-    .option('-a, --ca <value>', `The additional intermediate certificate or certificates that web browsers will need in order to validate the server certificate.`)
-    .option('-l, --logLevel <none|trace|debug|info|warn|error|fatal>', `Logging level. Default: "info". `, /^(none|trace|debug|info|warn|error|fatal)$/i, defaults.logLevel)
-    .option('-f, --logFile', `If specified, writes logs into file`)
-    .parse(process.argv);
-if (!program.host) {
-    throw new Error('-h, --host options is required');
-}
-// Command line parameters
-const { name, host, port, botURL, signalingURL, key, cert, ca, logLevel } = program;
-const useHttps = program.useHttps ? true : false;
-const logIntoFile = program.logFile ? true : false;
-// Configure logging
-log_1.createLogger(logIntoFile, logLevel);
-// Configure error handling on process
-process.on('uncaughtException', (err) => log_1.log.fatal(err));
-// Connect to MongoDB
-let error = null;
-const mongooseAdapter = new MongooseAdapter_1.MongooseAdapter();
-mongooseAdapter.connect('localhost')
-    .then(() => {
-    log_1.log.info(`Connected to the database  ✓`);
-    // Configure routes
-    // Instantiate main objects
-    const app = new Koa();
-    const router = new KoaRouter();
-    router
-        .get('/name', (ctx, next) => {
-        ctx.body = name;
-    })
-        .get('/docs', (ctx, next) => __awaiter(this, void 0, void 0, function* () {
-        yield mongooseAdapter.list()
-            .then((docs) => {
-            const docList = docs.map((doc) => { return { id: doc.key }; });
-            ctx.body = docList;
-        })
-            .catch((err) => {
-            log_1.log.error('Could not retreive the document list stored in database', err);
-            ctx.status = 500;
-        });
-    }));
-    // Apply router and cors middlewares
-    return app
-        .use(koaCors())
-        .use(router.routes())
-        .use(router.allowedMethods());
-})
-    .then((app) => {
-    log_1.log.info(`Configured routes  ✓`);
-    // Create server
-    if (useHttps) {
-        const fs = __webpack_require__(30);
-        return __webpack_require__(32).createServer({
-            key: fs.readFileSync(key),
-            cert: fs.readFileSync(cert),
-            ca: fs.readFileSync(ca)
-        }, app.callback());
-    }
-    else {
-        return http.createServer(app.callback());
-    }
-})
-    .then((server) => {
-    log_1.log.info(`Configured server  ✓`);
-    // Configure storage bot
-    const bot = new netflux_1.BotServer({ signalingURL, bot: { url: botURL, server } });
-    bot.onWebChannel = (wc) => {
-        log_1.log.info('New peer to peer network invitation received. Waiting for a document key...');
-        const botStorage = new BotStorage_1.BotStorage(name, wc, mongooseAdapter);
-        bot.onWebChannelReady = (wc) => { botStorage.sendKeyRequest(wc); };
-    };
-    return new Promise((resolve, reject) => {
-        // Start the server
-        server.listen(port, host, resolve);
-    });
-})
-    .then(() => {
-    log_1.log.info(`Successfully started the storage bot server at ${host}:${port} with the following settings`, { name, host, port, botURL, signalingURL, useHttps, logLevel, logIntoFile });
-})
-    .catch((err) => {
-    log_1.log.fatal(err);
-});
-
-
-/***/ }),
-/* 52 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -13391,7 +13252,7 @@ mongooseAdapter.connect('localhost')
  */
 // GENERATED CODE -- DO NOT EDIT!
 
-var jspb = __webpack_require__(12);
+var jspb = __webpack_require__(6);
 var goog = jspb;
 var global = Function('return this')();
 
@@ -13873,46 +13734,74 @@ goog.object.extend(exports, proto);
 
 
 /***/ }),
-/* 53 */
-/***/ (function(module, exports) {
-
-module.exports = require("bunyan");
-
-/***/ }),
-/* 54 */
-/***/ (function(module, exports) {
-
-module.exports = require("eventsource");
-
-/***/ }),
-/* 55 */
-/***/ (function(module, exports) {
-
-module.exports = require("mongoose");
-
-/***/ }),
 /* 56 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = require("node-fetch");
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const mongoose = __webpack_require__(57);
+const mute_core_1 = __webpack_require__(14);
+const log_1 = __webpack_require__(12);
+class MongooseAdapter {
+    constructor() {
+        this.docSchema = new mongoose.Schema({
+            key: { type: String, require: true },
+            doc: { type: Object }
+        });
+        this.docModel = mongoose.model('Doc', this.docSchema);
+    }
+    connect(url) {
+        const uri = `mongodb://${url}/docs`;
+        return mongoose.connect(uri)
+            .then(() => {
+            this.db = mongoose.connection;
+            mongoose.connection.on('close', () => {
+                log_1.log.warn(`Connection to the database ${uri} has been closed`);
+            });
+        });
+    }
+    find(key) {
+        return this.docModel.findOne({ key })
+            .then((response) => {
+            if (response !== null) {
+                return response.doc.map((op) => {
+                    return mute_core_1.RichLogootSOperation.fromPlain(op);
+                });
+            }
+            return response;
+        });
+    }
+    list() {
+        return this.docModel.find().exec();
+    }
+    save(key, doc) {
+        const query = { key };
+        const update = { doc };
+        const options = { upsert: true, new: true, setDefaultsOnInsert: true };
+        return this.docModel.findOneAndUpdate(query, update, options).exec();
+    }
+}
+exports.MongooseAdapter = MongooseAdapter;
+
 
 /***/ }),
 /* 57 */
 /***/ (function(module, exports) {
 
-module.exports = require("text-encoding");
+module.exports = require("mongoose");
 
 /***/ }),
 /* 58 */
 /***/ (function(module, exports) {
 
-module.exports = require("url");
+module.exports = require("fs");
 
 /***/ }),
 /* 59 */
 /***/ (function(module, exports) {
 
-module.exports = require("wrtc");
+module.exports = require("https");
 
 /***/ })
 /******/ ]);
