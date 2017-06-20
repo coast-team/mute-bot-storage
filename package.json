@@ -24,8 +24,10 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "bunyan": "^1.8.8",
-    "express": "^4.14.0",
     "google-protobuf": "~3.3.0",
+    "kcors": "^2.2.1",
+    "koa": "^2.2.0",
+    "koa-router": "^7.2.1",
     "mongoose": "^4.7.1",
     "mute-core": "^0.1.2",
     "mute-structs": "^0.1.2",
