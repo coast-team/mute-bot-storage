@@ -12,12 +12,12 @@ export class MongooseAdapter {
   constructor () {
     this.docSchema = new mongoose.Schema({
       key: { type: String, require: true },
-      doc: { type: Object }
+      doc: { type: Object },
     })
     this.docModel = mongoose.model('Doc', this.docSchema)
   }
 
-  connect(url: string): Promise<void> {
+  connect (url: string): Promise<void> {
     const uri = `mongodb://${url}/docs`
     return mongoose.connect(uri)
       .then(() => {

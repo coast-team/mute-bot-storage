@@ -8,6 +8,7 @@
     "dev": "npm run build:live",
     "build": "webpack",
     "build:live": "nodemon --exec ts-node ./src/index.ts -- --logLevel trace | bunyan",
+    "lint": "tslint src/*.ts src/**/*.ts -e 'src/**/*.proto' -e 'src/**/*.d.ts'",
     "protoc": "protoc/protoc-3.2.0-linux-x86_64 --js_out=import_style=commonjs,binary:. src/proto/message.proto",
     "cz": "git-cz",
     "commitmsg": "validate-commit-msg"
@@ -49,6 +50,7 @@
     "ts-loader": "^2.0.0",
     "ts-node": "^3.0.2",
     "tslint": "^5.1.0",
+    "tslint-eslint-rules": "^4.1.1",
     "typescript": "~2.3.4",
     "validate-commit-msg": "^2.11.1",
     "webpack": "^3.0.0",

@@ -1,17 +1,17 @@
-import { ReplaySubject, BehaviorSubject, Subject } from 'rxjs'
 import {
-  MuteCore,
-  BroadcastMessage,
-  SendRandomlyMessage,
   AbstractMessage,
-  SendToMessage,
-  NetworkMessage,
+  BroadcastMessage,
   JoinEvent,
+  MuteCore,
+  NetworkMessage,
   RichLogootSOperation,
+  SendRandomlyMessage,
+  SendToMessage,
   State } from 'mute-core'
+import { BehaviorSubject, ReplaySubject, Subject } from 'rxjs'
 
-import { MongooseAdapter } from './MongooseAdapter'
 import { log } from './log'
+import { MongooseAdapter } from './MongooseAdapter'
 const pb = require('./proto/message_pb.js')
 
 // TODO: BotStorage should serialize document in DB
@@ -29,7 +29,7 @@ export class BotStorage {
   private peerLeaveSubject: ReplaySubject<number>
   private stateSubject: Subject<State>
 
-  constructor(pseudonym, webChannel, mongooseAdapter: MongooseAdapter) {
+  constructor (pseudonym, webChannel, mongooseAdapter: MongooseAdapter) {
     this.pseudonym = pseudonym
     this.joinSubject = new Subject<JoinEvent>()
     this.messageSubject = new ReplaySubject()
@@ -84,7 +84,7 @@ export class BotStorage {
     msg.setKey('')
     webChannel.sendTo(webChannel.members[0], this.buildMessage({
       service: 'botprotocol',
-      content: msg.serializeBinary()
+      content: msg.serializeBinary(),
     }))
   }
 
@@ -117,7 +117,10 @@ export class BotStorage {
           log.error(`The document ${docKey} could not be saved into database`, err)
         })
     })
-    this.muteCore.syncService.setJoinAndStateSources(this.joinSubject.asObservable() as any, this.stateSubject.asObservable() as any)
+    this.muteCore.syncService.setJoinAndStateSources(
+      this.joinSubject.asObservable() as any, this.stateSubject.asObservable() as any,
+    )
+
     this.muteCore.init(docKey)
   }
 
@@ -127,12 +130,12 @@ export class BotStorage {
     if (id !== undefined) {
       this.webChannel.sendTo(this.webChannel.members[0], this.buildMessage({
         service: 'botprotocol',
-        content: msg.serializeBinary()
+        content: msg.serializeBinary(),
       }))
     } else {
       this.webChannel.send(this.buildMessage({
         service: 'botprotocol',
-        content: msg.serializeBinary()
+        content: msg.serializeBinary(),
       }))
     }
   }

@@ -1,14 +1,14 @@
-import { BotServer } from 'netflux'
-import * as https from 'https'
+import * as program from 'commander'
 import * as http from 'http'
+import * as https from 'https'
+import * as koaCors from 'kcors'
 import * as Koa from 'koa'
 import * as KoaRouter from 'koa-router'
-import * as koaCors from 'kcors'
-import * as program from 'commander'
+import { BotServer } from 'netflux'
 
 import { BotStorage } from './BotStorage'
-import { MongooseAdapter } from './MongooseAdapter'
 import { createLogger, log } from './log'
+import { MongooseAdapter } from './MongooseAdapter'
 
 // Default options
 const defaults = {
@@ -22,7 +22,7 @@ const defaults = {
   cert: '',
   ca: '',
   logLevel: 'info',
-  logIntoFile: false
+  logIntoFile: false,
 }
 
 // Configure command-line interface
@@ -44,7 +44,8 @@ program
   .option('-c, --cert <value>',
     `The server certificate`)
   .option('-a, --ca <value>',
-    `The additional intermediate certificate or certificates that web browsers will need in order to validate the server certificate.`)
+    `The additional intermediate certificate or certificates that web browsers
+      will need in order to validate the server certificate.`)
   .option('-l, --logLevel <none|trace|debug|info|warn|error|fatal>',
     `Logging level. Default: "info". `,
     /^(none|trace|debug|info|warn|error|fatal)$/i, defaults.logLevel)
@@ -67,7 +68,7 @@ createLogger(logIntoFile, logLevel)
 process.on('uncaughtException', (err) => log.fatal(err))
 
 // Connect to MongoDB
-let error = null
+const error = null
 const mongooseAdapter = new MongooseAdapter()
 mongooseAdapter.connect('localhost')
   .then(() => {
@@ -85,14 +86,14 @@ mongooseAdapter.connect('localhost')
       .get('/docs', async (ctx, next) => {
         await mongooseAdapter.list()
           .then((docs: any[]) => {
-            const docList = docs.map((doc) => { return { id: doc.key }})
+            const docList = docs.map((doc) => ({ id: doc.key }))
             ctx.body = docList
           })
           .catch( (err) => {
             log.error('Could not retreive the document list stored in database', err)
             ctx.status = 500
           })
-    })
+      })
 
     // Apply router and cors middlewares
     return app
@@ -109,7 +110,7 @@ mongooseAdapter.connect('localhost')
       return require('https').createServer({
         key: fs.readFileSync(key),
         cert: fs.readFileSync(cert),
-        ca: fs.readFileSync(ca)
+        ca: fs.readFileSync(ca),
       }, app.callback())
     } else {
       return http.createServer(app.callback())
@@ -123,7 +124,7 @@ mongooseAdapter.connect('localhost')
     bot.onWebChannel = (wc) => {
       log.info('New peer to peer network invitation received. Waiting for a document key...')
       const botStorage = new BotStorage(name, wc, mongooseAdapter)
-      bot.onWebChannelReady = (wc) => { botStorage.sendKeyRequest(wc) }
+      bot.onWebChannelReady = (v) => { botStorage.sendKeyRequest(v) }
     }
 
     return new Promise((resolve, reject) => {
@@ -133,7 +134,7 @@ mongooseAdapter.connect('localhost')
   })
   .then(() => {
     log.info(`Successfully started the storage bot server at ${host}:${port} with the following settings`,
-      {name, host, port, botURL, signalingURL, useHttps, logLevel, logIntoFile}
+      {name, host, port, botURL, signalingURL, useHttps, logLevel, logIntoFile},
     )
   })
   .catch((err) => {
