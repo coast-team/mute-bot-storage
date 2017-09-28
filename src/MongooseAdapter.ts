@@ -1,13 +1,16 @@
-import * as mongoose from 'mongoose'
+import { Connection, Document, Model, Schema } from 'mongoose'
 import { RichLogootSOperation } from 'mute-core'
 
 import { log } from './log'
 
+const mongoose = require('mongoose')
+mongoose.Promise = global.Promise
+
 export class MongooseAdapter {
 
-  private db: mongoose.Connection
-  private docSchema: mongoose.Schema
-  private docModel: mongoose.Model<mongoose.Document>
+  private db: Connection
+  private docSchema: Schema
+  private docModel: Model<Document>
 
   constructor () {
     this.docSchema = new mongoose.Schema({
@@ -19,7 +22,9 @@ export class MongooseAdapter {
 
   connect (url: string): Promise<void> {
     const uri = `mongodb://${url}/docs`
-    return mongoose.connect(uri)
+    return mongoose.connect(uri, {
+      useMongoClient: true,
+    })
       .then(() => {
         this.db = mongoose.connection
         mongoose.connection.on('close', () => {

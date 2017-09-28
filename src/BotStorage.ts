@@ -10,15 +10,16 @@ import {
   State } from 'mute-core'
 import { BehaviorSubject, ReplaySubject, Subject } from 'rxjs'
 
+import { WebGroup } from 'netflux'
 import { log } from './log'
 import { MongooseAdapter } from './MongooseAdapter'
-const pb = require('./proto/message_pb.js')
+import { BotProtocol, IBotProtocol, IMessage, Message } from './proto'
 
 // TODO: BotStorage should serialize document in DB
 export class BotStorage {
 
   private mongooseAdapter: MongooseAdapter
-  private webChannel
+  private wg
   private muteCore: MuteCore
   private pseudonym: string
   private url: string
@@ -29,7 +30,7 @@ export class BotStorage {
   private peerLeaveSubject: ReplaySubject<number>
   private stateSubject: Subject<State>
 
-  constructor (pseudonym, webChannel, mongooseAdapter: MongooseAdapter) {
+  constructor (pseudonym: string, wg: WebGroup, mongooseAdapter: MongooseAdapter) {
     this.pseudonym = pseudonym
     this.joinSubject = new Subject<JoinEvent>()
     this.messageSubject = new ReplaySubject()
@@ -37,17 +38,17 @@ export class BotStorage {
     this.peerLeaveSubject = new ReplaySubject()
     this.stateSubject = new Subject<State>()
 
-    this.webChannel = webChannel
+    this.wg = wg
 
-    webChannel.onMessage = (id, bytes, isBroadcast) => {
-      const msg = pb.Message.deserializeBinary(bytes)
-      if (msg.getService() === 'botprotocol') {
-        const docKey = pb.BotProtocol.deserializeBinary(msg.getContent()).getKey()
+    wg.onMessage = (id, bytes: Uint8Array, isBroadcast) => {
+      const msg: IMessage = Message.decode(bytes)
+      if (msg.service === 'botprotocol') {
+        const docKey: string = BotProtocol.decode(msg.content).key
 
         this.mongooseAdapter.find(docKey)
           .then((doc: RichLogootSOperation[]) => {
             this.initMuteCore(docKey)
-            this.joinSubject.next(new JoinEvent(this.webChannel.myId, docKey, false))
+            this.joinSubject.next(new JoinEvent(this.wg.myId, docKey, false))
             if (doc === null) {
               log.info(`Document ${docKey} was not found in database, thus create a new document`)
               this.stateSubject.next(new State(new Map(), []))
@@ -60,31 +61,29 @@ export class BotStorage {
             log.error(`Error when searching for the document ${docKey}`, err)
           })
 
-        webChannel.onMessage = (id, bytes, isBroadcast) => {
-          const msg = pb.Message.deserializeBinary(bytes)
-          this.messageSubject.next(new NetworkMessage(msg.getService(), id, isBroadcast, msg.getContent()))
+        wg.onMessage = (id, bytes: Uint8Array, isBroadcast) => {
+          const msg: IMessage = Message.decode(bytes)
+          this.messageSubject.next(new NetworkMessage(msg.service, id, isBroadcast, msg.content))
         }
       } else {
-        this.messageSubject.next(new NetworkMessage(msg.getService(), id, isBroadcast, msg.getContent()))
+        this.messageSubject.next(new NetworkMessage(msg.service, id, isBroadcast, msg.content))
       }
     }
 
     // this.sendMyUrl()
-    webChannel.onPeerJoin = (id) => {
+    wg.onMemberJoin = (id) => {
       // this.sendMyUrl(id)
       this.peerJoinSubject.next(id)
     }
-    webChannel.onPeerLeave = (id) => this.peerLeaveSubject.next(id)
+    wg.onMemberLeave = (id) => this.peerLeaveSubject.next(id)
 
     this.mongooseAdapter = mongooseAdapter
   }
 
-  sendKeyRequest (webChannel) {
-    const msg = new pb.BotProtocol()
-    msg.setKey('')
-    webChannel.sendTo(webChannel.members[0], this.buildMessage({
+  sendKeyRequest (wg) {
+    wg.sendTo(wg.members[0], this.encode({
       service: 'botprotocol',
-      content: msg.serializeBinary(),
+      content: BotProtocol.encode(BotProtocol.create({ key: '' })).finish(),
     }))
   }
 
@@ -93,14 +92,14 @@ export class BotStorage {
     this.muteCore = new MuteCore(42)
     this.muteCore.messageSource = this.messageSubject.asObservable() as any
     this.muteCore.onMsgToBroadcast.subscribe((bm: BroadcastMessage) => {
-      this.webChannel.send(this.buildMessage(bm))
+      this.wg.send(this.encode(bm))
     })
     this.muteCore.onMsgToSendRandomly.subscribe((srm: SendRandomlyMessage) => {
-      const index: number = Math.ceil(Math.random() * this.webChannel.members.length) - 1
-      this.webChannel.sendTo(this.webChannel.members[index], this.buildMessage(srm))
+      const index: number = Math.ceil(Math.random() * this.wg.members.length) - 1
+      this.wg.sendTo(this.wg.members[index], this.encode(srm))
     })
     this.muteCore.onMsgToSendTo.subscribe((stm: SendToMessage) => {
-      this.webChannel.sendTo(stm.id, this.buildMessage(stm))
+      this.wg.sendTo(stm.id, this.encode(stm))
     })
 
     // Collaborators config
@@ -124,26 +123,23 @@ export class BotStorage {
     this.muteCore.init(docKey)
   }
 
-  private sendMyUrl (id?: number) {
-    const msg = new pb.BotResponse()
-    msg.setUrl(this.url)
-    if (id !== undefined) {
-      this.webChannel.sendTo(this.webChannel.members[0], this.buildMessage({
-        service: 'botprotocol',
-        content: msg.serializeBinary(),
-      }))
-    } else {
-      this.webChannel.send(this.buildMessage({
-        service: 'botprotocol',
-        content: msg.serializeBinary(),
-      }))
-    }
-  }
+  // private sendMyUrl (id?: number) {
+  //   const msg = new pb.BotResponse()
+  //   msg.setUrl(this.url)
+  //   if (id !== undefined) {
+  //     this.wg.sendTo(this.wg.members[0], this.encode({
+  //       service: 'botprotocol',
+  //       content: msg.serializeBinary(),
+  //     }))
+  //   } else {
+  //     this.wg.send(this.encode({
+  //       service: 'botprotocol',
+  //       content: msg.serializeBinary(),
+  //     }))
+  //   }
+  // }
 
-  private buildMessage (msg: AbstractMessage) {
-    const pbMsg = new pb.Message()
-    pbMsg.setService(msg.service)
-    pbMsg.setContent(msg.content)
-    return pbMsg.serializeBinary()
+  private encode (msg: AbstractMessage) {
+    return Message.encode(Message.create(msg)).finish()
   }
 }

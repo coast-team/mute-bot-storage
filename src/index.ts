@@ -4,14 +4,28 @@ import * as https from 'https'
 import * as koaCors from 'kcors'
 import * as Koa from 'koa'
 import * as KoaRouter from 'koa-router'
-import { BotServer } from 'netflux'
+import { WebGroup, WebGroupBotServer, WebGroupState } from 'netflux'
 
 import { BotStorage } from './BotStorage'
 import { createLogger, log } from './log'
 import { MongooseAdapter } from './MongooseAdapter'
 
+interface IOptions {
+  name: string,
+  host: string,
+  port: number,
+  botURL: string,
+  signalingURL: string,
+  useHttps: boolean,
+  key: string,
+  cert: string,
+  ca: string,
+  logLevel: string,
+  logIntoFile: boolean
+}
+
 // Default options
-const defaults = {
+const defaults: IOptions = {
   name: 'Repono',
   host: '0.0.0.0',
   port: 20000,
@@ -57,7 +71,7 @@ if (!program.host) {
 }
 
 // Command line parameters
-const {name, host, port, botURL, signalingURL, key, cert, ca, logLevel} = program
+const {name, host, port, botURL, signalingURL, key, cert, ca, logLevel} = program as any
 const useHttps = (program as any).useHttps ? true : false
 const logIntoFile = (program as any).logFile ? true : false
 
@@ -116,15 +130,19 @@ mongooseAdapter.connect('localhost')
       return http.createServer(app.callback())
     }
   })
-  .then((server) => {
+  .then((server: http.Server|https.Server) => {
     log.info(`Configured server  ✓`)
 
     // Configure storage bot
-    const bot = new BotServer({signalingURL, bot: {url: botURL, server}})
-    bot.onWebChannel = (wc) => {
+    const bot = new WebGroupBotServer({url: botURL, server, webGroupOptions: { signalingURL }})
+    bot.onWebGroup = (wg: WebGroup) => {
       log.info('New peer to peer network invitation received. Waiting for a document key...')
-      const botStorage = new BotStorage(name, wc, mongooseAdapter)
-      bot.onWebChannelReady = (v) => { botStorage.sendKeyRequest(v) }
+      const botStorage = new BotStorage(name, wg, mongooseAdapter)
+      wg.onStateChange = (state: WebGroupState) => {
+        if (state === WebGroupState.JOINED) {
+          botStorage.sendKeyRequest(wg)
+        }
+      }
     }
 
     return new Promise((resolve, reject) => {
