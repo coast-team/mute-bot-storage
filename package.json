@@ -12,6 +12,7 @@
     "proto": "pbjs -t static-module -w es6 --no-verify --no-delimited --no-convert src/proto/index.proto -o src/proto/index.es6.js && pbts src/proto/index.es6.js -o src/proto/index.d.ts",
     "postproto": "babel --presets env -o src/proto/index.js src/proto/index.es6.js && rm src/proto/index.es6.js",
     "cz": "git-cz",
+    "precommit": "npm run lint",
     "commitmsg": "validate-commit-msg"
   },
   "bin": {
@@ -54,7 +55,7 @@
     "ts-node": "^3.0.2",
     "tslint": "^5.1.0",
     "tslint-eslint-rules": "^4.1.1",
-    "typescript": "~2.4.2",
+    "typescript": "~2.5.3",
     "validate-commit-msg": "^2.11.1",
     "webpack": "^3.0.0",
     "webpack-node-externals": "^1.5.4"

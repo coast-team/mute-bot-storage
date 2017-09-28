@@ -81,7 +81,7 @@ export class BotStorage {
   }
 
   sendKeyRequest (wg) {
-    wg.sendTo(wg.members[0], this.encode({
+    wg.sendTo(wg.members[1], this.encode({
       service: 'botprotocol',
       content: BotProtocol.encode(BotProtocol.create({ key: '' })).finish(),
     }))

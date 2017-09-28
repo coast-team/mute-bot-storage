@@ -11928,7 +11928,7 @@ class BotStorage {
         this.mongooseAdapter = mongooseAdapter;
     }
     sendKeyRequest(wg) {
-        wg.sendTo(wg.members[0], this.encode({
+        wg.sendTo(wg.members[1], this.encode({
             service: 'botprotocol',
             content: proto_1.BotProtocol.encode(proto_1.BotProtocol.create({ key: '' })).finish(),
         }));
