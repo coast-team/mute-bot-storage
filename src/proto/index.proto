@@ -12,3 +12,7 @@ message BotProtocol {
 message BotResponse {
   string url = 1;
 }
+
+message Keys {
+  repeated string keys = 1;
+}

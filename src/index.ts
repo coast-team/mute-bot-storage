@@ -3,12 +3,14 @@ import * as http from 'http'
 import * as https from 'https'
 import * as koaCors from 'kcors'
 import * as Koa from 'koa'
+import * as bodyParser from 'koa-bodyparser'
 import * as KoaRouter from 'koa-router'
 import { WebGroup, WebGroupBotServer, WebGroupState } from 'netflux'
 
 import { BotStorage } from './BotStorage'
 import { createLogger, log } from './log'
 import { MongooseAdapter } from './MongooseAdapter'
+import { Keys } from './proto'
 
 interface IOptions {
   name: string,
@@ -83,8 +85,8 @@ process.on('uncaughtException', (err) => log.fatal(err))
 
 // Connect to MongoDB
 const error = null
-const mongooseAdapter = new MongooseAdapter()
-mongooseAdapter.connect('localhost')
+const db = new MongooseAdapter()
+db.connect('localhost')
   .then(() => {
     log.info(`Connected to the database  ✓`)
 
@@ -97,8 +99,13 @@ mongooseAdapter.connect('localhost')
       .get('/name', (ctx, next) => {
         ctx.body = name
       })
+      .post('/exist', async (ctx, next) => {
+        const keys = (ctx.request as any).body
+        const existedKeys = await db.whichExist(keys)
+        ctx.body = JSON.stringify(existedKeys)
+      })
       .get('/docs', async (ctx, next) => {
-        await mongooseAdapter.list()
+        await db.list()
           .then((docs: any[]) => {
             const docList = docs.map((doc) => ({ id: doc.key }))
             ctx.body = docList
@@ -111,6 +118,7 @@ mongooseAdapter.connect('localhost')
 
     // Apply router and cors middlewares
     return app
+      .use(bodyParser())
       .use(koaCors())
       .use(router.routes())
       .use(router.allowedMethods())
@@ -137,7 +145,7 @@ mongooseAdapter.connect('localhost')
     const bot = new WebGroupBotServer({url: botURL, server, webGroupOptions: { signalingURL }})
     bot.onWebGroup = (wg: WebGroup) => {
       log.info('New peer to peer network invitation received. Waiting for a document key...')
-      const botStorage = new BotStorage(name, wg, mongooseAdapter)
+      const botStorage = new BotStorage(name, wg, db)
       wg.onStateChange = (state: WebGroupState) => {
         if (state === WebGroupState.JOINED) {
           botStorage.sendKeyRequest(wg)

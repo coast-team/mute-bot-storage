@@ -404,8 +404,8 @@ exports.IdentifierInterval = IdentifierInterval;
 Object.defineProperty(exports, "__esModule", { value: true });
 var identifier_1 = __webpack_require__(2);
 var identifierinterval_1 = __webpack_require__(3);
-var IDFactory = __webpack_require__(46);
-var iteratorhelperidentifier_1 = __webpack_require__(48);
+var IDFactory = __webpack_require__(47);
+var iteratorhelperidentifier_1 = __webpack_require__(49);
 var logootsadd_1 = __webpack_require__(19);
 var logootsblock_1 = __webpack_require__(8);
 var logootsdel_1 = __webpack_require__(20);
@@ -1078,15 +1078,15 @@ exports.LogootSRopes = LogootSRopes;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var BroadcastMessage_1 = __webpack_require__(39);
+var BroadcastMessage_1 = __webpack_require__(40);
 exports.BroadcastMessage = BroadcastMessage_1.BroadcastMessage;
-var JoinEvent_1 = __webpack_require__(40);
+var JoinEvent_1 = __webpack_require__(41);
 exports.JoinEvent = JoinEvent_1.JoinEvent;
-var NetworkMessage_1 = __webpack_require__(41);
+var NetworkMessage_1 = __webpack_require__(42);
 exports.NetworkMessage = NetworkMessage_1.NetworkMessage;
-var SendRandomlyMessage_1 = __webpack_require__(42);
+var SendRandomlyMessage_1 = __webpack_require__(43);
 exports.SendRandomlyMessage = SendRandomlyMessage_1.SendRandomlyMessage;
-var SendToMessage_1 = __webpack_require__(43);
+var SendToMessage_1 = __webpack_require__(44);
 exports.SendToMessage = SendToMessage_1.SendToMessage;
 var AbstractMessage_1 = __webpack_require__(1);
 exports.AbstractMessage = AbstractMessage_1.AbstractMessage;
@@ -1430,7 +1430,7 @@ exports.StateVector = StateVector;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const bunyan = __webpack_require__(53);
+const bunyan = __webpack_require__(54);
 function createLogger(logIntoFile, logLevel) {
     const options = {
         name: 'mute-bot-storage',
@@ -1498,7 +1498,7 @@ exports.NetworkMessage = _3.NetworkMessage;
 exports.SendRandomlyMessage = _3.SendRandomlyMessage;
 exports.SendToMessage = _3.SendToMessage;
 exports.AbstractMessage = _3.AbstractMessage;
-var MuteCore_1 = __webpack_require__(49);
+var MuteCore_1 = __webpack_require__(50);
 exports.MuteCore = MuteCore_1.MuteCore;
 var _4 = __webpack_require__(25);
 exports.RichLogootSOperation = _4.RichLogootSOperation;
@@ -1514,7 +1514,7 @@ exports.State = _4.State;
 Object.defineProperty(exports, "__esModule", { value: true });
 var Collaborator_1 = __webpack_require__(17);
 exports.Collaborator = Collaborator_1.Collaborator;
-var CollaboratorsService_1 = __webpack_require__(38);
+var CollaboratorsService_1 = __webpack_require__(39);
 exports.CollaboratorsService = CollaboratorsService_1.CollaboratorsService;
 //# sourceMappingURL=index.js.map
 
@@ -1542,7 +1542,7 @@ exports.Collaborator = Collaborator;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var DocService_1 = __webpack_require__(45);
+var DocService_1 = __webpack_require__(46);
 exports.DocService = DocService_1.DocService;
 //# sourceMappingURL=index.js.map
 
@@ -2175,9 +2175,9 @@ var State_1 = __webpack_require__(26);
 exports.State = State_1.State;
 var StateVector_1 = __webpack_require__(12);
 exports.StateVector = StateVector_1.StateVector;
-var SyncService_1 = __webpack_require__(50);
+var SyncService_1 = __webpack_require__(51);
 exports.SyncService = SyncService_1.SyncService;
-var SyncMessageService_1 = __webpack_require__(51);
+var SyncMessageService_1 = __webpack_require__(52);
 exports.SyncMessageService = SyncMessageService_1.SyncMessageService;
 //# sourceMappingURL=index.js.map
 
@@ -2217,11 +2217,12 @@ const program = __webpack_require__(28);
 const http = __webpack_require__(29);
 const koaCors = __webpack_require__(30);
 const Koa = __webpack_require__(31);
-const KoaRouter = __webpack_require__(32);
-const netflux_1 = __webpack_require__(33);
-const BotStorage_1 = __webpack_require__(37);
+const bodyParser = __webpack_require__(32);
+const KoaRouter = __webpack_require__(33);
+const netflux_1 = __webpack_require__(34);
+const BotStorage_1 = __webpack_require__(38);
 const log_1 = __webpack_require__(13);
-const MongooseAdapter_1 = __webpack_require__(55);
+const MongooseAdapter_1 = __webpack_require__(56);
 // Default options
 const defaults = {
     name: 'Repono',
@@ -2264,8 +2265,8 @@ log_1.createLogger(logIntoFile, logLevel);
 process.on('uncaughtException', (err) => log_1.log.fatal(err));
 // Connect to MongoDB
 const error = null;
-const mongooseAdapter = new MongooseAdapter_1.MongooseAdapter();
-mongooseAdapter.connect('localhost')
+const db = new MongooseAdapter_1.MongooseAdapter();
+db.connect('localhost')
     .then(() => {
     log_1.log.info(`Connected to the database  ✓`);
     // Configure routes
@@ -2276,8 +2277,13 @@ mongooseAdapter.connect('localhost')
         .get('/name', (ctx, next) => {
         ctx.body = name;
     })
+        .post('/exist', (ctx, next) => __awaiter(this, void 0, void 0, function* () {
+        const keys = ctx.request.body;
+        const existedKeys = yield db.whichExist(keys);
+        ctx.body = JSON.stringify(existedKeys);
+    }))
         .get('/docs', (ctx, next) => __awaiter(this, void 0, void 0, function* () {
-        yield mongooseAdapter.list()
+        yield db.list()
             .then((docs) => {
             const docList = docs.map((doc) => ({ id: doc.key }));
             ctx.body = docList;
@@ -2289,6 +2295,7 @@ mongooseAdapter.connect('localhost')
     }));
     // Apply router and cors middlewares
     return app
+        .use(bodyParser())
         .use(koaCors())
         .use(router.routes())
         .use(router.allowedMethods());
@@ -2297,8 +2304,8 @@ mongooseAdapter.connect('localhost')
     log_1.log.info(`Configured routes  ✓`);
     // Create server
     if (useHttps) {
-        const fs = __webpack_require__(57);
-        return __webpack_require__(58).createServer({
+        const fs = __webpack_require__(58);
+        return __webpack_require__(59).createServer({
             key: fs.readFileSync(key),
             cert: fs.readFileSync(cert),
             ca: fs.readFileSync(ca),
@@ -2314,7 +2321,7 @@ mongooseAdapter.connect('localhost')
     const bot = new netflux_1.WebGroupBotServer({ url: botURL, server, webGroupOptions: { signalingURL } });
     bot.onWebGroup = (wg) => {
         log_1.log.info('New peer to peer network invitation received. Waiting for a document key...');
-        const botStorage = new BotStorage_1.BotStorage(name, wg, mongooseAdapter);
+        const botStorage = new BotStorage_1.BotStorage(name, wg, db);
         wg.onStateChange = (state) => {
             if (state === netflux_1.WebGroupState.JOINED) {
                 botStorage.sendKeyRequest(wg);
@@ -2362,10 +2369,16 @@ module.exports = require("koa");
 /* 32 */
 /***/ (function(module, exports) {
 
-module.exports = require("koa-router");
+module.exports = require("koa-bodyparser");
 
 /***/ }),
 /* 33 */
+/***/ (function(module, exports) {
+
+module.exports = require("koa-router");
+
+/***/ }),
+/* 34 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -2386,10 +2399,10 @@ catch (err) {
     console.warn(err.message);
 }
 global.WebSocket = __webpack_require__(14);
-var textEncoding = __webpack_require__(34);
+var textEncoding = __webpack_require__(35);
 global.TextEncoder = textEncoding.TextEncoder;
 global.TextDecoder = textEncoding.TextDecoder;
-global.crypto = __webpack_require__(35);
+global.crypto = __webpack_require__(36);
 global.Event = (function () {
     function Event(name) {
         this.name = name;
@@ -11609,7 +11622,7 @@ var Topology = (function () {
  * @external {NodeJSHttpsServer} https://nodejs.org/api/https.html#https_class_https_server
  */
 
-var urlLib = __webpack_require__(36);
+var urlLib = __webpack_require__(37);
 var uws = __webpack_require__(14);
 var BotServer = (function () {
     function BotServer(_a) {
@@ -11852,25 +11865,25 @@ var WebGroupBotServer = (function () {
 
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports) {
 
 module.exports = require("text-encoding");
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports) {
 
 module.exports = require("crypto");
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports) {
 
 module.exports = require("url");
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11879,7 +11892,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mute_core_1 = __webpack_require__(15);
 const rxjs_1 = __webpack_require__(0);
 const log_1 = __webpack_require__(13);
-const proto_1 = __webpack_require__(54);
+const proto_1 = __webpack_require__(55);
 // TODO: BotStorage should serialize document in DB
 class BotStorage {
     constructor(pseudonym, wg, mongooseAdapter) {
@@ -11899,11 +11912,11 @@ class BotStorage {
                     this.initMuteCore(docKey);
                     this.joinSubject.next(new mute_core_1.JoinEvent(this.wg.myId, docKey, false));
                     if (doc === null) {
-                        log_1.log.info(`Document ${docKey} was not found in database, thus create a new document`);
+                        log_1.log.info(`"${docKey}" document was not found in database: create a new document`);
                         this.stateSubject.next(new mute_core_1.State(new Map(), []));
                     }
                     else {
-                        log_1.log.info(`Document ${docKey} retreived from database`);
+                        log_1.log.info(`Document "${docKey}" retreived from database`);
                         this.stateSubject.next(new mute_core_1.State(new Map(), doc));
                     }
                 })
@@ -11986,7 +11999,7 @@ exports.BotStorage = BotStorage;
 
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11995,7 +12008,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var rxjs_1 = __webpack_require__(0);
 var _1 = __webpack_require__(5);
 var Collaborator_1 = __webpack_require__(17);
-var collaborator_pb_1 = __webpack_require__(44);
+var collaborator_pb_1 = __webpack_require__(45);
 var CollaboratorsService = /** @class */ (function () {
     function CollaboratorsService() {
         this.collaboratorChangePseudoSubject = new rxjs_1.Subject();
@@ -12138,7 +12151,7 @@ exports.CollaboratorsService = CollaboratorsService;
 //# sourceMappingURL=CollaboratorsService.js.map
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12166,7 +12179,7 @@ exports.BroadcastMessage = BroadcastMessage;
 //# sourceMappingURL=BroadcastMessage.js.map
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12184,7 +12197,7 @@ exports.JoinEvent = JoinEvent;
 //# sourceMappingURL=JoinEvent.js.map
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12215,7 +12228,7 @@ exports.NetworkMessage = NetworkMessage;
 //# sourceMappingURL=NetworkMessage.js.map
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12243,7 +12256,7 @@ exports.SendRandomlyMessage = SendRandomlyMessage;
 //# sourceMappingURL=SendRandomlyMessage.js.map
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12273,7 +12286,7 @@ exports.SendToMessage = SendToMessage;
 //# sourceMappingURL=SendToMessage.js.map
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12384,7 +12397,7 @@ module.exports = $root;
 
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12529,7 +12542,7 @@ exports.DocService = DocService;
 //# sourceMappingURL=DocService.js.map
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12554,7 +12567,7 @@ exports.DocService = DocService;
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var identifier_1 = __webpack_require__(2);
-var infinitestring_1 = __webpack_require__(47);
+var infinitestring_1 = __webpack_require__(48);
 function isMine(replica) {
     return function (base) { return base[base.length - 2] === replica; };
 }
@@ -12594,7 +12607,7 @@ exports.createBetweenPosition = createBetweenPosition;
 //# sourceMappingURL=idfactory.js.map
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12642,7 +12655,7 @@ exports.InfiniteString = InfiniteString;
 //# sourceMappingURL=infinitestring.js.map
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12746,7 +12759,7 @@ exports.compareBase = compareBase;
 //# sourceMappingURL=iteratorhelperidentifier.js.map
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12825,7 +12838,7 @@ exports.MuteCore = MuteCore;
 //# sourceMappingURL=MuteCore.js.map
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13096,7 +13109,7 @@ exports.SyncService = SyncService;
 //# sourceMappingURL=SyncService.js.map
 
 /***/ }),
-/* 51 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13109,7 +13122,7 @@ var _1 = __webpack_require__(5);
 var ReplySyncEvent_1 = __webpack_require__(10);
 var RichLogootSOperation_1 = __webpack_require__(11);
 var StateVector_1 = __webpack_require__(12);
-var sync_pb_1 = __webpack_require__(52);
+var sync_pb_1 = __webpack_require__(53);
 var SyncMessageService = /** @class */ (function () {
     function SyncMessageService() {
         this.disposeSubject = new rxjs_1.Subject();
@@ -13336,7 +13349,7 @@ exports.SyncMessageService = SyncMessageService;
 //# sourceMappingURL=SyncMessageService.js.map
 
 /***/ }),
-/* 52 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14434,13 +14447,13 @@ module.exports = $root;
 
 
 /***/ }),
-/* 53 */
+/* 54 */
 /***/ (function(module, exports) {
 
 module.exports = require("bunyan");
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14449,7 +14462,7 @@ module.exports = require("bunyan");
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.default = exports.BotResponse = exports.BotProtocol = exports.Message = undefined;
+exports.default = exports.Keys = exports.BotResponse = exports.BotProtocol = exports.Message = undefined;
 
 var _minimal = __webpack_require__(6);
 
@@ -14746,11 +14759,103 @@ var BotResponse = exports.BotResponse = $root.BotResponse = function () {
     return BotResponse;
 }();
 
+var Keys = exports.Keys = $root.Keys = function () {
+
+    /**
+     * Properties of a Keys.
+     * @exports IKeys
+     * @interface IKeys
+     * @property {Array.<string>} [keys] Keys keys
+     */
+
+    /**
+     * Constructs a new Keys.
+     * @exports Keys
+     * @classdesc Represents a Keys.
+     * @constructor
+     * @param {IKeys=} [properties] Properties to set
+     */
+    function Keys(properties) {
+        this.keys = [];
+        if (properties) for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i) {
+            if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
+        }
+    }
+
+    /**
+     * Keys keys.
+     * @member {Array.<string>}keys
+     * @memberof Keys
+     * @instance
+     */
+    Keys.prototype.keys = $util.emptyArray;
+
+    /**
+     * Creates a new Keys instance using the specified properties.
+     * @function create
+     * @memberof Keys
+     * @static
+     * @param {IKeys=} [properties] Properties to set
+     * @returns {Keys} Keys instance
+     */
+    Keys.create = function create(properties) {
+        return new Keys(properties);
+    };
+
+    /**
+     * Encodes the specified Keys message. Does not implicitly {@link Keys.verify|verify} messages.
+     * @function encode
+     * @memberof Keys
+     * @static
+     * @param {IKeys} message Keys message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    Keys.encode = function encode(message, writer) {
+        if (!writer) writer = $Writer.create();
+        if (message.keys != null && message.keys.length) for (var i = 0; i < message.keys.length; ++i) {
+            writer.uint32( /* id 1, wireType 2 =*/10).string(message.keys[i]);
+        }return writer;
+    };
+
+    /**
+     * Decodes a Keys message from the specified reader or buffer.
+     * @function decode
+     * @memberof Keys
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {Keys} Keys
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    Keys.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader)) reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length,
+            message = new $root.Keys();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (!(message.keys && message.keys.length)) message.keys = [];
+                    message.keys.push(reader.string());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    };
+
+    return Keys;
+}();
+
 exports.default = $root;
 
 
 /***/ }),
-/* 55 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14758,7 +14863,7 @@ exports.default = $root;
 Object.defineProperty(exports, "__esModule", { value: true });
 const mute_core_1 = __webpack_require__(15);
 const log_1 = __webpack_require__(13);
-const mongoose = __webpack_require__(56);
+const mongoose = __webpack_require__(57);
 mongoose.Promise = global.Promise;
 class MongooseAdapter {
     constructor() {
@@ -14794,6 +14899,14 @@ class MongooseAdapter {
     list() {
         return this.docModel.find().exec();
     }
+    whichExist(keys) {
+        return this.docModel.find({ key: { $in: keys } }).exec()
+            .then((docs) => {
+            if (docs !== null) {
+                return docs.map((doc) => doc.key);
+            }
+        });
+    }
     save(key, doc) {
         const query = { key };
         const update = { doc };
@@ -14805,19 +14918,19 @@ exports.MongooseAdapter = MongooseAdapter;
 
 
 /***/ }),
-/* 56 */
+/* 57 */
 /***/ (function(module, exports) {
 
 module.exports = require("mongoose");
 
 /***/ }),
-/* 57 */
+/* 58 */
 /***/ (function(module, exports) {
 
 module.exports = require("fs");
 
 /***/ }),
-/* 58 */
+/* 59 */
 /***/ (function(module, exports) {
 
 module.exports = require("https");

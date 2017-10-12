@@ -49,6 +49,15 @@ export class MongooseAdapter {
     return this.docModel.find().exec()
   }
 
+  whichExist (keys: string[]): Promise<string[]> {
+    return this.docModel.find({ key: { $in: keys } }).exec()
+      .then((docs) => {
+        if (docs !== null) {
+          return docs.map((doc: any) => doc.key)
+        }
+      })
+  }
+
   save (key: string, doc: RichLogootSOperation[]): Promise<any> {
     const query = {key}
     const update = {doc}

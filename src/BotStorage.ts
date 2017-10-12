@@ -50,10 +50,10 @@ export class BotStorage {
             this.initMuteCore(docKey)
             this.joinSubject.next(new JoinEvent(this.wg.myId, docKey, false))
             if (doc === null) {
-              log.info(`Document ${docKey} was not found in database, thus create a new document`)
+              log.info(`"${docKey}" document was not found in database: create a new document`)
               this.stateSubject.next(new State(new Map(), []))
             } else {
-              log.info(`Document ${docKey} retreived from database`)
+              log.info(`Document "${docKey}" retreived from database`)
               this.stateSubject.next(new State(new Map(), doc))
             }
           })

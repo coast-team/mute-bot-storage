@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.default = exports.BotResponse = exports.BotProtocol = exports.Message = undefined;
+exports.default = exports.Keys = exports.BotResponse = exports.BotProtocol = exports.Message = undefined;
 
 var _minimal = require("protobufjs/minimal");
 
@@ -298,6 +298,98 @@ var BotResponse = exports.BotResponse = $root.BotResponse = function () {
     };
 
     return BotResponse;
+}();
+
+var Keys = exports.Keys = $root.Keys = function () {
+
+    /**
+     * Properties of a Keys.
+     * @exports IKeys
+     * @interface IKeys
+     * @property {Array.<string>} [keys] Keys keys
+     */
+
+    /**
+     * Constructs a new Keys.
+     * @exports Keys
+     * @classdesc Represents a Keys.
+     * @constructor
+     * @param {IKeys=} [properties] Properties to set
+     */
+    function Keys(properties) {
+        this.keys = [];
+        if (properties) for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i) {
+            if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
+        }
+    }
+
+    /**
+     * Keys keys.
+     * @member {Array.<string>}keys
+     * @memberof Keys
+     * @instance
+     */
+    Keys.prototype.keys = $util.emptyArray;
+
+    /**
+     * Creates a new Keys instance using the specified properties.
+     * @function create
+     * @memberof Keys
+     * @static
+     * @param {IKeys=} [properties] Properties to set
+     * @returns {Keys} Keys instance
+     */
+    Keys.create = function create(properties) {
+        return new Keys(properties);
+    };
+
+    /**
+     * Encodes the specified Keys message. Does not implicitly {@link Keys.verify|verify} messages.
+     * @function encode
+     * @memberof Keys
+     * @static
+     * @param {IKeys} message Keys message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    Keys.encode = function encode(message, writer) {
+        if (!writer) writer = $Writer.create();
+        if (message.keys != null && message.keys.length) for (var i = 0; i < message.keys.length; ++i) {
+            writer.uint32( /* id 1, wireType 2 =*/10).string(message.keys[i]);
+        }return writer;
+    };
+
+    /**
+     * Decodes a Keys message from the specified reader or buffer.
+     * @function decode
+     * @memberof Keys
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {Keys} Keys
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    Keys.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader)) reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length,
+            message = new $root.Keys();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (!(message.keys && message.keys.length)) message.keys = [];
+                    message.keys.push(reader.string());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    };
+
+    return Keys;
 }();
 
 exports.default = $root;

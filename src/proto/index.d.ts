@@ -140,3 +140,48 @@ export class BotResponse {
      */
     public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): BotResponse;
 }
+
+/** Properties of a Keys. */
+export interface IKeys {
+
+    /** Keys keys */
+    keys?: string[];
+}
+
+/** Represents a Keys. */
+export class Keys {
+
+    /**
+     * Constructs a new Keys.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: IKeys);
+
+    /** Keys keys. */
+    public keys: string[];
+
+    /**
+     * Creates a new Keys instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Keys instance
+     */
+    public static create(properties?: IKeys): Keys;
+
+    /**
+     * Encodes the specified Keys message. Does not implicitly {@link Keys.verify|verify} messages.
+     * @param message Keys message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: IKeys, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a Keys message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Keys
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): Keys;
+}
