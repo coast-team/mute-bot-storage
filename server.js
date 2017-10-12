@@ -2231,6 +2231,7 @@ const defaults = {
     botURL: 'ws://localhost:20000',
     signalingURL: 'ws://localhost:10000',
     useHttps: false,
+    database: 'mutedocs',
     key: '',
     cert: '',
     ca: '',
@@ -2243,6 +2244,7 @@ program
     .option('-h, --host <ip or host name>', `Host address to bind to, Default: "${defaults.host}"`, defaults.host)
     .option('-p, --port <n>', `Port to use for the server. Default: ${defaults.port}`, defaults.port)
     .option('-b, --botURL <n>', `Bot public URL, to be shared on the p2p network. Default: ${defaults.botURL}`, defaults.botURL)
+    .option('-d, --database <n>', `Database name. Default: ${defaults.database}`, defaults.database)
     .option('-s, --signalingURL <url>', `Signaling server url. Default: ${defaults.signalingURL}\n`, defaults.signalingURL)
     .option('-t, --https', `If present, the REST API server is listening on HTTPS instead of HTTP`)
     .option('-k, --key <value>', `Private key for the certificate`)
@@ -2256,7 +2258,7 @@ if (!program.host) {
     throw new Error('-h, --host options is required');
 }
 // Command line parameters
-const { name, host, port, botURL, signalingURL, key, cert, ca, logLevel } = program;
+const { name, host, port, botURL, signalingURL, database, key, cert, ca, logLevel } = program;
 const useHttps = program.useHttps ? true : false;
 const logIntoFile = program.logFile ? true : false;
 // Configure logging
@@ -2266,7 +2268,7 @@ process.on('uncaughtException', (err) => log_1.log.fatal(err));
 // Connect to MongoDB
 const error = null;
 const db = new MongooseAdapter_1.MongooseAdapter();
-db.connect('localhost')
+db.connect('localhost', database)
     .then(() => {
     log_1.log.info(`Connected to the database  ✓`);
     // Configure routes
@@ -14873,8 +14875,9 @@ class MongooseAdapter {
         });
         this.docModel = mongoose.model('Doc', this.docSchema);
     }
-    connect(url) {
-        const uri = `mongodb://${url}/docs`;
+    connect(url, dbName) {
+        const uri = `mongodb://${url}/${dbName}`;
+        log_1.log.info('uri: ', uri);
         return mongoose.connect(uri, {
             useMongoClient: true,
         })

@@ -20,8 +20,9 @@ export class MongooseAdapter {
     this.docModel = mongoose.model('Doc', this.docSchema)
   }
 
-  connect (url: string): Promise<void> {
-    const uri = `mongodb://${url}/docs`
+  connect (url: string, dbName: string): Promise<void> {
+    const uri = `mongodb://${url}/${dbName}`
+    log.info('uri: ', uri)
     return mongoose.connect(uri, {
       useMongoClient: true,
     })

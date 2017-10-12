@@ -19,6 +19,7 @@ interface IOptions {
   botURL: string,
   signalingURL: string,
   useHttps: boolean,
+  database: string,
   key: string,
   cert: string,
   ca: string,
@@ -34,6 +35,7 @@ const defaults: IOptions = {
   botURL: 'ws://localhost:20000',
   signalingURL: 'ws://localhost:10000',
   useHttps: false,
+  database: 'mutedocs',
   key: '',
   cert: '',
   ca: '',
@@ -51,6 +53,8 @@ program
     `Port to use for the server. Default: ${defaults.port}`, defaults.port)
   .option('-b, --botURL <n>',
     `Bot public URL, to be shared on the p2p network. Default: ${defaults.botURL}`, defaults.botURL)
+  .option('-d, --database <n>',
+    `Database name. Default: ${defaults.database}`, defaults.database)
   .option('-s, --signalingURL <url>',
     `Signaling server url. Default: ${defaults.signalingURL}\n`, defaults.signalingURL)
   .option('-t, --https',
@@ -73,7 +77,7 @@ if (!program.host) {
 }
 
 // Command line parameters
-const {name, host, port, botURL, signalingURL, key, cert, ca, logLevel} = program as any
+const {name, host, port, botURL, signalingURL, database, key, cert, ca, logLevel} = program as any
 const useHttps = (program as any).useHttps ? true : false
 const logIntoFile = (program as any).logFile ? true : false
 
@@ -86,7 +90,7 @@ process.on('uncaughtException', (err) => log.fatal(err))
 // Connect to MongoDB
 const error = null
 const db = new MongooseAdapter()
-db.connect('localhost')
+db.connect('localhost', database)
   .then(() => {
     log.info(`Connected to the database  ✓`)
 
