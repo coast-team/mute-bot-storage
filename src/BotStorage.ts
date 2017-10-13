@@ -95,8 +95,9 @@ export class BotStorage {
       this.wg.send(this.encode(bm))
     })
     this.muteCore.onMsgToSendRandomly.subscribe((srm: SendRandomlyMessage) => {
-      const index: number = Math.ceil(Math.random() * this.wg.members.length) - 1
-      this.wg.sendTo(this.wg.members[index], this.encode(srm))
+      const members = this.wg.members.filter((id) => id !== this.wg.myId)
+      const index = Math.ceil(Math.random() * members.length) - 1
+      this.wg.sendTo(members[index], this.encode(srm))
     })
     this.muteCore.onMsgToSendTo.subscribe((stm: SendToMessage) => {
       this.wg.sendTo(stm.id, this.encode(stm))
@@ -122,22 +123,6 @@ export class BotStorage {
 
     this.muteCore.init(docKey)
   }
-
-  // private sendMyUrl (id?: number) {
-  //   const msg = new pb.BotResponse()
-  //   msg.setUrl(this.url)
-  //   if (id !== undefined) {
-  //     this.wg.sendTo(this.wg.members[0], this.encode({
-  //       service: 'botprotocol',
-  //       content: msg.serializeBinary(),
-  //     }))
-  //   } else {
-  //     this.wg.send(this.encode({
-  //       service: 'botprotocol',
-  //       content: msg.serializeBinary(),
-  //     }))
-  //   }
-  // }
 
   private encode (msg: AbstractMessage) {
     return Message.encode(Message.create(msg)).finish()
