@@ -11,7 +11,7 @@ export function createLogger (logIntoFile, logLevel: string) {
       type: 'rotating-file',
       period: '1d',
       count: 3,
-      path: `./${options.name}.log`,
+      path: `${process.cwd()}/${options.name}.log`,
     }]
   }
   log = bunyan.createLogger(options)
