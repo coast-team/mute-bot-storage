@@ -101,18 +101,14 @@ db.connect('localhost', database)
 
     router
       .get('/name', (ctx, next) => {
-        log.debug('/name')
         ctx.body = name
       })
       .post('/exist', async (ctx, next) => {
         const keys = (ctx.request as any).body
-        log.debug('Waiting /exist', keys)
-        const existedKeys = await db.whichExist([])
-        log.debug('finish /exist', existedKeys)
+        const existedKeys = await db.whichExist(keys)
         ctx.body = JSON.stringify(existedKeys)
       })
       .get('/docs', async (ctx, next) => {
-        log.debug('Waiting /docs')
         await db.list()
           .then((docs: any[]) => {
             const docList = docs.map((doc) => ({ id: doc.key }))
@@ -122,7 +118,6 @@ db.connect('localhost', database)
             log.error('Could not retreive the document list stored in database', err)
             ctx.status = 500
           })
-        log.debug('finish /docs')
       })
 
     // Apply router and cors middlewares
