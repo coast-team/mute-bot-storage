@@ -8,6 +8,7 @@
     "dev": "npm run build:live",
     "build": "webpack",
     "build:live": "nodemon --exec ts-node ./src/index.ts -- --logLevel trace | bunyan",
+    "builddev": "npm run build && scp server.js ovhmute:/root/container/botStorage",
     "lint": "tslint src/*.ts src/**/*.ts -e 'src/**/*.proto' -e 'src/**/*.d.ts' -p tsconfig.json",
     "proto": "pbjs -t static-module -w es6 --no-verify --no-delimited --no-convert src/proto/index.proto -o src/proto/index.es6.js && pbts src/proto/index.es6.js -o src/proto/index.d.ts",
     "postproto": "babel --presets env -o src/proto/index.js src/proto/index.es6.js && rm src/proto/index.es6.js",
