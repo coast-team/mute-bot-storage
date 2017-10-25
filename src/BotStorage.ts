@@ -11,7 +11,6 @@ import {
 import { BehaviorSubject, ReplaySubject, Subject } from 'rxjs'
 
 import { WebGroup } from 'netflux'
-import { log } from './log'
 import { MongooseAdapter } from './MongooseAdapter'
 import { BotProtocol, IMessage, Message } from './proto'
 

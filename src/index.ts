@@ -8,7 +8,7 @@ import * as KoaRouter from 'koa-router'
 import { WebGroup, WebGroupBotServer, WebGroupState } from 'netflux'
 
 import { BotStorage } from './BotStorage'
-import { createLogger, log } from './log'
+import { createLogger } from './log'
 import { MongooseAdapter } from './MongooseAdapter'
 
 interface IOptions {
@@ -23,7 +23,7 @@ interface IOptions {
   cert: string,
   ca: string,
   logLevel: string,
-  logIntoFile: boolean
+  logFolder: string
 }
 
 // Default options
@@ -39,7 +39,7 @@ const defaults: IOptions = {
   cert: '',
   ca: '',
   logLevel: 'info',
-  logIntoFile: false,
+  logFolder: '',
 }
 
 // Configure command-line interface
@@ -68,7 +68,8 @@ program
   .option('-l, --logLevel <none|trace|debug|info|warn|error|fatal>',
     `Logging level. Default: "info". `,
     /^(none|trace|debug|info|warn|error|fatal)$/i, defaults.logLevel)
-  .option('-f, --logFile', `If specified, writes logs into file`)
+  .option('-f, --logFolder <path>', `Path to where log files would be stored.
+                              If not specified stdout will used.`, defaults.logFolder)
   .parse(process.argv)
 
 if (!program.host) {
@@ -76,12 +77,11 @@ if (!program.host) {
 }
 
 // Command line parameters
-const {name, host, port, botURL, signalingURL, database, key, cert, ca, logLevel} = program as any
+const {name, host, port, botURL, signalingURL, database, key, cert, ca, logLevel, logFolder} = program as any
 const useHttps = (program as any).useHttps ? true : false
-const logIntoFile = (program as any).logFile ? true : false
 
 // Configure logging
-createLogger(logIntoFile, logLevel)
+global.log = createLogger(logFolder, logLevel)
 
 // Configure error handling on process
 process.on('uncaughtException', (err) => log.fatal(err))
@@ -163,7 +163,7 @@ db.connect('localhost', database)
   })
   .then(() => {
     log.info(`Successfully started the storage bot server at ${host}:${port} with the following settings`,
-      {name, host, port, botURL, signalingURL, useHttps, logLevel, logIntoFile},
+      {name, host, port, botURL, signalingURL, useHttps, logLevel, logFolder},
     )
   })
   .catch((err) => {

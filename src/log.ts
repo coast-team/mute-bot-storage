@@ -1,17 +1,16 @@
 import * as bunyan from 'bunyan'
 
-export let log: any
-
-export function createLogger (logIntoFile, logLevel: string) {
+export function createLogger (logFolder: string, logLevel: string): bunyan {
+  let log
   const options: any = {
     name: 'mute-bot-storage',
   }
-  if (logIntoFile) {
+  if (logFolder !== '') {
     options.streams = [{
       type: 'rotating-file',
       period: '1d',
       count: 3,
-      path: `${process.cwd()}/${options.name}.log`,
+      path: `${logFolder}/${options.name}.log`,
     }]
   }
   log = bunyan.createLogger(options)
@@ -40,4 +39,5 @@ export function createLogger (logIntoFile, logLevel: string) {
   default:
     log.level(bunyan.INFO)
   }
+  return log
 }

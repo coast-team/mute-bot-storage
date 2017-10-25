@@ -1,8 +1,6 @@
 import { Connection, Document, Model, Schema } from 'mongoose'
 import { RichLogootSOperation } from 'mute-core'
 
-import { log } from './log'
-
 const mongoose = require('mongoose')
 mongoose.Promise = global.Promise
 
