@@ -10,7 +10,6 @@ import { WebGroup, WebGroupBotServer, WebGroupState } from 'netflux'
 import { BotStorage } from './BotStorage'
 import { createLogger, log } from './log'
 import { MongooseAdapter } from './MongooseAdapter'
-import { Keys } from './proto'
 
 interface IOptions {
   name: string,
@@ -88,7 +87,6 @@ createLogger(logIntoFile, logLevel)
 process.on('uncaughtException', (err) => log.fatal(err))
 
 // Connect to MongoDB
-const error = null
 const db = new MongooseAdapter()
 db.connect('localhost', database)
   .then(() => {

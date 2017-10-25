@@ -13,7 +13,7 @@ import { BehaviorSubject, ReplaySubject, Subject } from 'rxjs'
 import { WebGroup } from 'netflux'
 import { log } from './log'
 import { MongooseAdapter } from './MongooseAdapter'
-import { BotProtocol, IBotProtocol, IMessage, Message } from './proto'
+import { BotProtocol, IMessage, Message } from './proto'
 
 // TODO: BotStorage should serialize document in DB
 export class BotStorage {
@@ -22,7 +22,6 @@ export class BotStorage {
   private wg
   private muteCore: MuteCore
   private pseudonym: string
-  private url: string
 
   private joinSubject: Subject<JoinEvent>
   private messageSubject: ReplaySubject<NetworkMessage>
