@@ -17,7 +17,6 @@ interface IOptions {
   port: number,
   botURL: string,
   signalingURL: string,
-  useHttps: boolean,
   database: string,
   key: string,
   cert: string,
@@ -33,7 +32,6 @@ const defaults: IOptions = {
   port: 20000,
   botURL: 'ws://localhost:20000',
   signalingURL: 'ws://localhost:10000',
-  useHttps: false,
   database: 'mutedocs',
   key: '',
   cert: '',
@@ -78,7 +76,6 @@ if (!program.host) {
 
 // Command line parameters
 const {name, host, port, botURL, signalingURL, database, key, cert, ca, logLevel, logFolder} = program as any
-const useHttps = (program as any).useHttps ? true : false
 
 // Configure logging
 global.log = createLogger(logFolder, logLevel)
@@ -129,7 +126,7 @@ db.connect('localhost', database)
     log.info(`Configured routes  ✓`)
 
     // Create server
-    if (useHttps) {
+    if (key && cert && ca) {
       const fs = require('fs')
       return require('https').createServer({
         key: fs.readFileSync(key),
@@ -163,7 +160,7 @@ db.connect('localhost', database)
   })
   .then(() => {
     log.info(`Successfully started the storage bot server at ${host}:${port} with the following settings`,
-      {name, host, port, botURL, signalingURL, useHttps, logLevel, logFolder},
+      {name, host, port, botURL, signalingURL, logLevel, logFolder},
     )
   })
   .catch((err) => {
