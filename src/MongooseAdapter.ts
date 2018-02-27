@@ -7,23 +7,20 @@ mongoose.Promise = global.Promise
 export class MongooseAdapter {
 
   private db: Connection
-  private docSchema: Schema
   private docModel: Model<Document>
 
   constructor () {
-    this.docSchema = new mongoose.Schema({
+    const docSchema = new mongoose.Schema({
       key: { type: String, require: true },
       doc: { type: Object },
     })
-    this.docModel = mongoose.model('Doc', this.docSchema)
+    this.docModel = mongoose.model('Doc', docSchema)
   }
 
   connect (url: string, dbName: string): Promise<void> {
     const uri = `mongodb://${url}/${dbName}`
     log.info('uri: ', uri)
-    return mongoose.connect(uri, {
-      useMongoClient: true,
-    })
+    return mongoose.connect(uri)
       .then(() => {
         this.db = mongoose.connection
         mongoose.connection.on('close', () => {
