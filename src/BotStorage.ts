@@ -21,13 +21,13 @@ export class BotStorage {
 
   private mongooseAdapter: MongooseAdapter
   private wg: WebGroup
-  private muteCore: MuteCore
+  private muteCore: MuteCore | undefined
   private pseudonym: string
-  private lastReceivedState: State
-  private lastSaveState: State
-  private key: string
-  private mongoDoc: Document
-  private operations: RichLogootSOperation[]
+  private lastReceivedState: State | undefined
+  private lastSaveState: State | undefined
+  private key: string | undefined
+  private mongoDoc: Document | undefined
+  private operations: RichLogootSOperation[] | undefined
   private saveInterval: NodeJS.Timer
 
   private joinSubject: Subject<JoinEvent>
@@ -52,34 +52,35 @@ export class BotStorage {
       }
     }, SAVE_INTERVAL)
 
-    wg.onMessage = (id, bytes: Uint8Array) => {
-      const msg: IMessage = Message.decode(bytes)
+    wg.onMessage = (id, bytes) => {
+      const msg: IMessage = Message.decode(bytes as Uint8Array)
       if (msg.service === 'botprotocol') {
-        this.key = BotProtocol.decode(msg.content as any).key
+        const key = BotProtocol.decode(msg.content as any).key as string
+        this.key = key
 
-        this.mongooseAdapter.find(this.key)
+        this.mongooseAdapter.find(key)
           .then((doc) => {
             if (doc) {
-              log.info(`Document "${this.key}" retreived from database`)
+              log.info(`Document "${key}" retreived from database`)
               return doc
             } else {
               log.info(`"${this.key}" document was not found in database: a new document has been created`)
-              return this.mongooseAdapter.create(this.key)
+              return this.mongooseAdapter.create(key)
             }
           })
           .then((doc: Document) => {
             this.mongoDoc = doc
             this.operations = doc.get('operations').map((op: any) => RichLogootSOperation.fromPlain(op))
             this.initMuteCore()
-            this.joinSubject.next(new JoinEvent(this.wg.myId, this.key, false))
-            this.stateSubject.next(new State(new Map(), this.operations))
+            this.joinSubject.next(new JoinEvent(this.wg.myId, key, false))
+            this.stateSubject.next(new State(new Map(), this.operations as RichLogootSOperation[]))
           })
           .catch((err) => {
-            log.error(`Error when searching for the document ${this.key}`, err)
+            log.error(`Error when searching for the document ${key}`, err)
           })
 
-        wg.onMessage = (id, bytes: Uint8Array) => {
-          const msg = Message.decode(bytes)
+        wg.onMessage = (id, bytes) => {
+          const msg = Message.decode(bytes as Uint8Array)
           this.messageSubject.next(new NetworkMessage(msg.service, id, true, msg.content))
         }
       } else {
@@ -105,7 +106,7 @@ export class BotStorage {
   }
 
   private save () {
-    if (this.lastReceivedState !== this.lastSaveState) {
+    if (this.mongoDoc && this.lastReceivedState && this.lastReceivedState !== this.lastSaveState) {
       log.info('Saving document: ' + this.key)
       this.mongoDoc.set( { operations: this.lastReceivedState.richLogootSOps} )
       this.mongoDoc.save()
@@ -142,7 +143,7 @@ export class BotStorage {
       this.joinSubject.asObservable() as any, this.stateSubject.asObservable() as any,
     )
 
-    this.muteCore.init(this.key)
+    this.muteCore.init(this.key as string)
   }
 
   private encode (msg: AbstractMessage) {
