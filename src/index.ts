@@ -5,6 +5,7 @@ import * as koaCors from 'kcors'
 import * as Koa from 'koa'
 import * as bodyParser from 'koa-bodyparser'
 import * as KoaRouter from 'koa-router'
+import { Document } from 'mongoose'
 import { WebGroup, WebGroupBotServer, WebGroupState } from 'netflux'
 
 import { BotStorage } from './BotStorage'
@@ -95,18 +96,18 @@ db.connect('localhost', database)
     const router = new KoaRouter()
 
     router
-      .get('/name', (ctx, next) => {
+      .get('/name', (ctx) => {
         ctx.body = name
       })
-      .post('/exist', async (ctx, next) => {
+      .post('/exist', async (ctx) => {
         const keys = (ctx.request as any).body
         const existedKeys = await db.whichExist(keys)
         ctx.body = JSON.stringify(existedKeys)
       })
-      .get('/docs', async (ctx, next) => {
+      .get('/docs', async (ctx) => {
         await db.list()
-          .then((docs: any[]) => {
-            const docList = docs.map((doc) => ({ id: doc.key }))
+          .then((docs: Document[]) => {
+            const docList = docs.map((doc) => ({ id: doc.get('key') }))
             ctx.body = docList
           })
           .catch( (err) => {
@@ -141,22 +142,27 @@ db.connect('localhost', database)
     log.info(`Configured server  ✓`)
 
     // Configure storage bot
-    const bot = new WebGroupBotServer({url: botURL, server, webGroupOptions: { signalingURL }})
+    const bot = new WebGroupBotServer({
+      url: botURL,
+      server,
+      webGroupOptions: {
+        signalingServer: signalingURL,
+      },
+    })
     bot.onWebGroup = (wg: WebGroup) => {
       log.info('New peer to peer network invitation received. Waiting for a document key...')
       const botStorage = new BotStorage(name, wg, db)
       wg.onStateChange = (state: WebGroupState) => {
         if (state === WebGroupState.JOINED) {
-          botStorage.sendKeyRequest(wg)
+          botStorage.init()
+        }
+        if (state === WebGroupState.LEFT) {
+          botStorage.clean()
         }
       }
     }
 
-    return new Promise((resolve, reject) => {
-      // Start the server
-      server.listen(port, host, resolve)
-      // console.assert(false)
-    })
+    return new Promise((resolve) => server.listen(port, host, resolve))
   })
   .then(() => {
     log.info(`Successfully started the storage bot server at ${host}:${port} with the following settings`,

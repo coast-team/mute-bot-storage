@@ -26,14 +26,15 @@ var Message = exports.Message = $root.Message = function () {
      * Properties of a Message.
      * @exports IMessage
      * @interface IMessage
-     * @property {string} [service] Message service
-     * @property {Uint8Array} [content] Message content
+     * @property {string|null} [service] Message service
+     * @property {Uint8Array|null} [content] Message content
      */
 
     /**
      * Constructs a new Message.
      * @exports Message
      * @classdesc Represents a Message.
+     * @implements IMessage
      * @constructor
      * @param {IMessage=} [properties] Properties to set
      */
@@ -45,7 +46,7 @@ var Message = exports.Message = $root.Message = function () {
 
     /**
      * Message service.
-     * @member {string}service
+     * @member {string} service
      * @memberof Message
      * @instance
      */
@@ -53,7 +54,7 @@ var Message = exports.Message = $root.Message = function () {
 
     /**
      * Message content.
-     * @member {Uint8Array}content
+     * @member {Uint8Array} content
      * @memberof Message
      * @instance
      */
@@ -128,13 +129,14 @@ var BotProtocol = exports.BotProtocol = $root.BotProtocol = function () {
      * Properties of a BotProtocol.
      * @exports IBotProtocol
      * @interface IBotProtocol
-     * @property {string} [key] BotProtocol key
+     * @property {string|null} [key] BotProtocol key
      */
 
     /**
      * Constructs a new BotProtocol.
      * @exports BotProtocol
      * @classdesc Represents a BotProtocol.
+     * @implements IBotProtocol
      * @constructor
      * @param {IBotProtocol=} [properties] Properties to set
      */
@@ -146,7 +148,7 @@ var BotProtocol = exports.BotProtocol = $root.BotProtocol = function () {
 
     /**
      * BotProtocol key.
-     * @member {string}key
+     * @member {string} key
      * @memberof BotProtocol
      * @instance
      */
@@ -217,13 +219,14 @@ var BotResponse = exports.BotResponse = $root.BotResponse = function () {
      * Properties of a BotResponse.
      * @exports IBotResponse
      * @interface IBotResponse
-     * @property {string} [url] BotResponse url
+     * @property {string|null} [url] BotResponse url
      */
 
     /**
      * Constructs a new BotResponse.
      * @exports BotResponse
      * @classdesc Represents a BotResponse.
+     * @implements IBotResponse
      * @constructor
      * @param {IBotResponse=} [properties] Properties to set
      */
@@ -235,7 +238,7 @@ var BotResponse = exports.BotResponse = $root.BotResponse = function () {
 
     /**
      * BotResponse url.
-     * @member {string}url
+     * @member {string} url
      * @memberof BotResponse
      * @instance
      */
@@ -306,13 +309,14 @@ var Keys = exports.Keys = $root.Keys = function () {
      * Properties of a Keys.
      * @exports IKeys
      * @interface IKeys
-     * @property {Array.<string>} [keys] Keys keys
+     * @property {Array.<string>|null} [keys] Keys keys
      */
 
     /**
      * Constructs a new Keys.
      * @exports Keys
      * @classdesc Represents a Keys.
+     * @implements IKeys
      * @constructor
      * @param {IKeys=} [properties] Properties to set
      */
@@ -325,7 +329,7 @@ var Keys = exports.Keys = $root.Keys = function () {
 
     /**
      * Keys keys.
-     * @member {Array.<string>}keys
+     * @member {Array.<string>} keys
      * @memberof Keys
      * @instance
      */
