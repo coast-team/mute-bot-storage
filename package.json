@@ -14,7 +14,8 @@
     "postproto": "babel --presets env -o src/proto/index.js src/proto/index.es6.js && rm src/proto/index.es6.js",
     "cz": "git-cz",
     "precommit": "npm run lint",
-    "commitmsg": "validate-commit-msg"
+    "commitmsg": "validate-commit-msg",
+    "semantic-release": "semantic-release --no-ci"
   },
   "files": [
     "dist/server.js"
@@ -58,6 +59,7 @@
     "cz-conventional-changelog": "^2.1.0",
     "husky": "^0.14.3",
     "nodemon": "^1.17.1",
+    "semantic-release": "^12.4.1",
     "ts-loader": "^4.0.0",
     "ts-node": "^5.0.0",
     "tslint": "^5.9.1",
