@@ -3,7 +3,6 @@
 yarn.lock
 
 # compiled output
-/dist
 /tmp
 
 # dependencies
@@ -36,3 +35,4 @@ testem.log
 #System Files
 .DS_Store
 Thumbs.db
+

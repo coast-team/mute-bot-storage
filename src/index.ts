@@ -1,114 +1,174 @@
-import { BotServer } from 'netflux'
-import * as https from 'https'
-import * as http from 'http'
-import * as express from 'express'
 import * as program from 'commander'
+import * as http from 'http'
+import * as https from 'https'
+import * as koaCors from 'kcors'
+import * as Koa from 'koa'
+import * as bodyParser from 'koa-bodyparser'
+import * as KoaRouter from 'koa-router'
+import { Document } from 'mongoose'
+import { WebGroup, WebGroupBotServer, WebGroupState } from 'netflux'
 
 import { BotStorage } from './BotStorage'
+import { createLogger } from './log'
 import { MongooseAdapter } from './MongooseAdapter'
-import { createLogger, log } from './log'
+
+interface IOptions {
+  name: string,
+  host: string,
+  port: number,
+  botURL: string,
+  signalingURL: string,
+  database: string,
+  key: string,
+  cert: string,
+  ca: string,
+  logLevel: string,
+  logFolder: string
+}
 
 // Default options
-const defaults = {
+const defaults: IOptions = {
   name: 'Repono',
   host: '0.0.0.0',
-  port: 8080,
-  portBot: 9000,
-  signalingURL: 'http://signal2.loria.fr',
-  useHttps: false,
+  port: 20000,
+  botURL: 'ws://localhost:20000',
+  signalingURL: 'ws://localhost:10000',
+  database: 'mutedocs',
+  key: '',
+  cert: '',
+  ca: '',
   logLevel: 'info',
-  logIntoFile: false
+  logFolder: '',
 }
 
 // Configure command-line interface
 program
   .option('-n, --name <bot name>',
-    `Specify a name for the bot, DEFAULT: "${defaults.name}"`, defaults.name)
+    `Bot name. Default: "${defaults.name}"`, defaults.name)
   .option('-h, --host <ip or host name>',
-    `Specify host address to bind to, DEFAULT: "${defaults.host}"`, defaults.host)
+    `Host address to bind to, Default: "${defaults.host}"`, defaults.host)
   .option('-p, --port <n>',
-    `Specify port to use for the server (REST API), DEFAULT: ${defaults.port}`, defaults.port)
-  .option('-b, --portBot <n>',
-    `Specify port to use for the peer to peer bot, DEFAULT: ${defaults.portBot}`, defaults.portBot)
+    `Port to use for the server. Default: ${defaults.port}`, defaults.port)
+  .option('-b, --botURL <n>',
+    `Bot public URL, to be shared on the p2p network. Default: ${defaults.botURL}`, defaults.botURL)
+  .option('-d, --database <n>',
+    `Database name. Default: ${defaults.database}`, defaults.database)
   .option('-s, --signalingURL <url>',
-    `Specify Signaling server url for the peer to peer bot, DEFAULT: ${defaults.signalingURL}\n`, defaults.signalingURL)
+    `Signaling server url. Default: ${defaults.signalingURL}\n`, defaults.signalingURL)
   .option('-t, --https',
     `If present, the REST API server is listening on HTTPS instead of HTTP`)
+  .option('-k, --key <value>',
+    `Private key for the certificate`)
+  .option('-c, --cert <value>',
+    `The server certificate`)
+  .option('-a, --ca <value>',
+    `The additional intermediate certificate or certificates that web browsers
+      will need in order to validate the server certificate.`)
   .option('-l, --logLevel <none|trace|debug|info|warn|error|fatal>',
-    `Specify level for logging. DEFAULT: "info". `,
+    `Logging level. Default: "info". `,
     /^(none|trace|debug|info|warn|error|fatal)$/i, defaults.logLevel)
-  .option('-f, --logFile', `If specified, writes logs into file`)
+  .option('-f, --logFolder <path>', `Path to where log files would be stored.
+                              If not specified stdout will used.`, defaults.logFolder)
   .parse(process.argv)
 
-// Setup settings
-const {name, host, port, portBot, signalingURL, logLevel} = program
-const useHttps = (program as any).useHttps ? true : false
-const logIntoFile = (program as any).logFile ? true : false
+if (!program.host) {
+  throw new Error('-h, --host options is required')
+}
+
+// Command line parameters
+const {name, host, port, botURL, signalingURL, database, key, cert, ca, logLevel, logFolder} = program as any
 
 // Configure logging
-createLogger(logIntoFile, logLevel)
+global.log = createLogger(logFolder, logLevel)
 
 // Configure error handling on process
 process.on('uncaughtException', (err) => log.fatal(err))
 
 // Connect to MongoDB
-let error = null
-const mongooseAdapter = new MongooseAdapter()
-mongooseAdapter.connect('localhost')
+const db = new MongooseAdapter()
+db.connect('localhost', database)
   .then(() => {
-    log.info(`Successfully connected to the database`)
+    log.info(`Connected to the database  ✓`)
 
-    // Configure & Start Peer To Peer storage bot
-    const bot = new BotServer({host: host, port: portBot, signalingURL})
-    bot.onWebChannel = (wc) => {
-      log.info('New peer to peer network invitation received. Waiting for a document key...')
-      new BotStorage(name, wc, mongooseAdapter)
+    // Configure routes
+    // Instantiate main objects
+    const app = new Koa()
+    const router = new KoaRouter()
+
+    router
+      .get('/name', (ctx) => {
+        ctx.body = name
+      })
+      .post('/exist', async (ctx) => {
+        const keys = (ctx.request as any).body
+        const existedKeys = await db.whichExist(keys)
+        ctx.body = JSON.stringify(existedKeys)
+      })
+      .get('/docs', async (ctx) => {
+        await db.list()
+          .then((docs: Document[]) => {
+            const docList = docs.map((doc) => ({ id: doc.get('key') }))
+            ctx.body = docList
+          })
+          .catch( (err) => {
+            log.error('Could not retreive the document list stored in database', err)
+            ctx.status = 500
+          })
+      })
+
+    // Apply router and cors middlewares
+    return app
+      .use(koaCors())
+      .use(bodyParser())
+      .use(router.routes())
+      .use(router.allowedMethods())
+  })
+  .then ((app) => {
+    log.info(`Configured routes  ✓`)
+
+    // Create server
+    if (key && cert && ca) {
+      const fs = require('fs')
+      return require('https').createServer({
+        key: fs.readFileSync(key),
+        cert: fs.readFileSync(cert),
+        ca: fs.readFileSync(ca),
+      }, app.callback())
+    } else {
+      return http.createServer(app.callback())
     }
-    return bot.start()
+  })
+  .then((server: http.Server|https.Server) => {
+    log.info(`Configured server  ✓`)
+
+    // Configure storage bot
+    const bot = new WebGroupBotServer({
+      url: botURL,
+      server,
+      webGroupOptions: {
+        signalingServer: signalingURL,
+      },
+    })
+    bot.onWebGroup = (wg: WebGroup) => {
+      log.info('New peer to peer network invitation received. Waiting for a document key...')
+      const botStorage = new BotStorage(name, wg, db)
+      wg.onStateChange = (state: WebGroupState) => {
+        if (state === WebGroupState.JOINED) {
+          botStorage.init()
+        }
+        if (state === WebGroupState.LEFT) {
+          botStorage.clean()
+        }
+      }
+    }
+
+    return new Promise((resolve) => server.listen(port, host, resolve))
   })
   .then(() => {
-    log.info(`Successfully started the storage bot server at ws://${host}:${portBot}`)
+    log.info(`Successfully started the storage bot server at ${host}:${port} with the following settings`,
+      {name, host, port, botURL, signalingURL, logLevel, logFolder},
+    )
   })
   .catch((err) => {
-    error = err
-    log.fatal(`Error during database/bot initialization`, err)
+    log.fatal(err)
   })
-
-// Configure & Start REST server
-const app = express()
-
-// Configure CORS: Cross-origin resource sharing middleware
-app.use(function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*')
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
-  next()
-})
-
-app.get('/name', (req, res) => {
-  if (error === null) {
-    res.send(name)
-  } else {
-    res.status(503).send(error.message)
-  }
-})
-
-app.get('/docs', (req, res) => {
-  mongooseAdapter.list()
-    .then((docs: any[]) => {
-      const docList = docs.map((doc) => { return { id: doc.key }})
-      res.json(docList)
-    })
-    .catch( (err) => {
-      log.error('Could not retreive the document list stored in database', err)
-      res.status(500).send(err.message)
-    })
-})
-
-// Start listen on http(s)
-const server = useHttps ? https.createServer(app) : http.createServer(app)
-server.listen(port, host, () => {
-  log.info('Current settings are\n',
-    {name, host, port, portBot, signalingURL, useHttps, logLevel, logIntoFile}
-  )
-  log.info(`Successfully started the REST API server at http${useHttps ? 's' : ''}://${host}:${port}`)
-})

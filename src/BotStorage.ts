@@ -1,27 +1,34 @@
-import { ReplaySubject, BehaviorSubject, Subject } from 'rxjs'
+import { Document } from 'mongoose'
 import {
-  MuteCore,
-  BroadcastMessage,
-  SendRandomlyMessage,
   AbstractMessage,
-  SendToMessage,
-  NetworkMessage,
+  BroadcastMessage,
   JoinEvent,
+  MuteCore,
+  NetworkMessage,
   RichLogootSOperation,
+  SendRandomlyMessage,
+  SendToMessage,
   State } from 'mute-core'
+import { BehaviorSubject, ReplaySubject, Subject } from 'rxjs'
 
+import { WebGroup } from 'netflux'
 import { MongooseAdapter } from './MongooseAdapter'
-import { log } from './log'
-const pb = require('./proto/message_pb.js')
+import { BotProtocol, IMessage, Message } from './proto'
 
-// TODO: BotStorage should serialize document in DB
+const SAVE_INTERVAL = 60000
+
 export class BotStorage {
 
   private mongooseAdapter: MongooseAdapter
-  private webChannel
-  private muteCore: MuteCore
+  private wg: WebGroup
+  private muteCore: MuteCore | undefined
   private pseudonym: string
-  private url: string
+  private lastReceivedState: State | undefined
+  private lastSaveState: State | undefined
+  private key: string | undefined
+  private mongoDoc: Document | undefined
+  private operations: RichLogootSOperation[] | undefined
+  private saveInterval: NodeJS.Timer
 
   private joinSubject: Subject<JoinEvent>
   private messageSubject: ReplaySubject<NetworkMessage>
@@ -29,76 +36,98 @@ export class BotStorage {
   private peerLeaveSubject: ReplaySubject<number>
   private stateSubject: Subject<State>
 
-  constructor(pseudonym, webChannel, mongooseAdapter: MongooseAdapter) {
+  constructor (pseudonym: string, wg: WebGroup, mongooseAdapter: MongooseAdapter) {
     this.pseudonym = pseudonym
+    this.wg = wg
+    this.mongooseAdapter = mongooseAdapter
     this.joinSubject = new Subject<JoinEvent>()
     this.messageSubject = new ReplaySubject()
     this.peerJoinSubject = new ReplaySubject()
     this.peerLeaveSubject = new ReplaySubject()
     this.stateSubject = new Subject<State>()
 
-    this.webChannel = webChannel
+    this.saveInterval = setInterval(() => {
+      if (this.mongoDoc) {
+        this.save()
+      }
+    }, SAVE_INTERVAL)
 
-    webChannel.onMessage = (id, bytes, isBroadcast) => {
-      const msg = pb.Message.deserializeBinary(bytes)
-      if (msg.getService() === 'botprotocol') {
-        const docKey = pb.BotProtocol.deserializeBinary(msg.getContent()).getKey()
+    wg.onMessage = (id, bytes) => {
+      const msg: IMessage = Message.decode(bytes as Uint8Array)
+      if (msg.service === 'botprotocol') {
+        const key = BotProtocol.decode(msg.content as any).key as string
+        this.key = key
 
-        this.mongooseAdapter.find(docKey)
-          .then((doc: RichLogootSOperation[]) => {
-            this.initMuteCore(docKey)
-            this.joinSubject.next(new JoinEvent(this.webChannel.myId, docKey, false))
-            if (doc === null) {
-              log.info(`Document ${docKey} was not found in database, thus create a new document`)
-              this.stateSubject.next(new State(new Map(), []))
+        this.mongooseAdapter.find(key)
+          .then((doc) => {
+            if (doc) {
+              log.info(`Document "${key}" retreived from database`)
+              return doc
             } else {
-              log.info(`Document ${docKey} retreived from database`)
-              this.stateSubject.next(new State(new Map(), doc))
+              log.info(`"${this.key}" document was not found in database: a new document has been created`)
+              return this.mongooseAdapter.create(key)
             }
           })
+          .then((doc: Document) => {
+            this.mongoDoc = doc
+            this.operations = doc.get('operations').map((op: any) => RichLogootSOperation.fromPlain(op))
+            this.initMuteCore()
+            this.joinSubject.next(new JoinEvent(this.wg.myId, key, false))
+            this.stateSubject.next(new State(new Map(), this.operations as RichLogootSOperation[]))
+          })
           .catch((err) => {
-            log.error(`Error when searching for the document ${docKey}`, err)
+            log.error(`Error when searching for the document ${key}`, err)
           })
 
-        webChannel.onMessage = (id, bytes, isBroadcast) => {
-          const msg = pb.Message.deserializeBinary(bytes)
-          this.messageSubject.next(new NetworkMessage(msg.getService(), id, isBroadcast, msg.getContent()))
+        wg.onMessage = (id, bytes) => {
+          const msg = Message.decode(bytes as Uint8Array)
+          this.messageSubject.next(new NetworkMessage(msg.service, id, true, msg.content))
         }
       } else {
-        this.messageSubject.next(new NetworkMessage(msg.getService(), id, isBroadcast, msg.getContent()))
+        this.messageSubject.next(new NetworkMessage(msg.service as any, id, true, msg.content as any))
       }
     }
 
-    const msg = new pb.BotProtocol()
-    msg.setKey('')
-    webChannel.sendTo(webChannel.members[0], this.buildMessage({
-      service: 'botprotocol',
-      content: msg.serializeBinary()
-    }))
-
     // this.sendMyUrl()
-    webChannel.onPeerJoin = (id) => {
-      // this.sendMyUrl(id)
-      this.peerJoinSubject.next(id)
-    }
-    webChannel.onPeerLeave = (id) => this.peerLeaveSubject.next(id)
-
-    this.mongooseAdapter = mongooseAdapter
+    wg.onMemberJoin = (id) => this.peerJoinSubject.next(id)
+    wg.onMemberLeave = (id) => this.peerLeaveSubject.next(id)
   }
 
-  initMuteCore (docKey: string): void {
+  init () {
+    this.wg.sendTo(this.wg.members[1], this.encode({
+      service: 'botprotocol',
+      content: BotProtocol.encode(BotProtocol.create({ key: '' })).finish(),
+    }))
+  }
+
+  clean () {
+    this.save()
+    global.clearInterval(this.saveInterval)
+  }
+
+  private save () {
+    if (this.mongoDoc && this.lastReceivedState && this.lastReceivedState !== this.lastSaveState) {
+      log.info('Saving document: ' + this.key)
+      this.mongoDoc.set( { operations: this.lastReceivedState.richLogootSOps} )
+      this.mongoDoc.save()
+      this.lastSaveState = this.lastReceivedState
+    }
+  }
+
+  private initMuteCore (): void {
     // TODO: MuteCore should consume doc Object
     this.muteCore = new MuteCore(42)
     this.muteCore.messageSource = this.messageSubject.asObservable() as any
     this.muteCore.onMsgToBroadcast.subscribe((bm: BroadcastMessage) => {
-      this.webChannel.send(this.buildMessage(bm))
+      this.wg.send(this.encode(bm))
     })
     this.muteCore.onMsgToSendRandomly.subscribe((srm: SendRandomlyMessage) => {
-      const index: number = Math.ceil(Math.random() * this.webChannel.members.length) - 1
-      this.webChannel.sendTo(this.webChannel.members[index], this.buildMessage(srm))
+      const members = this.wg.members.filter((id) => id !== this.wg.myId)
+      const index = Math.ceil(Math.random() * members.length) - 1
+      this.wg.sendTo(members[index], this.encode(srm))
     })
     this.muteCore.onMsgToSendTo.subscribe((stm: SendToMessage) => {
-      this.webChannel.sendTo(stm.id, this.buildMessage(stm))
+      this.wg.sendTo(stm.id, this.encode(stm))
     })
 
     // Collaborators config
@@ -108,37 +137,16 @@ export class BotStorage {
     this.muteCore.collaboratorsService.pseudoSource = pseudoSubject.asObservable() as any
 
     // Sync service config
-    this.muteCore.syncService.onState.subscribe((state: State) => {
-      // FIXME: Reduce the number of saves
-      this.mongooseAdapter.save(docKey, state.richLogootSOps)
-        .catch((err) => {
-          log.error(`The document ${docKey} could not be saved into database`, err)
-        })
-    })
-    this.muteCore.syncService.setJoinAndStateSources(this.joinSubject.asObservable() as any, this.stateSubject.asObservable() as any)
-    this.muteCore.init(docKey)
+    this.muteCore.syncService.onState.subscribe((state: State) => this.lastReceivedState = state)
+
+    this.muteCore.syncService.setJoinAndStateSources(
+      this.joinSubject.asObservable() as any, this.stateSubject.asObservable() as any,
+    )
+
+    this.muteCore.init(this.key as string)
   }
 
-  private sendMyUrl (id?: number) {
-    const msg = new pb.BotResponse()
-    msg.setUrl(this.url)
-    if (id !== undefined) {
-      this.webChannel.sendTo(this.webChannel.members[0], this.buildMessage({
-        service: 'botprotocol',
-        content: msg.serializeBinary()
-      }))
-    } else {
-      this.webChannel.send(this.buildMessage({
-        service: 'botprotocol',
-        content: msg.serializeBinary()
-      }))
-    }
-  }
-
-  private buildMessage (msg: AbstractMessage) {
-    const pbMsg = new pb.Message()
-    pbMsg.setService(msg.service)
-    pbMsg.setContent(msg.content)
-    return pbMsg.serializeBinary()
+  private encode (msg: AbstractMessage) {
+    return Message.encode(Message.create(msg)).finish()
   }
 }

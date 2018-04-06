@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+message Message {
+  string service = 1;
+  bytes content = 2;
+}
+
+message BotProtocol {
+  string key = 1;
+}
+
+message BotResponse {
+  string url = 1;
+}
+
+message Keys {
+  repeated string keys = 1;
+}

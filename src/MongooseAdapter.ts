@@ -1,54 +1,40 @@
-import * as mongoose from 'mongoose'
-import { RichLogootSOperation } from 'mute-core'
-
-import { log } from './log'
+import { connect, connection, Document, Model, model, Mongoose, Schema } from 'mongoose'
 
 export class MongooseAdapter {
 
-  private db: mongoose.Connection
-  private docSchema: mongoose.Schema
-  private docModel: mongoose.Model<mongoose.Document>
+  private DocModel: Model<Document>
 
   constructor () {
-    this.docSchema = new mongoose.Schema({
+    this.DocModel = model('Doc', new Schema({
       key: { type: String, require: true },
-      doc: { type: Object }
-    })
-    this.docModel = mongoose.model('Doc', this.docSchema)
+      operations: Array,
+    }))
   }
 
-  connect(url: string): Promise<void> {
-    const uri = `mongodb://${url}/docs`
-    return mongoose.connect(uri)
-      .then(() => {
-        this.db = mongoose.connection
-        mongoose.connection.on('close', () => {
-          log.warn(`Connection to the database ${uri} has been closed`)
-        })
-      })
+  connect (url: string, dbName: string): Promise<Mongoose> {
+    connection.on('close', () => log.warn(`Connection to the database has been closed`))
+    return connect(`mongodb://${url}/${dbName}`)
   }
 
-  find (key: string): Promise<RichLogootSOperation[]> {
-    return this.docModel.findOne({key})
-      .then((response: any) => {
-        log.debug('Mongo: ', response)
-        if (response !== null) {
-          return response.doc.map((op: RichLogootSOperation) => {
-            return RichLogootSOperation.fromPlain(op)
-          })
+  find (key: string): Promise<Document | null> {
+    return this.DocModel.findOne({ key }).exec()
+  }
+
+  list (): Promise<Document[]> {
+    return this.DocModel.find().exec()
+  }
+
+  whichExist (keys: string[]): Promise<string[] | undefined> {
+    return this.DocModel.find({ key: { $in: keys } }).exec()
+      .then((docs) => {
+        if (docs !== null) {
+          return docs.map((doc: any) => doc.key)
         }
-        return response
+        return []
       })
   }
 
-  list (): Promise<any> {
-    return this.docModel.find().exec()
-  }
-
-  save (key: string, doc: RichLogootSOperation[]): Promise<any> {
-    const query = {key}
-    const update = {doc}
-    const options = {upsert: true, new: true, setDefaultsOnInsert: true}
-    return this.docModel.findOneAndUpdate(query, update, options).exec()
+  create (key: string): Promise<Document> {
+    return this.DocModel.create({ key })
   }
 }
