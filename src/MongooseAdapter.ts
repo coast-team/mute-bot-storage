@@ -7,6 +7,7 @@ export class MongooseAdapter {
   constructor () {
     this.DocModel = model('Doc', new Schema({
       key: { type: String, require: true },
+      logins: [],
       operations: Array,
     }))
   }
@@ -20,19 +21,41 @@ export class MongooseAdapter {
     return this.DocModel.findOne({ key }).exec()
   }
 
-  list (): Promise<Document[]> {
-    return this.DocModel.find().exec()
-  }
-
-  whichExist (keys: string[]): Promise<string[] | undefined> {
-    return this.DocModel.find({ key: { $in: keys } }).exec()
-      .then((docs) => {
-        if (docs !== null) {
-          return docs.map((doc: any) => doc.key)
-        }
-        return []
+  findKeysByLogin (login: string): Promise<string[]> {
+    return this.DocModel.find({ logins: login }, 'key').exec()
+      .then((docs: Document[]) => {
+        return docs.map((doc) => doc.get('key'))
       })
   }
+
+  async removeLogin (key: string, login: string) {
+    const doc = await this.find(key)
+    if (doc) {
+      const logins: string[] = doc.get('logins')
+      for (let i = 0 ; i < logins.length; i++) {
+        if (logins[i] === login) {
+          logins.splice(i)
+          break
+        }
+      }
+      doc.set('logins', logins)
+      doc.save()
+    }
+  }
+
+  // list (): Promise<Document[]> {
+  //   return this.DocModel.find().exec()
+  // }
+
+  // whichExist (keys: string[]): Promise<string[] | undefined> {
+  //   return this.DocModel.find({ key: { $in: keys } }).exec()
+  //     .then((docs) => {
+  //       if (docs !== null) {
+  //         return docs.map((doc: any) => doc.key)
+  //       }
+  //       return []
+  //     })
+  // }
 
   create (key: string): Promise<Document> {
     return this.DocModel.create({ key })

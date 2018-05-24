@@ -2,30 +2,38 @@ import { Document } from 'mongoose'
 import {
   AbstractMessage,
   BroadcastMessage,
+  ICollaborator,
   JoinEvent,
   MuteCore,
   NetworkMessage,
   RichLogootSOperation,
   SendRandomlyMessage,
   SendToMessage,
-  State } from 'mute-core'
-import { BehaviorSubject, ReplaySubject, Subject } from 'rxjs'
+  State,
+} from 'mute-core'
+import { from, ReplaySubject, Subject } from 'rxjs'
 
-import { WebGroup } from 'netflux'
+import { LogLevel, setLogLevel, WebGroup, WebGroupState } from 'netflux'
 import { MongooseAdapter } from './MongooseAdapter'
-import { BotProtocol, IMessage, Message } from './proto'
+import { Message } from './proto'
 
-const SAVE_INTERVAL = 60000
+const SAVE_INTERVAL = 120000
+
+setLogLevel(LogLevel.DEBUG, LogLevel.CHANNEL)
 
 export class BotStorage {
+  public static ID = 9137
+
+  public key: string
 
   private mongooseAdapter: MongooseAdapter
   private wg: WebGroup
   private muteCore: MuteCore | undefined
   private pseudonym: string
+  private login: string
+  private savedLogins: string[]
   private lastReceivedState: State | undefined
   private lastSaveState: State | undefined
-  private key: string | undefined
   private mongoDoc: Document | undefined
   private operations: RichLogootSOperation[] | undefined
   private saveInterval: NodeJS.Timer
@@ -34,17 +42,18 @@ export class BotStorage {
   private messageSubject: ReplaySubject<NetworkMessage>
   private peerJoinSubject: ReplaySubject<number>
   private peerLeaveSubject: ReplaySubject<number>
-  private stateSubject: Subject<State>
 
-  constructor (pseudonym: string, wg: WebGroup, mongooseAdapter: MongooseAdapter) {
+  constructor(pseudonym: string, login: string, wg: WebGroup, mongooseAdapter: MongooseAdapter) {
     this.pseudonym = pseudonym
+    this.login = login
+    this.savedLogins = []
     this.wg = wg
+    this.key = wg.key
     this.mongooseAdapter = mongooseAdapter
-    this.joinSubject = new Subject<JoinEvent>()
+    this.joinSubject = new ReplaySubject<JoinEvent>()
     this.messageSubject = new ReplaySubject()
     this.peerJoinSubject = new ReplaySubject()
     this.peerLeaveSubject = new ReplaySubject()
-    this.stateSubject = new Subject<State>()
 
     this.saveInterval = setInterval(() => {
       if (this.mongoDoc) {
@@ -52,101 +61,112 @@ export class BotStorage {
       }
     }, SAVE_INTERVAL)
 
+    // Look for the document in the database
+    this.mongooseAdapter
+      .find(this.key)
+      .then((doc) => (doc ? doc : this.mongooseAdapter.create(this.key)))
+      .then((doc) => {
+        this.mongoDoc = doc
+        // trasform serialized data into structured object
+        this.operations = doc.get('operations').map((op: any) => RichLogootSOperation.fromPlain(op))
+
+        // initialize mute-core with provided key and the document content
+        this.muteCore = this.createMuteCore(this.key, this.operations as RichLogootSOperation[])
+
+        // subscribes to remote events
+        this.muteCore.collaboratorsService.joinSource = this.peerJoinSubject.asObservable()
+        this.muteCore.collaboratorsService.leaveSource = this.peerLeaveSubject.asObservable()
+        this.muteCore.messageSource = this.messageSubject.asObservable() as any
+        this.mergeSavedLogins()
+      })
+      .catch((err) => {
+        log.error(`Error when searching for the document ${this.key}`, err)
+      })
+
+    // Configure WebGroup callbacks
     wg.onMessage = (id, bytes) => {
-      const msg: IMessage = Message.decode(bytes as Uint8Array)
-      if (msg.service === 'botprotocol') {
-        const key = BotProtocol.decode(msg.content as any).key as string
-        this.key = key
-
-        this.mongooseAdapter.find(key)
-          .then((doc) => {
-            if (doc) {
-              log.info(`Document "${key}" retreived from database`)
-              return doc
-            } else {
-              log.info(`"${this.key}" document was not found in database: a new document has been created`)
-              return this.mongooseAdapter.create(key)
-            }
-          })
-          .then((doc: Document) => {
-            this.mongoDoc = doc
-            this.operations = doc.get('operations').map((op: any) => RichLogootSOperation.fromPlain(op))
-            this.initMuteCore()
-            this.joinSubject.next(new JoinEvent(this.wg.myId, key, false))
-            this.stateSubject.next(new State(new Map(), this.operations as RichLogootSOperation[]))
-          })
-          .catch((err) => {
-            log.error(`Error when searching for the document ${key}`, err)
-          })
-
-        wg.onMessage = (id, bytes) => {
-          const msg = Message.decode(bytes as Uint8Array)
-          this.messageSubject.next(new NetworkMessage(msg.service, id, true, msg.content))
-        }
-      } else {
-        this.messageSubject.next(new NetworkMessage(msg.service as any, id, true, msg.content as any))
+      const msg = Message.decode(bytes as Uint8Array)
+      this.messageSubject.next(new NetworkMessage(msg.service, id, true, msg.content))
+    }
+    wg.onStateChange = (state) => {
+      if (state === WebGroupState.JOINED) {
+        this.joinSubject.next(new JoinEvent(this.wg.myId, this.key, false))
+      } else if (state === WebGroupState.LEFT) {
+        this.save()
+        global.clearInterval(this.saveInterval)
       }
     }
 
-    // this.sendMyUrl()
     wg.onMemberJoin = (id) => this.peerJoinSubject.next(id)
     wg.onMemberLeave = (id) => this.peerLeaveSubject.next(id)
   }
 
-  init () {
-    this.wg.sendTo(this.wg.members[1], this.encode({
-      service: 'botprotocol',
-      content: BotProtocol.encode(BotProtocol.create({ key: '' })).finish(),
-    }))
-  }
-
-  clean () {
-    this.save()
-    global.clearInterval(this.saveInterval)
-  }
-
-  private save () {
+  private save() {
     if (this.mongoDoc && this.lastReceivedState && this.lastReceivedState !== this.lastSaveState) {
       log.info('Saving document: ' + this.key)
-      this.mongoDoc.set( { operations: this.lastReceivedState.richLogootSOps} )
-      this.mongoDoc.save()
+      this.mongoDoc.set({ operations: this.lastReceivedState.richLogootSOps })
+      this.mongoDoc.save().catch((err) => log.error('Could not save the document ' + this.key, err))
       this.lastSaveState = this.lastReceivedState
     }
   }
 
-  private initMuteCore (): void {
+  private updateLogins(login: string | undefined) {
+    if (login && login !== 'anonymous') {
+      if (this.mongoDoc) {
+        const logins = this.mongoDoc.get('logins')
+        logins.push(login)
+        this.mongoDoc.set({ logins })
+        this.mongoDoc.save()
+      } else {
+        this.savedLogins.push(login)
+      }
+    }
+  }
+
+  private mergeSavedLogins() {
+    if (this.mongoDoc && this.savedLogins.length !== 0) {
+      this.mongoDoc.set({
+        logins: this.mongoDoc.get('logins').concat(this.savedLogins),
+      })
+      this.mongoDoc.save()
+      this.savedLogins = []
+    }
+  }
+
+  private createMuteCore(key: string, operations: RichLogootSOperation[]): MuteCore {
     // TODO: MuteCore should consume doc Object
-    this.muteCore = new MuteCore(42)
-    this.muteCore.messageSource = this.messageSubject.asObservable() as any
-    this.muteCore.onMsgToBroadcast.subscribe((bm: BroadcastMessage) => {
+    const muteCore = new MuteCore({
+      displayName: this.pseudonym,
+      login: this.login,
+    })
+    muteCore.onMsgToBroadcast.subscribe((bm: BroadcastMessage) => {
       this.wg.send(this.encode(bm))
     })
-    this.muteCore.onMsgToSendRandomly.subscribe((srm: SendRandomlyMessage) => {
+    muteCore.onMsgToSendRandomly.subscribe((srm: SendRandomlyMessage) => {
       const members = this.wg.members.filter((id) => id !== this.wg.myId)
       const index = Math.ceil(Math.random() * members.length) - 1
       this.wg.sendTo(members[index], this.encode(srm))
     })
-    this.muteCore.onMsgToSendTo.subscribe((stm: SendToMessage) => {
+    muteCore.onMsgToSendTo.subscribe((stm: SendToMessage) => {
       this.wg.sendTo(stm.id, this.encode(stm))
     })
 
-    // Collaborators config
-    this.muteCore.collaboratorsService.peerJoinSource = this.peerJoinSubject.asObservable() as any
-    this.muteCore.collaboratorsService.peerLeaveSource = this.peerLeaveSubject.asObservable() as any
-    const pseudoSubject = new BehaviorSubject<string>(this.pseudonym)
-    this.muteCore.collaboratorsService.pseudoSource = pseudoSubject.asObservable() as any
+    muteCore.collaboratorsService.onUpdate.subscribe((collab: ICollaborator) => {
+      this.updateLogins(collab.login)
+    })
 
     // Sync service config
-    this.muteCore.syncService.onState.subscribe((state: State) => this.lastReceivedState = state)
+    muteCore.syncService.onState.subscribe((state: State) => (this.lastReceivedState = state))
 
-    this.muteCore.syncService.setJoinAndStateSources(
-      this.joinSubject.asObservable() as any, this.stateSubject.asObservable() as any,
+    muteCore.init(key as string)
+    muteCore.syncService.setJoinAndStateSources(
+      this.joinSubject.asObservable(),
+      from([new State(new Map(), operations)])
     )
-
-    this.muteCore.init(this.key as string)
+    return muteCore
   }
 
-  private encode (msg: AbstractMessage) {
+  private encode(msg: AbstractMessage) {
     return Message.encode(Message.create(msg)).finish()
   }
 }
