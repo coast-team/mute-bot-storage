@@ -96,8 +96,13 @@ if (logLevel !== 'none') {
   setLogLevel(LogLevel.DEBUG)
 }
 
+require('longjohn')
+
 // Configure error handling on process
-process.on('uncaughtException', (err) => log.fatal(err))
+process.on('uncaughtException', (err) => {
+  // log.fatal('NodeJS process error', err)
+  console.error('uncaughtException -> #####################', err)
+})
 
 // Connect to MongoDB
 const db = new MongooseAdapter()

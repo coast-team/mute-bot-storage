@@ -11,9 +11,11 @@ import {
   SendToMessage,
   State,
 } from 'mute-core'
-import { from, ReplaySubject, Subject } from 'rxjs'
+import { from, merge, ReplaySubject, Subject } from 'rxjs'
+import { flatMap } from 'rxjs/operators'
 
 import { LogLevel, setLogLevel, WebGroup, WebGroupState } from 'netflux'
+import { SymmetricCrypto } from './Crypto'
 import { MongooseAdapter } from './MongooseAdapter'
 import { Message } from './proto'
 
@@ -43,12 +45,15 @@ export class BotStorage {
   private peerJoinSubject: ReplaySubject<number>
   private peerLeaveSubject: ReplaySubject<number>
 
+  private crypto: SymmetricCrypto
+
   constructor(pseudonym: string, login: string, wg: WebGroup, mongooseAdapter: MongooseAdapter) {
     this.pseudonym = pseudonym
     this.login = login
     this.savedLogins = []
     this.wg = wg
     this.key = wg.key
+    this.crypto = new SymmetricCrypto()
     this.mongooseAdapter = mongooseAdapter
     this.joinSubject = new ReplaySubject<JoinEvent>()
     this.messageSubject = new ReplaySubject()
@@ -69,14 +74,17 @@ export class BotStorage {
         this.mongoDoc = doc
         // trasform serialized data into structured object
         this.operations = doc.get('operations').map((op: any) => RichLogootSOperation.fromPlain(op))
-
+      })
+      .then(() => this.crypto.importKey(this.key))
+      .then(() => {
         // initialize mute-core with provided key and the document content
         this.muteCore = this.createMuteCore(this.key, this.operations as RichLogootSOperation[])
 
         // subscribes to remote events
-        this.muteCore.collaboratorsService.joinSource = this.peerJoinSubject.asObservable()
-        this.muteCore.collaboratorsService.leaveSource = this.peerLeaveSubject.asObservable()
-        this.muteCore.messageSource = this.messageSubject.asObservable() as any
+        this.muteCore.collaboratorsService.joinSource = this.peerJoinSubject
+        this.muteCore.collaboratorsService.leaveSource = this.peerLeaveSubject
+        this.muteCore.messageSource = this.messageSubject
+
         this.mergeSavedLogins()
       })
       .catch((err) => {
@@ -86,7 +94,14 @@ export class BotStorage {
     // Configure WebGroup callbacks
     wg.onMessage = (id, bytes) => {
       const msg = Message.decode(bytes as Uint8Array)
-      this.messageSubject.next(new NetworkMessage(msg.service, id, true, msg.content))
+
+      if (msg.service === 423) {
+        this.crypto.decrypt(msg.content).then((content) => {
+          this.messageSubject.next(new NetworkMessage(msg.service, id, true, content))
+        })
+      } else {
+        this.messageSubject.next(new NetworkMessage(msg.service, id, true, msg.content))
+      }
     }
     wg.onStateChange = (state) => {
       if (state === WebGroupState.JOINED) {
@@ -139,17 +154,34 @@ export class BotStorage {
       displayName: this.pseudonym,
       login: this.login,
     })
-    muteCore.onMsgToBroadcast.subscribe((bm: BroadcastMessage) => {
-      this.wg.send(this.encode(bm))
-    })
-    muteCore.onMsgToSendRandomly.subscribe((srm: SendRandomlyMessage) => {
+    merge(
+      muteCore.collaboratorsService.onMsgToBroadcast,
+      muteCore.syncMessageService.onMsgToBroadcast.pipe(
+        flatMap((msg) =>
+          this.crypto.encrypt(msg.content).then((content) => Object.assign({}, msg, { content }))
+        )
+      )
+    ).subscribe((bm: BroadcastMessage) => this.wg.send(this.encode(bm)))
+    merge(
+      muteCore.collaboratorsService.onMsgToSendRandomly,
+      muteCore.syncMessageService.onMsgToSendRandomly.pipe(
+        flatMap((msg) =>
+          this.crypto.encrypt(msg.content).then((content) => Object.assign({}, msg, { content }))
+        )
+      )
+    ).subscribe((srm: SendRandomlyMessage) => {
       const members = this.wg.members.filter((id) => id !== this.wg.myId)
       const index = Math.ceil(Math.random() * members.length) - 1
       this.wg.sendTo(members[index], this.encode(srm))
     })
-    muteCore.onMsgToSendTo.subscribe((stm: SendToMessage) => {
-      this.wg.sendTo(stm.id, this.encode(stm))
-    })
+    merge(
+      muteCore.collaboratorsService.onMsgToSendTo,
+      muteCore.syncMessageService.onMsgToSendTo.pipe(
+        flatMap((msg) =>
+          this.crypto.encrypt(msg.content).then((content) => Object.assign({}, msg, { content }))
+        )
+      )
+    ).subscribe((stm: SendToMessage) => this.wg.sendTo(stm.id, this.encode(stm)))
 
     muteCore.collaboratorsService.onUpdate.subscribe((collab: ICollaborator) => {
       this.updateLogins(collab.login)
