@@ -1,7 +1,7 @@
 import * as program from 'commander'
 import * as http from 'http'
 import * as https from 'https'
-// import * as koaCors from 'kcors'
+import * as koaCors from 'kcors'
 import * as Koa from 'koa'
 import * as bodyParser from 'koa-bodyparser'
 import * as KoaRouter from 'koa-router'
@@ -18,6 +18,7 @@ interface IOptions {
   botURL: string
   signalingURL: string
   database: string
+  cors: boolean
   key: string
   cert: string
   ca: string
@@ -33,6 +34,7 @@ const defaults: IOptions = {
   botURL: 'ws://localhost:20000',
   signalingURL: 'ws://localhost:8010',
   database: 'mutedocs',
+  cors: false,
   key: '',
   cert: '',
   ca: '',
@@ -42,35 +44,25 @@ const defaults: IOptions = {
 
 // Configure command-line interface
 program
-  .option('-n, --name <bot name>', `Bot name. Default: "${defaults.name}"`, defaults.name)
+  .option('-h, --host <ip or host name>', 'Host address to bind to.', defaults.host)
+  .option('-p, --port <number>', 'Port to use for the server.', defaults.port)
+  .option('-b, --botURL <number>', 'Bot public URL.', defaults.botURL)
+  .option('-s, --signalingURL <url>', 'Signaling server url.', defaults.signalingURL)
+  .option('', '\n')
+  .option('--cors', 'Enable Cross-origin Resource Sharing.', defaults.cors)
+  .option('-n, --name <bot name>', 'Bot name.', defaults.name)
+  .option('-d, --database <name>', 'Database name.', defaults.database)
+  .option('', '\n')
+  .option('--key <file path>', 'Private key for the certificate')
+  .option('--cert <file path>', 'The server certificate')
   .option(
-    '-h, --host <ip or host name>',
-    `Host address to bind to, Default: "${defaults.host}"`,
-    defaults.host
+    '--ca <file path>',
+    'The additional intermediate certificate or certificates that web browsers will need in order to validate the server certificate.'
   )
-  .option('-p, --port <n>', `Port to use for the server. Default: ${defaults.port}`, defaults.port)
-  .option(
-    '-b, --botURL <n>',
-    `Bot public URL, to be shared on the p2p network. Default: ${defaults.botURL}`,
-    defaults.botURL
-  )
-  .option('-d, --database <n>', `Database name. Default: ${defaults.database}`, defaults.database)
-  .option(
-    '-s, --signalingURL <url>',
-    `Signaling server url. Default: ${defaults.signalingURL}\n`,
-    defaults.signalingURL
-  )
-  .option('-t, --https', `If present, the REST API server is listening on HTTPS instead of HTTP`)
-  .option('-k, --key <value>', `Private key for the certificate`)
-  .option('-c, --cert <value>', `The server certificate`)
-  .option(
-    '-a, --ca <value>',
-    `The additional intermediate certificate or certificates that web browsers
-      will need in order to validate the server certificate.`
-  )
+  .option('', '\n')
   .option(
     '-l, --logLevel <none|trace|debug|info|warn|error|fatal>',
-    `Logging level. Default: "info". `,
+    `Logging level.`,
     /^(none|trace|debug|info|warn|error|fatal)$/i,
     defaults.logLevel
   )
@@ -82,10 +74,6 @@ program
   )
   .parse(process.argv)
 
-if (!program.host) {
-  throw new Error('-h, --host options is required')
-}
-
 // Command line parameters
 const {
   name,
@@ -94,6 +82,7 @@ const {
   botURL,
   signalingURL,
   database,
+  cors,
   key,
   cert,
   ca,
@@ -119,7 +108,7 @@ db
 
     // Configure routes
     // Instantiate main objects
-    const app = new Koa()
+    let app = new Koa()
     const router = new KoaRouter()
 
     router
@@ -141,13 +130,13 @@ db
       })
 
     // Apply router and cors middlewares
-    return (
-      app
-        // .use(koaCors())
-        .use(bodyParser())
-        .use(router.routes())
-        .use(router.allowedMethods())
-    )
+    if (cors) {
+      app = app.use(koaCors())
+    }
+    return app
+      .use(bodyParser())
+      .use(router.routes())
+      .use(router.allowedMethods())
   })
   .then((app) => {
     log.info(`Configured routes  ✓`)
