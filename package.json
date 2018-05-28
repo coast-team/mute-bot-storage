@@ -9,11 +9,11 @@
     "build": "webpack",
     "build:live": "nodemon --exec ts-node ./src/index.ts -- --cors --logLevel trace | bunyan",
     "builddev": "npm run build && scp server.js ovhmute:/root/container/botStorage",
-    "lint": "tslint src/*.ts src/**/*.ts -e 'src/**/*.proto' -e 'src/**/*.d.ts' -p tsconfig.json",
+    "lint": "tslint --fix -p tsconfig.json  'src/**/*.ts' -e 'src/**/*.proto' -e 'src/**/*.d.ts' && markdownlint ./*.md",
     "proto": "pbjs -t static-module -w es6 --no-verify --no-delimited --no-convert src/proto/index.proto -o src/proto/index.es6.js && pbts src/proto/index.es6.js -o src/proto/index.d.ts",
     "postproto": "babel --presets env -o src/proto/index.js src/proto/index.es6.js && rm src/proto/index.es6.js",
     "cz": "git-cz",
-    "precommit": "npm run lint",
+    "precommit": "lint-staged",
     "commitmsg": "commitlint -e $GIT_PARAMS",
     "release": "standard-version --no-verify"
   },
@@ -63,6 +63,8 @@
     "commitizen": "^2.10.1",
     "cz-conventional-changelog": "^2.1.0",
     "husky": "^0.14.3",
+    "lint-staged": "^7.1.2",
+    "markdownlint-cli": "^0.9.0",
     "nodemon": "^1.17.5",
     "prettier": "^1.12.1",
     "standard-version": "^4.4.0",
@@ -86,5 +88,21 @@
     "commitizen": {
       "path": "node_modules/cz-conventional-changelog"
     }
+  },
+  "lint-staged": {
+    "linters": {
+      "*.md": [
+        "markdownlint"
+      ],
+      "*.ts": [
+        "tslint --fix -p tsconfig.json -e src/proto/* -e docs/*",
+        "git add"
+      ],
+      "*.{ts,json,scss,css}": [
+        "prettier --write --list-different -e *proto*",
+        "git add"
+      ]
+    },
+    "concurrent": false
   }
 }

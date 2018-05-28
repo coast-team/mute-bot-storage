@@ -1,13 +1,15 @@
-# <p align="center">Mute-bot-storage</p>
+# Mute-bot-storage
 
 Very simple bot storage NodeJS server written in Typescript to use with [MUTE](https://github.com/coast-team/mute). It may be invited into MUTE collaboration session, like any other collaborator, but it never modifies the document content or title. Its role is to store the document into MongoDB.
 
-**Features**
-- Can participate in several MUTE sessions independently
-- Has REST API to get bot name and the list of all documents in database
+## Features
+
+* Can participate in several MUTE sessions independently
+* Has REST API to get bot name and the list of all documents in database
 
 ## Usage
-```
+
+```shell
 Usage: node server [options]
 
   Options:
