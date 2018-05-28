@@ -4,12 +4,14 @@ module.exports = {
   mode: 'production',
   entry: './src/index.ts',
   output: {
-    filename: 'server.js'
+    filename: 'server.js',
   },
   target: 'node',
-  externals: [nodeExternals({
-      whitelist: ['netflux', 'mute-structs', 'mute-core']
-  })],
+  externals: [
+    nodeExternals({
+      whitelist: ['netflux', 'mute-structs', 'mute-core'],
+    }),
+  ],
   module: {
     rules: [
       {
@@ -17,9 +19,9 @@ module.exports = {
         loader: 'ts-loader',
         exclude: /node_modules/,
       },
-    ]
+    ],
   },
   resolve: {
-    extensions: ['.ts', '.js']
-  }
+    extensions: ['.ts', '.js'],
+  },
 }

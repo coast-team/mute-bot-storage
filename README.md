@@ -4,8 +4,8 @@ Very simple bot storage NodeJS server written in Typescript to use with [MUTE](h
 
 ## Features
 
-* Can participate in several MUTE sessions independently
-* Has REST API to get bot name and the list of all documents in database
+- Can participate in several MUTE sessions independently
+- Has REST API to get bot name and the list of all documents in database
 
 ## Usage
 

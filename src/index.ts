@@ -106,8 +106,10 @@ process.on('uncaughtException', (err) => {
 
 // Connect to MongoDB
 const db = new MongooseAdapter()
-db
-  .connect('localhost', database)
+db.connect(
+  'localhost',
+  database
+)
   .then(() => {
     log.info(`Connected to the database  ✓`)
 
