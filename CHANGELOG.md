@@ -1,8 +1,15 @@
-<!-- markdownlint-disable -->
-
 # Change Log
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+<a name="1.1.2"></a>
+## <small>1.1.2 (2018-06-01)</small>
+
+* chore(changelog): disable markdown linter for CHANGELOG.md ([3057c81](https://github.com/coast-team/mute-bot-storage/commit/3057c81))
+* chore(package): update dependencies ([42da099](https://github.com/coast-team/mute-bot-storage/commit/42da099))
+* fix(avatar): add bot avatar ([741bc60](https://github.com/coast-team/mute-bot-storage/commit/741bc60))
+
+
 
 <a name="1.1.1"></a>
 
