@@ -153,6 +153,7 @@ export class BotStorage {
     const muteCore = new MuteCore({
       displayName: this.pseudonym,
       login: this.login,
+      avatar: 'https://www.shareicon.net/data/256x256/2016/01/01/228083_bot_256x256.png',
     })
     merge(
       muteCore.collaboratorsService.onMsgToBroadcast,
