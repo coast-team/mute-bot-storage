@@ -21,7 +21,7 @@ import { Message } from './proto'
 
 const SAVE_INTERVAL = 120000
 
-setLogLevel(LogLevel.DEBUG, LogLevel.CHANNEL)
+setLogLevel(LogLevel.DEBUG, LogLevel.TOPOLOGY)
 
 export class BotStorage {
   public static ID = 9137
@@ -113,7 +113,12 @@ export class BotStorage {
     }
 
     wg.onMemberJoin = (id) => this.peerJoinSubject.next(id)
-    wg.onMemberLeave = (id) => this.peerLeaveSubject.next(id)
+    wg.onMemberLeave = (id) => {
+      if (wg.members.length < 2) {
+        this.save()
+      }
+      this.peerLeaveSubject.next(id)
+    }
   }
 
   private save() {
@@ -128,6 +133,7 @@ export class BotStorage {
   private updateLogins(login: string | undefined) {
     if (login && login !== 'anonymous') {
       if (this.mongoDoc) {
+        log.info('Update logins with: ' + login)
         const logins = this.mongoDoc.get('logins')
         logins.push(login)
         this.mongoDoc.set({ logins })
@@ -185,6 +191,10 @@ export class BotStorage {
     ).subscribe((stm: SendToMessage) => this.wg.sendTo(stm.id, this.encode(stm)))
 
     muteCore.collaboratorsService.onUpdate.subscribe((collab: ICollaborator) => {
+      this.updateLogins(collab.login)
+    })
+
+    muteCore.collaboratorsService.onJoin.subscribe((collab: ICollaborator) => {
       this.updateLogins(collab.login)
     })
 
