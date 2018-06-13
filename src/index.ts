@@ -26,6 +26,19 @@ interface IOptions {
   logFolder: string
 }
 
+// Retrieve version from package.json
+let version: string
+try {
+  version = require('../package.json').version
+} catch (err) {
+  try {
+    version = require('./package.json').version
+  } catch {
+    log.error(err)
+    version = ''
+  }
+}
+
 // Default options
 const defaults: IOptions = {
   name: 'Repono',
@@ -44,6 +57,7 @@ const defaults: IOptions = {
 
 // Configure command-line interface
 program
+  .version(version)
   .option('-h, --host <ip or host name>', 'Host address to bind to.', defaults.host)
   .option('-p, --port <number>', 'Port to use for the server.', defaults.port)
   .option('-b, --botURL <number>', 'Bot public URL.', defaults.botURL)
@@ -96,12 +110,10 @@ if (logLevel !== 'none') {
   setLogLevel(LogLevel.DEBUG)
 }
 
-require('longjohn')
-
 // Configure error handling on process
 process.on('uncaughtException', (err) => {
   // log.fatal('NodeJS process error', err)
-  console.error('uncaughtException -> #####################', err)
+  console.error('uncaughtException -> ', err)
 })
 
 // Connect to MongoDB
@@ -180,7 +192,7 @@ db.connect(
       },
     })
     bot.onWebGroup = (wg: WebGroup) => {
-      const botStorage = new BotStorage(name, extractHostname(botURL), wg, db)
+      const botStorage = new BotStorage(name, getLogin(botURL), wg, db)
       log.info('New peer to peer network invitation received for ', botStorage.key)
     }
 
@@ -196,20 +208,17 @@ db.connect(
     log.fatal(err)
   })
 
-function extractHostname(url: string) {
-  let hostname
+function getLogin(url: string) {
+  let login = 'bot.storage'
 
-  // find & remove protocol (http, ftp, etc.) and get hostname
-  if (url.indexOf('://') > -1) {
-    hostname = url.split('/')[2]
-  } else {
-    hostname = url.split('/')[0]
+  // find & remove protocol (http, ftp, etc.) and get hostname and port
+  const chunks = url.split('/')
+  const hostnameAndPort = url.indexOf('://') > -1 ? chunks[2] : chunks[0]
+
+  if (version) {
+    login += `.v${version}`
   }
+  login += `@${hostnameAndPort}`
 
-  // find & remove port number
-  hostname = hostname.split(':')[0]
-  // find & remove "?"
-  hostname = hostname.split('?')[0]
-
-  return hostname
+  return login
 }
