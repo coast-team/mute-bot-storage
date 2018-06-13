@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.2.0"></a>
+# [1.2.0](https://github.com/coast-team/mute-bot-storage/compare/v1.1.2...v1.2.0) (2018-06-13)
+
+
+### Bug Fixes
+
+* save document when all members left ([98aa468](https://github.com/coast-team/mute-bot-storage/commit/98aa468))
+
+
+### Features
+
+* **login:** add version number into login ([3b8c12d](https://github.com/coast-team/mute-bot-storage/commit/3b8c12d))
+
+
+
 <a name="1.1.2"></a>
 ## <small>1.1.2 (2018-06-01)</small>
 
