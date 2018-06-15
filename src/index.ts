@@ -144,7 +144,9 @@ db.connect(
           })
       })
       .post('/remove', (ctx) => {
-        db.removeLogin(ctx.request.body.key, ctx.request.body.login)
+        db.removeLogin(ctx.request.body.key, ctx.request.body.login).catch((err) => {
+          log.error(`Failed to remove login ${ctx.request.body.login}`, err)
+        })
         ctx.body = true
       })
 
@@ -204,9 +206,7 @@ db.connect(
       { name, host, port, botURL, signalingURL, logLevel, logFolder }
     )
   })
-  .catch((err) => {
-    log.fatal(err)
-  })
+  .catch((err) => log.fatal(err))
 
 function getLogin(url: string) {
   let login = 'bot.storage'

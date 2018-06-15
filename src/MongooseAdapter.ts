@@ -23,7 +23,7 @@ export class MongooseAdapter {
     return this.DocModel.findOne({ key }).exec()
   }
 
-  findKeysByLogin(login: string): Promise<string[]> {
+  async findKeysByLogin(login: string): Promise<string[]> {
     return this.DocModel.find({ logins: login }, 'key')
       .exec()
       .then((docs: Document[]) => {
@@ -45,20 +45,6 @@ export class MongooseAdapter {
       doc.save()
     }
   }
-
-  // list (): Promise<Document[]> {
-  //   return this.DocModel.find().exec()
-  // }
-
-  // whichExist (keys: string[]): Promise<string[] | undefined> {
-  //   return this.DocModel.find({ key: { $in: keys } }).exec()
-  //     .then((docs) => {
-  //       if (docs !== null) {
-  //         return docs.map((doc: any) => doc.key)
-  //       }
-  //       return []
-  //     })
-  // }
 
   create(key: string): Promise<Document> {
     return this.DocModel.create({ key })
