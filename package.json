@@ -5,17 +5,16 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "npm run build:live",
+    "dev": "nodemon --exec ts-node ./src/index.ts -- --cors --logLevel trace | bunyan",
     "build": "webpack",
-    "build:live": "nodemon --exec ts-node ./src/index.ts -- --cors --logLevel trace | bunyan",
-    "builddev": "npm run build && scp server.js ovhmute:/root/container/botStorage",
     "lint": "tslint --fix -p tsconfig.json  'src/**/*.ts' -e 'src/**/*.proto' -e 'src/**/*.d.ts' && prettier --write --list-different 'src/**/*.ts' './*.{ts,js,json,md}'  && markdownlint ./*.md",
     "proto": "pbjs -t static-module -w es6 --no-verify --no-delimited --no-convert src/proto/index.proto -o src/proto/index.es6.js && pbts src/proto/index.es6.js -o src/proto/index.d.ts",
     "postproto": "babel --presets env -o src/proto/index.js src/proto/index.es6.js && rm src/proto/index.es6.js",
     "cz": "git-cz",
     "precommit": "lint-staged && npm run build && git add dist/*",
     "commitmsg": "commitlint -e $GIT_PARAMS",
-    "release": "npm run build && standard-version --no-verify"
+    "prerelease": "npm run build && git add dist/*",
+    "release": "standard-version --no-verify"
   },
   "files": [
     "dist/server.js"
