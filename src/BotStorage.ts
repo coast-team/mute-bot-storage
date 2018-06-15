@@ -121,26 +121,38 @@ export class BotStorage {
     }
   }
 
-  private save() {
-    if (this.mongoDoc && this.lastReceivedState && this.lastReceivedState !== this.lastSaveState) {
-      log.info('Saving document: ' + this.key)
-      this.mongoDoc.set({ operations: this.lastReceivedState.richLogootSOps })
-      this.mongoDoc.save().catch((err) => log.error('Could not save the document ' + this.key, err))
-      this.lastSaveState = this.lastReceivedState
+  private async save() {
+    try {
+      if (
+        this.mongoDoc &&
+        this.lastReceivedState &&
+        this.lastReceivedState !== this.lastSaveState
+      ) {
+        this.mongoDoc.set({ operations: this.lastReceivedState.richLogootSOps })
+        this.mongoDoc
+          .save()
+          .catch((err) => log.error('Could not save the document ' + this.key, err))
+        this.lastSaveState = this.lastReceivedState
+      }
+    } catch (err) {
+      log.error('Failed save the document:', err)
     }
   }
 
-  private updateLogins(login: string | undefined) {
-    if (login && login !== 'anonymous') {
-      if (this.mongoDoc) {
-        log.info('Update logins with: ' + login)
-        const logins = this.mongoDoc.get('logins')
-        logins.push(login)
-        this.mongoDoc.set({ logins })
-        this.mongoDoc.save()
-      } else {
-        this.savedLogins.push(login)
+  private async updateLogins(login: string | undefined) {
+    try {
+      if (login && login !== 'anonymous') {
+        if (this.mongoDoc) {
+          const logins = this.mongoDoc.get('logins')
+          logins.push(login)
+          this.mongoDoc.set({ logins })
+          this.mongoDoc.save()
+        } else {
+          this.savedLogins.push(login)
+        }
       }
+    } catch (err) {
+      log.error('Failed update the logins:', err)
     }
   }
 
@@ -190,9 +202,9 @@ export class BotStorage {
       )
     ).subscribe((stm: SendToMessage) => this.wg.sendTo(stm.id, this.encode(stm)))
 
-    muteCore.collaboratorsService.onUpdate.subscribe((collab: ICollaborator) => {
+    muteCore.collaboratorsService.onUpdate.subscribe((collab: ICollaborator) =>
       this.updateLogins(collab.login)
-    })
+    )
 
     muteCore.collaboratorsService.onJoin.subscribe((collab: ICollaborator) => {
       this.updateLogins(collab.login)
