@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.2.2"></a>
+## [1.2.2](https://github.com/coast-team/mute-bot-storage/compare/v1.2.1...v1.2.2) (2018-06-18)
+
+
+### Bug Fixes
+
+* **mongo:** resolve remained unhandled prosise rejection ([1aa39fd](https://github.com/coast-team/mute-bot-storage/commit/1aa39fd))
+* **mongo:** unhandled promise rejection on save and login update ([fdc75d9](https://github.com/coast-team/mute-bot-storage/commit/fdc75d9))
+* **netflux:** update netflux to v4.1.2 which solves an issue ([ba93298](https://github.com/coast-team/mute-bot-storage/commit/ba93298))
+
+
+
 <a name="1.2.1"></a>
 ## [1.2.1](https://github.com/coast-team/mute-bot-storage/compare/v1.2.0...v1.2.1) (2018-06-15)
 
