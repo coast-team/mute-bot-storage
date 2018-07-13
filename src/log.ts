@@ -1,7 +1,8 @@
 import * as bunyan from 'bunyan'
 
-export function createLogger(logFolder: string, logLevel: string): bunyan {
-  let log
+export let log: bunyan
+
+export function createLogger(logFolder: string, logLevel: string) {
   const options: any = {
     name: 'mute-bot-storage',
   }
@@ -41,5 +42,4 @@ export function createLogger(logFolder: string, logLevel: string): bunyan {
     default:
       log.level(bunyan.INFO)
   }
-  return log
 }

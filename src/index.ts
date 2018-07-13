@@ -8,7 +8,7 @@ import * as KoaRouter from 'koa-router'
 import { Bot, LogLevel, setLogLevel, WebGroup } from 'netflux'
 
 import { BotStorage } from './BotStorage'
-import { createLogger } from './log'
+import { createLogger, log } from './log'
 import { IMetadata, MongooseAdapter } from './MongooseAdapter'
 
 interface IOptions {
@@ -105,7 +105,7 @@ const {
 } = program as any
 
 // Configure logging
-global.log = createLogger(logFolder, logLevel)
+createLogger(logFolder, logLevel)
 
 if (logLevel !== 'none') {
   setLogLevel(LogLevel.DEBUG)

@@ -14,7 +14,6 @@
     "moduleResolution": "node",
     "rootDir": "./src/",
     "sourceMap": true,
-    "target": "es2017",
-    "typeRoots": ["./node_modules/@types", "src/typings.d.ts"]
+    "target": "es2017"
   }
 }

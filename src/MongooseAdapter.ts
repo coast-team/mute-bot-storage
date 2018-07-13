@@ -1,6 +1,8 @@
 import { connect, connection, Document, Model, model, Mongoose, Schema } from 'mongoose'
 import { SymmetricCrypto } from './SymmetricCrypto'
 
+import { log } from './log'
+
 export interface IMetadata {
   signalingKey: string
   cryptoKey: string

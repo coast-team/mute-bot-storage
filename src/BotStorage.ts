@@ -17,6 +17,7 @@ import { from, merge, ReplaySubject, Subject } from 'rxjs'
 import { filter, flatMap } from 'rxjs/operators'
 
 import { LogLevel, setLogLevel, WebGroup, WebGroupState } from 'netflux'
+import { log } from './log'
 import { MongooseAdapter } from './MongooseAdapter'
 import { Message } from './proto'
 import { SymmetricCrypto } from './SymmetricCrypto'
