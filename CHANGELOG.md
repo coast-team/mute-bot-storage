@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.0.0"></a>
+# [2.0.0](https://github.com/coast-team/mute-bot-storage/compare/v1.2.2...v2.0.0) (2018-07-13)
+
+
+### Code Refactoring
+
+* update mute-core to v6.0.0, change REST API ([66589e3](https://github.com/coast-team/mute-bot-storage/commit/66589e3))
+
+
+### BREAKING CHANGES
+
+* HTTP request ".../name"  becomes ".../info"
+
+
+
 <a name="1.2.2"></a>
 ## [1.2.2](https://github.com/coast-team/mute-bot-storage/compare/v1.2.1...v1.2.2) (2018-06-18)
 
