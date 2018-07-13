@@ -1,6 +1,10 @@
 import { symmetricCrypto } from 'crypto-api-wrapper'
 
 export class SymmetricCrypto {
+  static async generateKey(): Promise<string> {
+    const key = await symmetricCrypto.generateEncryptionKey()
+    return symmetricCrypto.toB64(await symmetricCrypto.exportKey(key))
+  }
   private key: any
 
   async importKey(key: string): Promise<void> {
@@ -24,7 +28,7 @@ export class SymmetricCrypto {
     try {
       return await symmetricCrypto.decrypt(ciphertext, this.key)
     } catch (err) {
-      console.error('DECRYPT ERROR INSIDE: ', err.stack)
+      console.error('DECRYPT ERROR INSIDE: ', err.message)
       return new Uint8Array()
     }
   }

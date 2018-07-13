@@ -1,4 +1,15 @@
 import { connect, connection, Document, Model, model, Mongoose, Schema } from 'mongoose'
+import { SymmetricCrypto } from './SymmetricCrypto'
+
+export interface IMetadata {
+  signalingKey: string
+  cryptoKey: string
+  title: string
+  titleModified: number
+  created: number
+}
+
+const DEFAULT_TITLE = 'Untitled Document'
 
 export class MongooseAdapter {
   private DocModel: Model<Document>
@@ -7,7 +18,12 @@ export class MongooseAdapter {
     this.DocModel = model(
       'Doc',
       new Schema({
-        key: { type: String, require: true },
+        key: String,
+        signalingKey: { type: String, require: true },
+        cryptoKey: { type: String, default: '' },
+        title: { type: String, default: DEFAULT_TITLE },
+        titleModified: { type: Number, default: 0 },
+        created: Number,
         logins: [],
         operations: Array,
       })
@@ -19,20 +35,48 @@ export class MongooseAdapter {
     return connect(`mongodb://${url}/${dbName}`)
   }
 
-  find(key: string): Promise<Document | null> {
-    return this.DocModel.findOne({ key }).exec()
+  async find(signalingKey: string): Promise<Document | null> {
+    const doc = await this.DocModel.findOne({ signalingKey }).exec()
+    if (doc) {
+      const key = doc.get('key')
+      if (key) {
+        doc.set({
+          key: undefined,
+          signalingKey: key,
+          cryptoKey: await SymmetricCrypto.generateKey(),
+        })
+        await doc.save()
+      }
+    }
+    return doc
   }
 
-  async findKeysByLogin(login: string): Promise<string[]> {
-    return this.DocModel.find({ logins: login }, 'key')
-      .exec()
-      .then((docs: Document[]) => {
-        return docs.map((doc) => doc.get('key'))
-      })
+  async lookupMetadataByLogin(login: string): Promise<IMetadata[]> {
+    const docs = await this.DocModel.find({ logins: login }, '-operations -logins').exec()
+
+    const result = []
+    for (const doc of docs) {
+      const key = doc.get('key')
+      if (key) {
+        doc.set({
+          key: undefined,
+          signalingKey: key,
+          cryptoKey: await SymmetricCrypto.generateKey(),
+        })
+        await doc.save()
+      }
+      const signalingKey = doc.get('signalingKey')
+      const cryptoKey = doc.get('cryptoKey')
+      const title = doc.get('title')
+      const titleModified = doc.get('titleModified')
+      const created = doc.get('created')
+      result.push({ signalingKey, cryptoKey, title, titleModified, created })
+    }
+    return result
   }
 
-  async removeLogin(key: string, login: string) {
-    const doc = await this.find(key)
+  async removeLogin(signalingKey: string, login: string) {
+    const doc = await this.find(signalingKey)
     if (doc) {
       const logins: string[] = doc.get('logins')
       for (let i = 0; i < logins.length; i++) {
@@ -42,11 +86,12 @@ export class MongooseAdapter {
         }
       }
       doc.set('logins', logins)
-      doc.save()
+      await doc.save()
     }
   }
 
-  create(key: string): Promise<Document> {
-    return this.DocModel.create({ key })
+  async create(signalingKey: string): Promise<Document> {
+    const cryptoKey = await SymmetricCrypto.generateKey()
+    return this.DocModel.create({ signalingKey, created: Date.now(), cryptoKey })
   }
 }

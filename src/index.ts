@@ -9,7 +9,7 @@ import { Bot, LogLevel, setLogLevel, WebGroup } from 'netflux'
 
 import { BotStorage } from './BotStorage'
 import { createLogger } from './log'
-import { MongooseAdapter } from './MongooseAdapter'
+import { IMetadata, MongooseAdapter } from './MongooseAdapter'
 
 interface IOptions {
   name: string
@@ -106,6 +106,7 @@ const {
 
 // Configure logging
 global.log = createLogger(logFolder, logLevel)
+
 if (logLevel !== 'none') {
   setLogLevel(LogLevel.DEBUG)
 }
@@ -131,23 +132,32 @@ db.connect(
     const router = new KoaRouter()
 
     router
-      .get('/name', (ctx) => {
-        ctx.body = name
+      .get('/info', (ctx) => {
+        ctx.body = getInfo()
       })
       .get('/docs/:login', async (ctx) => {
         await db
-          .findKeysByLogin(ctx.params.login)
-          .then((keys: string[]) => (ctx.body = keys))
+          .lookupMetadataByLogin(ctx.params.login)
+          .then((metadata: IMetadata[]) => (ctx.body = metadata))
           .catch((err) => {
             log.error('Could not retreive the document list stored in database', err)
             ctx.status = 500
           })
       })
       .post('/remove', (ctx) => {
-        db.removeLogin(ctx.request.body.key, ctx.request.body.login).catch((err) => {
-          log.error(`Failed to remove login ${ctx.request.body.login}`, err)
-        })
-        ctx.body = true
+        const { key, login } = ctx.request.body as any
+        if (ctx.request.body && key && login) {
+          db.removeLogin(key, login)
+            .then(() => {
+              ctx.body = true
+            })
+            .catch((err) => {
+              log.error(`Failed to remove login ${login}`, err)
+              ctx.status = 500
+            })
+        } else {
+          ctx.status = 404
+        }
       })
 
     // Apply router and cors middlewares
@@ -195,7 +205,7 @@ db.connect(
     })
     bot.onWebGroup = (wg: WebGroup) => {
       const botStorage = new BotStorage(name, getLogin(botURL), wg, db)
-      log.info('New peer to peer network invitation received for ', botStorage.key)
+      log.info('New peer to peer network invitation received for ', botStorage.signalingKey)
     }
 
     return new Promise((resolve) => server.listen(port, host, resolve))
@@ -208,17 +218,19 @@ db.connect(
   })
   .catch((err) => log.fatal(err))
 
-function getLogin(url: string) {
-  let login = 'bot.storage'
+function getInfo() {
+  return {
+    displayName: name,
+    login: getLogin(botURL),
+    avatar: BotStorage.AVATAR,
+    version,
+  }
+}
 
+function getLogin(url: string) {
   // find & remove protocol (http, ftp, etc.) and get hostname and port
   const chunks = url.split('/')
-  const hostnameAndPort = url.indexOf('://') > -1 ? chunks[2] : chunks[0]
+  const host = url.indexOf('://') > -1 ? chunks[2] : chunks[0]
 
-  if (version) {
-    login += `.v${version}`
-  }
-  login += `@${hostnameAndPort}`
-
-  return login
+  return `bot.storage@${host}`
 }
