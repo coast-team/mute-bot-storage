@@ -212,10 +212,12 @@ export class BotStorage {
 
   private saveLogins(login: string | undefined) {
     if (this.mongoDoc && login && login !== 'anonymous') {
-      const logins = this.mongoDoc.get('logins')
-      logins.push(login)
-      this.mongoDoc.set({ logins })
-      this.saveDoc()
+      const logins: string[] = this.mongoDoc.get('logins')
+      if (!logins.includes(login)) {
+        logins.push(login)
+        this.mongoDoc.set({ logins })
+        this.saveDoc()
+      }
     }
   }
 
