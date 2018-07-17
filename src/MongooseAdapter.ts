@@ -34,7 +34,10 @@ export class MongooseAdapter {
 
   connect(url: string, dbName: string): Promise<Mongoose> {
     connection.on('close', () => log.warn(`Connection to the database has been closed`))
-    return connect(`mongodb://${url}/${dbName}`)
+    return connect(
+      `mongodb://${url}:27017/${dbName}`,
+      { useNewUrlParser: true }
+    )
   }
 
   async find(signalingKey: string): Promise<Document | null> {

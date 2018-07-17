@@ -120,7 +120,7 @@ process.on('uncaughtException', (err) => {
 // Connect to MongoDB
 const db = new MongooseAdapter()
 db.connect(
-  'localhost',
+  `localhost`,
   database
 )
   .then(() => {
