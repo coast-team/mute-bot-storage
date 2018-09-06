@@ -9,7 +9,7 @@ module.exports = {
   target: 'node',
   externals: [
     nodeExternals({
-      whitelist: ['netflux', 'mute-structs', 'mute-core'],
+      whitelist: ['netflux', 'mute-structs', '@coast-team/mute-core', '@coast-team/mute-crypto'],
     }),
   ],
   module: {

@@ -1,5 +1,5 @@
+import { Symmetric } from '@coast-team/mute-crypto'
 import { connect, connection, Document, Model, model, Mongoose, Schema } from 'mongoose'
-import { SymmetricCrypto } from './SymmetricCrypto'
 
 import { log } from './log'
 
@@ -48,7 +48,7 @@ export class MongooseAdapter {
         doc.set({
           key: undefined,
           signalingKey: key,
-          cryptoKey: await SymmetricCrypto.generateKey(),
+          cryptoKey: await Symmetric.generateKey(),
         })
         await doc.save()
       }
@@ -66,7 +66,7 @@ export class MongooseAdapter {
         doc.set({
           key: undefined,
           signalingKey: key,
-          cryptoKey: await SymmetricCrypto.generateKey(),
+          cryptoKey: await Symmetric.generateKey(),
         })
         await doc.save()
       }
@@ -96,7 +96,7 @@ export class MongooseAdapter {
   }
 
   async create(signalingKey: string): Promise<Document> {
-    const cryptoKey = await SymmetricCrypto.generateKey()
+    const cryptoKey = await Symmetric.generateKey()
     return this.DocModel.create({ signalingKey, created: Date.now(), cryptoKey })
   }
 }

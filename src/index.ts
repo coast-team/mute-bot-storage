@@ -5,7 +5,7 @@ import * as koaCors from 'kcors'
 import * as Koa from 'koa'
 import * as bodyParser from 'koa-bodyparser'
 import * as KoaRouter from 'koa-router'
-import { Bot, LogLevel, setLogLevel, WebGroup } from 'netflux'
+import { Bot, LogLevel, setLogLevel } from 'netflux'
 
 import { BotStorage } from './BotStorage'
 import { createLogger, log } from './log'
@@ -18,6 +18,7 @@ interface IOptions {
   botURL: string
   signalingURL: string
   database: string
+  cryptography: string
   cors: boolean
   key: string
   cert: string
@@ -47,6 +48,7 @@ const defaults: IOptions = {
   botURL: 'ws://localhost:20000',
   signalingURL: 'ws://localhost:8010',
   database: 'mutedocs',
+  cryptography: 'keyagreement', // Possible values: 'none', 'metadata', 'keyagreement'
   cors: false,
   key: '',
   cert: '',
@@ -63,6 +65,11 @@ program
   .option('-b, --botURL <number>', 'Bot public URL.', defaults.botURL)
   .option('-s, --signalingURL <url>', 'Signaling server url.', defaults.signalingURL)
   .option('', '\n')
+  .option(
+    '-c --cryptography <string>',
+    'Specify cryptography type. Possible values are: "none", "metadata", "keyagreement"',
+    defaults.cryptography
+  )
   .option('--cors', 'Enable Cross-origin Resource Sharing.', defaults.cors)
   .option('-n, --name <bot name>', 'Bot name.', defaults.name)
   .option('-d, --database <name>', 'Database name.', defaults.database)
@@ -96,6 +103,7 @@ const {
   botURL,
   signalingURL,
   database,
+  cryptography,
   cors,
   key,
   cert,
@@ -203,8 +211,8 @@ db.connect(
         signalingServer: signalingURL,
       },
     })
-    bot.onWebGroup = (wg: WebGroup) => {
-      const botStorage = new BotStorage(name, getLogin(botURL), wg, db)
+    bot.onWebGroup = (wg) => {
+      const botStorage = new BotStorage(name, getLogin(botURL), wg, db, cryptography)
       log.info('New peer to peer network invitation received for ', botStorage.signalingKey)
     }
 

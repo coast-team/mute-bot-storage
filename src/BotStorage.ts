@@ -1,197 +1,287 @@
-import { Document } from 'mongoose'
 import {
-  AbstractMessage,
-  BroadcastMessage,
-  ICollaborator,
-  JoinEvent,
+  FixDataState,
   MetaDataType,
   MuteCore,
-  NetworkMessage,
   RichLogootSOperation,
-  SendRandomlyMessage,
-  SendToMessage,
   State,
-} from 'mute-core'
-import { FixDataState, TitleState } from 'mute-core'
-import { from, merge, ReplaySubject, Subject } from 'rxjs'
-import { filter, flatMap } from 'rxjs/operators'
+  Streams as MuteCoreStreams,
+  TitleState,
+} from '@coast-team/mute-core'
+import {
+  // enableDebug,
+  KeyAgreementBD,
+  KeyState,
+  Streams as MuteCryptoStreams,
+  Symmetric,
+} from '@coast-team/mute-crypto'
+import { Document } from 'mongoose'
+import { merge, ReplaySubject, Subject, Subscription } from 'rxjs'
+import { auditTime, filter } from 'rxjs/operators'
 
-import { LogLevel, setLogLevel, WebGroup, WebGroupState } from 'netflux'
+import { WebGroup, WebGroupState } from 'netflux'
 import { log } from './log'
 import { MongooseAdapter } from './MongooseAdapter'
 import { Message } from './proto'
-import { SymmetricCrypto } from './SymmetricCrypto'
 
 const SAVE_INTERVAL = 120000
 
-setLogLevel(LogLevel.DEBUG, LogLevel.TOPOLOGY)
+// enableDebug(true)
+const SYNC_DOC_INTERVAL = 10000
 
 export class BotStorage {
   public static AVATAR = 'https://www.shareicon.net/data/256x256/2016/01/01/228083_bot_256x256.png'
   public static ID = 9137
 
-  public signalingKey: string
-
   private mongooseAdapter: MongooseAdapter
   private wg: WebGroup
-  private muteCore: MuteCore | undefined
   private displayName: string
   private login: string
   private lastReceivedState: State | undefined
-  private lastSaveState: State | undefined
+  private lastSavedState: State | undefined
   private mongoDoc: Document | undefined
-  private operations: RichLogootSOperation[] | undefined
   private saveInterval: NodeJS.Timer
   private saveChain: Promise<void>
+  private syncDocContentInterval: NodeJS.Timer | undefined
 
-  private joinSubject: Subject<JoinEvent>
-  private messageSubject: ReplaySubject<NetworkMessage>
-  private collabJoinSubject: ReplaySubject<number>
-  private collabLeaveSubject: ReplaySubject<number>
-  private cryptoReady: Subject<void>
-  private cryptoInitialized: boolean
+  private message$: ReplaySubject<{ senderId: number; streamId: number; content: Uint8Array }>
+  private memberJoin$: ReplaySubject<number>
+  private memberLeave$: ReplaySubject<number>
+  private state$: ReplaySubject<WebGroupState>
+  private myId$: ReplaySubject<number>
+  private synchronize: () => void
 
-  private crypto: SymmetricCrypto
+  private crypto: Symmetric | KeyAgreementBD | undefined
+  private subs: Subscription[]
 
-  constructor(pseudonym: string, login: string, wg: WebGroup, mongooseAdapter: MongooseAdapter) {
+  constructor(
+    pseudonym: string,
+    login: string,
+    wg: WebGroup,
+    mongooseAdapter: MongooseAdapter,
+    cryptography: string
+  ) {
     this.displayName = pseudonym
     this.login = login
     this.wg = wg
-    this.cryptoInitialized = false
+    this.synchronize = () => {}
+    this.syncDocContentInterval = undefined
     this.saveChain = Promise.resolve()
-    this.signalingKey = wg.key
-    this.crypto = new SymmetricCrypto()
     this.mongooseAdapter = mongooseAdapter
-    this.joinSubject = new Subject<JoinEvent>()
-    this.messageSubject = new ReplaySubject()
-    this.collabJoinSubject = new ReplaySubject()
-    this.collabLeaveSubject = new ReplaySubject()
-    this.cryptoReady = new Subject()
+    this.message$ = new ReplaySubject()
+    this.memberJoin$ = new ReplaySubject()
+    this.memberLeave$ = new ReplaySubject()
+    this.state$ = new ReplaySubject()
+    this.myId$ = new ReplaySubject()
+    this.subs = []
 
+    // Configure document content save interval
     this.saveInterval = setInterval(() => {
       if (this.mongoDoc) {
         this.saveContent()
       }
     }, SAVE_INTERVAL)
 
-    // Look for the document in the database
-    this.mongooseAdapter
-      .find(this.signalingKey)
-      .then((doc) => (doc ? doc : this.mongooseAdapter.create(this.signalingKey)))
+    // Initialize WebGroup
+    this.initWebGroup()
+
+    // Initialize cryptography
+    this.initMuteCrypto(cryptography)
+
+    // Get the document from database or create a new one, then initialize CRDTs
+    this.retreiveDocument(wg.key)
       .then((doc) => {
         this.mongoDoc = doc
-        // trasform serialized data into structured object
-        this.operations = doc.get('operations').map((op: any) => RichLogootSOperation.fromPlain(op))
-        // initialize mute-core with provided key and the document content
-        this.muteCore = this.createMuteCore(doc, this.signalingKey, this
-          .operations as RichLogootSOperation[])
-
-        this.muteCore.metaDataService.onChange.subscribe(({ type, data }) => {
-          switch (type) {
-            case MetaDataType.Title:
-              const { title, titleModified } = data as TitleState
-              this.saveTitle(title, titleModified)
-              break
-            case MetaDataType.FixData:
-              const { docCreated, cryptoKey } = data as FixDataState
-              this.saveFixData(docCreated, cryptoKey)
-              this.crypto
-                .importKey(cryptoKey)
-                .then(() => {
-                  if (!this.cryptoInitialized) {
-                    const muteCore = this.muteCore as MuteCore
-
-                    muteCore.syncMessageService.messageSource = this.messageSubject.pipe(
-                      filter(({ service }) => service === 423),
-                      flatMap((msg) => {
-                        return this.crypto
-                          .decrypt(msg.content)
-                          .then((content) => Object.assign({}, msg, { content }))
-                      })
-                    )
-
-                    muteCore.syncMessageService.onMsgToBroadcast
-                      .pipe(
-                        flatMap((msg) =>
-                          this.crypto
-                            .encrypt(msg.content)
-                            .then((content) => Object.assign({}, msg, { content }))
-                        )
-                      )
-                      .subscribe((bm: BroadcastMessage) => this.wg.send(this.encode(bm)))
-
-                    muteCore.syncMessageService.onMsgToSendRandomly
-                      .pipe(
-                        flatMap((msg) =>
-                          this.crypto
-                            .encrypt(msg.content)
-                            .then((content) => Object.assign({}, msg, { content }))
-                        )
-                      )
-                      .subscribe((srm: SendRandomlyMessage) => {
-                        const members = this.wg.members.filter((id) => id !== this.wg.myId)
-                        const index = Math.ceil(Math.random() * members.length) - 1
-                        this.wg.sendTo(members[index], this.encode(srm))
-                      })
-
-                    muteCore.syncMessageService.onMsgToSendTo
-                      .pipe(
-                        flatMap((msg) =>
-                          this.crypto
-                            .encrypt(msg.content)
-                            .then((content) => Object.assign({}, msg, { content }))
-                        )
-                      )
-                      .subscribe((stm: SendToMessage) => this.wg.sendTo(stm.id, this.encode(stm)))
-
-                    this.cryptoReady.next()
-                    this.cryptoInitialized = true
-                  }
-                })
-                .catch((err) => {
-                  log.error('Import Key error: ', err.message)
-                })
-              break
-          }
-        })
-
-        // subscribes to remote events
-        this.muteCore.collaboratorsService.joinSource = this.collabJoinSubject
-        this.muteCore.collaboratorsService.leaveSource = this.collabLeaveSubject
-        this.muteCore.collaboratorsService.messageSource = this.messageSubject
-
-        this.muteCore.metaDataService.joinSource = this.collabJoinSubject
-        this.muteCore.metaDataService.messageSource = this.messageSubject
+        const operations = doc
+          .get('operations')
+          .map((op: RichLogootSOperation) => RichLogootSOperation.fromPlain(op))
+        this.initMuteCore(doc, new State(new Map(), operations || []))
       })
-      .catch((err) => {
-        log.error(`Error when searching for the document ${this.signalingKey}`, err)
-      })
+      .catch((err) => log.error(`Failed to initialize document ${wg.key}`, err))
+  }
 
-    // Configure WebGroup callbacks
-    wg.onMessage = (id, bytes) => {
+  get signalingKey(): string {
+    return this.wg.key
+  }
+
+  private initWebGroup() {
+    this.wg.onMessage = (senderId, bytes) => {
       try {
-        const { service, content } = Message.decode(bytes as Uint8Array)
-        this.messageSubject.next(new NetworkMessage(service, id, true, content))
+        this.message$.next({ senderId, ...Message.decode(bytes as Uint8Array) })
       } catch (err) {
         log.error('Failed to decode a message: ', err)
       }
     }
-    wg.onStateChange = (state) => {
-      if (state === WebGroupState.JOINED) {
-        this.joinSubject.next(new JoinEvent(this.wg.myId, this.signalingKey, false))
-      } else if (state === WebGroupState.LEFT) {
+    this.wg.onStateChange = (state) => {
+      if (state === WebGroupState.LEFT) {
         this.saveContent()
         global.clearInterval(this.saveInterval)
       }
+      this.state$.next(state)
     }
-
-    wg.onMemberJoin = (id) => this.collabJoinSubject.next(id)
-    wg.onMemberLeave = (id) => {
-      if (wg.members.length < 2) {
+    this.wg.onMemberJoin = (id) => this.memberJoin$.next(id)
+    this.wg.onMemberLeave = (id) => {
+      if (this.wg.members.length < 2) {
         this.saveContent()
       }
-      this.collabLeaveSubject.next(id)
+      this.memberLeave$.next(id)
     }
+    this.wg.onMyId = (id) => this.myId$.next(id)
+  }
+
+  private async retreiveDocument(key: string): Promise<Document> {
+    const doc = await this.mongooseAdapter.find(key)
+    if (!doc) {
+      return await this.mongooseAdapter.create(key)
+    }
+    return doc
+  }
+
+  private initMuteCore(mongoDoc: Document, docContent: State): MuteCore {
+    // TODO: MuteCore should consume doc Object
+    const muteCore = new MuteCore({
+      profile: {
+        displayName: this.displayName,
+        login: this.login,
+        avatar: BotStorage.AVATAR,
+      },
+      docContent,
+      metaTitle: {
+        title: mongoDoc.get('title'),
+        titleModified: mongoDoc.get('titleModified'),
+      },
+      metaFixData: {
+        docCreated: mongoDoc.get('created'),
+        cryptoKey: mongoDoc.get('cryptoKey'),
+      },
+    })
+
+    // Message IN/OUT
+    muteCore.messageIn$ = this.message$
+    this.subs[this.subs.length] = muteCore.messageOut$.subscribe(
+      ({ streamId, content, recipientId }) => {
+        if (
+          streamId === MuteCoreStreams.DOCUMENT_CONTENT &&
+          this.crypto &&
+          this.crypto.state === KeyState.READY
+        ) {
+          this.crypto
+            .encrypt(content)
+            .then((encryptedContent) => this.send(streamId, encryptedContent, recipientId))
+            .catch((err) => log.error('Failed to encrypt a message: ', err))
+        } else {
+          this.send(streamId, content, recipientId)
+        }
+      }
+    )
+
+    this.subs[this.subs.length] = muteCore.remoteTextOperations$.subscribe(() => {
+      this.lastReceivedState = muteCore.state
+    })
+
+    // Collaborators
+    muteCore.memberJoin$ = this.memberJoin$
+    muteCore.memberLeave$ = this.memberLeave$
+    this.subs[this.subs.length] = muteCore.collabJoin$.subscribe(({ login }) => {
+      this.saveLogins(login)
+    })
+    this.subs[this.subs.length] = muteCore.remoteCollabUpdate$.subscribe(({ login }) =>
+      this.saveLogins(login)
+    )
+
+    muteCore.collabJoin$.subscribe(() => muteCore.synchronize())
+
+    // Metadata
+    this.subs[this.subs.length] = muteCore.remoteMetadataUpdate$.subscribe(({ type, data }) => {
+      switch (type) {
+        case MetaDataType.Title:
+          const { title, titleModified } = data as TitleState
+          this.saveTitle(title, titleModified)
+          break
+        case MetaDataType.FixData:
+          const { docCreated, cryptoKey } = data as FixDataState
+          this.saveFixData(docCreated, cryptoKey)
+          break
+      }
+    })
+
+    // Synchronization mechanism
+    this.synchronize = () => {
+      if (this.wg.members.length > 1) {
+        if (this.crypto) {
+          if (this.crypto.state === KeyState.READY) {
+            muteCore.synchronize()
+          }
+        } else {
+          muteCore.synchronize()
+        }
+      }
+    }
+
+    return muteCore
+  }
+
+  private initMuteCrypto(cryptography: string) {
+    log.debug('CRYPTOGRAPHY type = ', cryptography)
+    switch (cryptography) {
+      case 'none':
+        this.crypto = undefined
+        break
+      case 'metadata':
+        this.crypto = new Symmetric()
+        break
+      case 'keyagreement':
+        this.crypto = new KeyAgreementBD()
+        this.crypto.onSend = (msg, streamId) => this.send(streamId, msg)
+        const bd = this.crypto as KeyAgreementBD
+
+        this.memberJoin$.subscribe((id) => bd.addMember(id))
+        this.memberLeave$.subscribe((id) => bd.removeMember(id))
+        this.state$.subscribe((state) => {
+          if (state === WebGroupState.JOINED) {
+            bd.setReady()
+          }
+        })
+        this.myId$.subscribe((id) => bd.setMyId(id))
+        this.wg.onMessage = (senderId, bytes) => {
+          const { streamId, content } = Message.decode(bytes as Uint8Array)
+
+          if (streamId === MuteCryptoStreams.KEY_AGREEMENT_BD) {
+            bd.onMessage(senderId, content)
+          } else if (streamId === MuteCoreStreams.DOCUMENT_CONTENT) {
+            bd.decrypt(content)
+              .then((decryptedContent) =>
+                this.message$.next({ senderId, streamId, content: decryptedContent })
+              )
+              .catch((err) => log.warn('Failed to decrypt document content: ', JSON.stringify(err)))
+          } else {
+            this.message$.next({ senderId, streamId, content })
+          }
+        }
+        const cryptoState = new Subject()
+        this.crypto.onStateChange = (state) => cryptoState.next(state)
+        this.subs[this.subs.length] = merge(
+          cryptoState.pipe(filter((state) => state === KeyState.READY)),
+          this.state$.pipe(filter((state) => state === WebGroupState.JOINED))
+        )
+          .pipe(auditTime(1000))
+          .subscribe(() => this.restartSyncInterval())
+        break
+    }
+  }
+
+  private send(streamId: number, content: Uint8Array, id?: number): void {
+    const msg = Message.create({ streamId, content })
+    if (id === undefined) {
+      this.wg.send(Message.encode(msg).finish())
+    } else {
+      id = id === 0 ? this.randomMember() : id
+      this.wg.sendTo(id, Message.encode(msg).finish())
+    }
+  }
+
+  private randomMember(): number {
+    const otherMembers = this.wg.members.filter((i) => i !== this.wg.myId)
+    return otherMembers[Math.ceil(Math.random() * otherMembers.length) - 1]
   }
 
   private saveContent() {
@@ -199,11 +289,11 @@ export class BotStorage {
       if (
         this.mongoDoc &&
         this.lastReceivedState &&
-        this.lastReceivedState !== this.lastSaveState
+        this.lastReceivedState !== this.lastSavedState
       ) {
         this.mongoDoc.set({ operations: this.lastReceivedState.richLogootSOps })
         this.saveDoc()
-        this.lastSaveState = this.lastReceivedState
+        this.lastSavedState = this.lastReceivedState
       }
     } catch (err) {
       log.error('Failed save the document content:', err)
@@ -245,66 +335,11 @@ export class BotStorage {
       .catch((err: Error) => log.warn('Could not save the document: ', err))
   }
 
-  private createMuteCore(
-    mongoDoc: Document,
-    key: string,
-    operations: RichLogootSOperation[]
-  ): MuteCore {
-    // TODO: MuteCore should consume doc Object
-    const muteCore = new MuteCore({
-      profile: {
-        displayName: this.displayName,
-        login: this.login,
-        avatar: BotStorage.AVATAR,
-      },
-      metaTitle: {
-        title: mongoDoc.get('title'),
-        titleModified: mongoDoc.get('titleModified'),
-      },
-      metaFixData: {
-        docCreated: mongoDoc.get('created'),
-        cryptoKey: mongoDoc.get('cryptoKey'),
-      },
-    })
-
-    merge(
-      muteCore.collaboratorsService.onMsgToBroadcast,
-      muteCore.metaDataService.onMsgToBroadcast
-    ).subscribe((bm: BroadcastMessage) => this.wg.send(this.encode(bm)))
-    merge(
-      muteCore.collaboratorsService.onMsgToSendRandomly,
-      muteCore.metaDataService.onMsgToSendRandomly
-    ).subscribe((srm: SendRandomlyMessage) => {
-      const members = this.wg.members.filter((id) => id !== this.wg.myId)
-      const index = Math.ceil(Math.random() * members.length) - 1
-      this.wg.sendTo(members[index], this.encode(srm))
-    })
-    merge(
-      muteCore.collaboratorsService.onMsgToSendTo,
-      muteCore.metaDataService.onMsgToSendTo
-    ).subscribe((stm: SendToMessage) => this.wg.sendTo(stm.id, this.encode(stm)))
-
-    muteCore.collaboratorsService.onUpdate.subscribe((collab: ICollaborator) =>
-      this.saveLogins(collab.login)
-    )
-
-    muteCore.collaboratorsService.onJoin.subscribe((collab: ICollaborator) => {
-      this.saveLogins(collab.login)
-    })
-
-    // Sync service config
-    muteCore.syncService.onState.subscribe((state: State) => (this.lastReceivedState = state))
-
-    muteCore.init(key as string)
-    muteCore.syncService.setJoinAndStateSources(
-      this.joinSubject,
-      this.cryptoReady,
-      from([new State(new Map(), operations)])
-    )
-    return muteCore
-  }
-
-  private encode(msg: AbstractMessage) {
-    return Message.encode(Message.create(msg)).finish()
+  private restartSyncInterval() {
+    if (this.syncDocContentInterval) {
+      clearInterval(this.syncDocContentInterval)
+    }
+    this.synchronize()
+    this.syncDocContentInterval = setInterval(() => this.synchronize(), SYNC_DOC_INTERVAL)
   }
 }
