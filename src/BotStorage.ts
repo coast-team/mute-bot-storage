@@ -104,13 +104,6 @@ export class BotStorage {
   }
 
   private initWebGroup() {
-    this.wg.onMessage = (senderId, bytes) => {
-      try {
-        this.message$.next({ senderId, ...Message.decode(bytes as Uint8Array) })
-      } catch (err) {
-        log.error('Failed to decode a message: ', err)
-      }
-    }
     this.wg.onStateChange = (state) => {
       if (state === WebGroupState.LEFT) {
         this.saveContent()
@@ -173,7 +166,6 @@ export class BotStorage {
         }
       }
     )
-
     this.subs[this.subs.length] = muteCore.remoteTextOperations$.subscribe(() => {
       this.lastReceivedState = muteCore.state
     })
@@ -188,8 +180,6 @@ export class BotStorage {
       this.saveLogins(login)
     )
 
-    muteCore.collabJoin$.subscribe(() => muteCore.synchronize())
-
     // Metadata
     this.subs[this.subs.length] = muteCore.remoteMetadataUpdate$.subscribe(({ type, data }) => {
       switch (type) {
@@ -200,6 +190,9 @@ export class BotStorage {
         case MetaDataType.FixData:
           const { docCreated, cryptoKey } = data as FixDataState
           this.saveFixData(docCreated, cryptoKey)
+          if (this.crypto instanceof Symmetric) {
+            this.crypto.importKey(cryptoKey)
+          }
           break
       }
     })
@@ -216,6 +209,7 @@ export class BotStorage {
         }
       }
     }
+    muteCore.collabJoin$.subscribe(() => muteCore.synchronize())
 
     return muteCore
   }
@@ -225,9 +219,38 @@ export class BotStorage {
     switch (cryptography) {
       case 'none':
         this.crypto = undefined
+        this.wg.onMessage = (senderId, bytes) => {
+          try {
+            this.message$.next({ senderId, ...Message.decode(bytes as Uint8Array) })
+          } catch (err) {
+            log.error('Failed to decode a message: ', err)
+          }
+        }
         break
       case 'metadata':
         this.crypto = new Symmetric()
+        const symmetric = this.crypto as Symmetric
+
+        this.wg.onMessage = (senderId, bytes) => {
+          try {
+            const { streamId, content } = Message.decode(bytes as Uint8Array)
+
+            if (streamId === MuteCoreStreams.DOCUMENT_CONTENT) {
+              symmetric
+                .decrypt(content)
+                .then((decryptedContent) => {
+                  this.message$.next({ senderId, streamId, content: decryptedContent })
+                })
+                .catch((err) =>
+                  log.warn('Failed to decrypt document content: ', JSON.stringify(err))
+                )
+            } else {
+              this.message$.next({ senderId, streamId, content })
+            }
+          } catch (err) {
+            log.warn('Message from network decode error: ', err.message)
+          }
+        }
         break
       case 'keyagreement':
         this.crypto = new KeyAgreementBD()
