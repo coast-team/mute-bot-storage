@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.1.0"></a>
+# [2.1.0](https://github.com/coast-team/mute-bot-storage/compare/v2.0.2...v2.1.0) (2018-09-07)
+
+
+### Features
+
+* **crypto:** add keyagreement option for cryptography ([90a97c7](https://github.com/coast-team/mute-bot-storage/commit/90a97c7))
+* **crypto:** add metadata option for cryptography ([4e5aea4](https://github.com/coast-team/mute-bot-storage/commit/4e5aea4))
+
+
+
 <a name="2.0.2"></a>
 ## [2.0.2](https://github.com/coast-team/mute-bot-storage/compare/v2.0.1...v2.0.2) (2018-07-17)
 
