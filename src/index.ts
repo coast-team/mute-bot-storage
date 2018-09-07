@@ -48,7 +48,7 @@ const defaults: IOptions = {
   botURL: 'ws://localhost:20000',
   signalingURL: 'ws://localhost:8010',
   database: 'mutedocs',
-  cryptography: 'metadata', // Possible values: 'none', 'metadata', 'keyagreement'
+  cryptography: 'keyagreement', // Possible values: 'none', 'metadata', 'keyagreement'
   cors: false,
   key: '',
   cert: '',
