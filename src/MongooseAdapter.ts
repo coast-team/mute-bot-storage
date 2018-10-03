@@ -1,6 +1,7 @@
 import { Symmetric } from '@coast-team/mute-crypto'
 import { connect, connection, Document, Model, model, Mongoose, Schema } from 'mongoose'
 
+import { isUndefined } from 'util'
 import { log } from './log'
 
 export interface IMetadata {
@@ -9,6 +10,8 @@ export interface IMetadata {
   title: string
   titleModified: number
   created: number
+  shareLogs: boolean
+  shareLogsVector: Map<number, number>
 }
 
 const DEFAULT_TITLE = 'Untitled Document'
@@ -28,6 +31,8 @@ export class MongooseAdapter {
         created: Number,
         logins: [],
         operations: Array,
+        shareLogs: Boolean,
+        shareLogsVector: { type: Map, of: Number },
       })
     )
   }
@@ -75,7 +80,17 @@ export class MongooseAdapter {
       const title = doc.get('title')
       const titleModified = doc.get('titleModified')
       const created = doc.get('created')
-      result.push({ signalingKey, cryptoKey, title, titleModified, created })
+      const shareLogs = doc.get('shareLogs')
+      const shareLogsVector = this.getShareVector(doc)
+      result.push({
+        signalingKey,
+        cryptoKey,
+        title,
+        titleModified,
+        created,
+        shareLogs,
+        shareLogsVector,
+      })
     }
     return result
   }
@@ -97,6 +112,23 @@ export class MongooseAdapter {
 
   async create(signalingKey: string): Promise<Document> {
     const cryptoKey = await Symmetric.generateKey()
-    return this.DocModel.create({ signalingKey, created: Date.now(), cryptoKey })
+    return this.DocModel.create({
+      signalingKey,
+      created: Date.now(),
+      cryptoKey,
+    })
+  }
+
+  public getShareVector(doc: Document): Map<number, number> {
+    const shareLogsVector = doc.get('shareLogsVector')
+    if (isUndefined(shareLogsVector)) {
+      return new Map<number, number>()
+    }
+    const map = new Map<number, number>()
+    for (const k of shareLogsVector.keys()) {
+      const id = parseInt(k, 10)
+      map.set(id, shareLogsVector.get(k))
+    }
+    return map
   }
 }

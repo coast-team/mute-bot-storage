@@ -18,7 +18,9 @@ import { Document } from 'mongoose'
 import { merge, ReplaySubject, Subject, Subscription } from 'rxjs'
 import { auditTime, filter } from 'rxjs/operators'
 
+import { LogState } from '@coast-team/mute-core/dist/types/src/doc'
 import { WebGroup, WebGroupState } from 'netflux'
+import { isUndefined } from 'util'
 import { log } from './log'
 import { MongooseAdapter } from './MongooseAdapter'
 import { Message } from './proto'
@@ -131,6 +133,7 @@ export class BotStorage {
 
   private initMuteCore(mongoDoc: Document, docContent: State): MuteCore {
     // TODO: MuteCore should consume doc Object
+
     const muteCore = new MuteCore({
       profile: {
         displayName: this.displayName,
@@ -145,6 +148,10 @@ export class BotStorage {
       metaFixData: {
         docCreated: mongoDoc.get('created'),
         cryptoKey: mongoDoc.get('cryptoKey'),
+      },
+      metaLogs: {
+        share: mongoDoc.get('shareLogs'),
+        vector: this.mongooseAdapter.getShareVector(mongoDoc),
       },
     })
 
@@ -193,6 +200,10 @@ export class BotStorage {
           if (this.crypto instanceof Symmetric) {
             this.crypto.importKey(cryptoKey)
           }
+          break
+        case MetaDataType.Logs:
+          const { share, vector } = data as LogState
+          this.saveLogs(share, isUndefined(vector) ? new Map() : vector)
           break
       }
     })
@@ -344,6 +355,17 @@ export class BotStorage {
   private saveFixData(created: number, cryptoKey: string) {
     if (this.mongoDoc) {
       this.mongoDoc.set({ created, cryptoKey })
+      this.saveDoc()
+    }
+  }
+
+  private saveLogs(shareLogs: boolean, vector: Map<number, number>) {
+    if (this.mongoDoc) {
+      const shareLogsVector = new Map<string, number>()
+      vector.forEach((value, key) => {
+        shareLogsVector.set(key.toString(), value)
+      })
+      this.mongoDoc.set({ shareLogs, shareLogsVector })
       this.saveDoc()
     }
   }
