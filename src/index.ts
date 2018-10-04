@@ -221,7 +221,7 @@ db.connect(
   .then(() => {
     log.info(
       `Successfully started the storage bot server at ${host}:${port} with the following settings`,
-      { name, host, port, botURL, signalingURL, logLevel, logFolder }
+      { name, host, port, botURL, signalingURL, cryptography, logLevel, logFolder }
     )
   })
   .catch((err) => log.fatal(err))
