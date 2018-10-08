@@ -2,107 +2,99 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-<a name="2.1.1"></a>
-## [2.1.1](https://github.com/coast-team/mute-bot-storage/compare/v2.1.0...v2.1.1) (2018-09-07)
-
-
-### Bug Fixes
-
-* **cryptography:** set keyagreement as default crypto type ([4a5f20b](https://github.com/coast-team/mute-bot-storage/commit/4a5f20b))
-
-
-
-<a name="2.1.0"></a>
-# [2.1.0](https://github.com/coast-team/mute-bot-storage/compare/v2.0.2...v2.1.0) (2018-09-07)
+<a name="2.2.0"></a>
+# [2.2.0](https://github.com/coast-team/mute-bot-storage/compare/v2.1.1...v2.2.0) (2018-10-08)
 
 
 ### Features
 
-* **crypto:** add keyagreement option for cryptography ([90a97c7](https://github.com/coast-team/mute-bot-storage/commit/90a97c7))
-* **crypto:** add metadata option for cryptography ([4e5aea4](https://github.com/coast-team/mute-bot-storage/commit/4e5aea4))
+* **log:** add cryptography type in the log when successfully started ([6404de7](https://github.com/coast-team/mute-bot-storage/commit/6404de7))
+* **mutecore:** update bot for the next version of mutecore with logs ([e3827c7](https://github.com/coast-team/mute-bot-storage/commit/e3827c7))
 
 
+
+<a name="2.1.1"></a>
+
+## [2.1.1](https://github.com/coast-team/mute-bot-storage/compare/v2.1.0...v2.1.1) (2018-09-07)
+
+### Bug Fixes
+
+- **cryptography:** set keyagreement as default crypto type ([4a5f20b](https://github.com/coast-team/mute-bot-storage/commit/4a5f20b))
+
+<a name="2.1.0"></a>
+
+# [2.1.0](https://github.com/coast-team/mute-bot-storage/compare/v2.0.2...v2.1.0) (2018-09-07)
+
+### Features
+
+- **crypto:** add keyagreement option for cryptography ([90a97c7](https://github.com/coast-team/mute-bot-storage/commit/90a97c7))
+- **crypto:** add metadata option for cryptography ([4e5aea4](https://github.com/coast-team/mute-bot-storage/commit/4e5aea4))
 
 <a name="2.0.2"></a>
+
 ## [2.0.2](https://github.com/coast-team/mute-bot-storage/compare/v2.0.1...v2.0.2) (2018-07-17)
 
-
 ### Bug Fixes
 
-* **mongoose:** remove depricated call of connect() function ([b5e3e6d](https://github.com/coast-team/mute-bot-storage/commit/b5e3e6d))
-
-
+- **mongoose:** remove depricated call of connect() function ([b5e3e6d](https://github.com/coast-team/mute-bot-storage/commit/b5e3e6d))
 
 <a name="2.0.1"></a>
-## [2.0.1](https://github.com/coast-team/mute-bot-storage/compare/v2.0.0...v2.0.1) (2018-07-17)
 
+## [2.0.1](https://github.com/coast-team/mute-bot-storage/compare/v2.0.0...v2.0.1) (2018-07-17)
 
 ### Bug Fixes
 
-* **logins:** do not add same login twice to the doc metadata ([be788d0](https://github.com/coast-team/mute-bot-storage/commit/be788d0))
-
-
+- **logins:** do not add same login twice to the doc metadata ([be788d0](https://github.com/coast-team/mute-bot-storage/commit/be788d0))
 
 <a name="2.0.0"></a>
-# [2.0.0](https://github.com/coast-team/mute-bot-storage/compare/v1.2.2...v2.0.0) (2018-07-13)
 
+# [2.0.0](https://github.com/coast-team/mute-bot-storage/compare/v1.2.2...v2.0.0) (2018-07-13)
 
 ### Code Refactoring
 
-* update mute-core to v6.0.0, change REST API ([66589e3](https://github.com/coast-team/mute-bot-storage/commit/66589e3))
-
+- update mute-core to v6.0.0, change REST API ([66589e3](https://github.com/coast-team/mute-bot-storage/commit/66589e3))
 
 ### BREAKING CHANGES
 
-* HTTP request ".../name"  becomes ".../info"
-
-
+- HTTP request ".../name" becomes ".../info"
 
 <a name="1.2.2"></a>
+
 ## [1.2.2](https://github.com/coast-team/mute-bot-storage/compare/v1.2.1...v1.2.2) (2018-06-18)
 
-
 ### Bug Fixes
 
-* **mongo:** resolve remained unhandled prosise rejection ([1aa39fd](https://github.com/coast-team/mute-bot-storage/commit/1aa39fd))
-* **mongo:** unhandled promise rejection on save and login update ([fdc75d9](https://github.com/coast-team/mute-bot-storage/commit/fdc75d9))
-* **netflux:** update netflux to v4.1.2 which solves an issue ([ba93298](https://github.com/coast-team/mute-bot-storage/commit/ba93298))
-
-
+- **mongo:** resolve remained unhandled prosise rejection ([1aa39fd](https://github.com/coast-team/mute-bot-storage/commit/1aa39fd))
+- **mongo:** unhandled promise rejection on save and login update ([fdc75d9](https://github.com/coast-team/mute-bot-storage/commit/fdc75d9))
+- **netflux:** update netflux to v4.1.2 which solves an issue ([ba93298](https://github.com/coast-team/mute-bot-storage/commit/ba93298))
 
 <a name="1.2.1"></a>
+
 ## [1.2.1](https://github.com/coast-team/mute-bot-storage/compare/v1.2.0...v1.2.1) (2018-06-15)
 
-
 ### Bug Fixes
 
-* update to latest Netflux ([5683c8e](https://github.com/coast-team/mute-bot-storage/commit/5683c8e))
-
-
+- update to latest Netflux ([5683c8e](https://github.com/coast-team/mute-bot-storage/commit/5683c8e))
 
 <a name="1.2.0"></a>
-# [1.2.0](https://github.com/coast-team/mute-bot-storage/compare/v1.1.2...v1.2.0) (2018-06-13)
 
+# [1.2.0](https://github.com/coast-team/mute-bot-storage/compare/v1.1.2...v1.2.0) (2018-06-13)
 
 ### Bug Fixes
 
-* save document when all members left ([98aa468](https://github.com/coast-team/mute-bot-storage/commit/98aa468))
-
+- save document when all members left ([98aa468](https://github.com/coast-team/mute-bot-storage/commit/98aa468))
 
 ### Features
 
-* **login:** add version number into login ([3b8c12d](https://github.com/coast-team/mute-bot-storage/commit/3b8c12d))
-
-
+- **login:** add version number into login ([3b8c12d](https://github.com/coast-team/mute-bot-storage/commit/3b8c12d))
 
 <a name="1.1.2"></a>
+
 ## <small>1.1.2 (2018-06-01)</small>
 
-* chore(changelog): disable markdown linter for CHANGELOG.md ([3057c81](https://github.com/coast-team/mute-bot-storage/commit/3057c81))
-* chore(package): update dependencies ([42da099](https://github.com/coast-team/mute-bot-storage/commit/42da099))
-* fix(avatar): add bot avatar ([741bc60](https://github.com/coast-team/mute-bot-storage/commit/741bc60))
-
-
+- chore(changelog): disable markdown linter for CHANGELOG.md ([3057c81](https://github.com/coast-team/mute-bot-storage/commit/3057c81))
+- chore(package): update dependencies ([42da099](https://github.com/coast-team/mute-bot-storage/commit/42da099))
+- fix(avatar): add bot avatar ([741bc60](https://github.com/coast-team/mute-bot-storage/commit/741bc60))
 
 <a name="1.1.1"></a>
 
