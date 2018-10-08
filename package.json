@@ -30,7 +30,7 @@
   },
   "license": "AGPL-3.0",
   "dependencies": {
-    "@coast-team/mute-core": "^7.0.2",
+    "@coast-team/mute-core": "^7.1.0",
     "@coast-team/mute-crypto": "^0.4.1",
     "bunyan": "^1.8.12",
     "commander": "^2.18.0",
