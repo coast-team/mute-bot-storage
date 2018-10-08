@@ -155,6 +155,27 @@ export class BotStorage {
       },
     })
 
+    // Metadata
+    this.subs[this.subs.length] = muteCore.remoteMetadataUpdate$.subscribe(({ type, data }) => {
+      switch (type) {
+        case MetaDataType.Title:
+          const { title, titleModified } = data as TitleState
+          this.saveTitle(title, titleModified)
+          break
+        case MetaDataType.FixData:
+          const { docCreated, cryptoKey } = data as FixDataState
+          this.saveFixData(docCreated, cryptoKey)
+          if (this.crypto instanceof Symmetric) {
+            this.crypto.importKey(cryptoKey)
+          }
+          break
+        case MetaDataType.Logs:
+          const { share, vector } = data as LogState
+          this.saveLogs(share, isUndefined(vector) ? new Map() : vector)
+          break
+      }
+    })
+
     // Message IN/OUT
     muteCore.messageIn$ = this.message$
     this.subs[this.subs.length] = muteCore.messageOut$.subscribe(
@@ -186,27 +207,6 @@ export class BotStorage {
     this.subs[this.subs.length] = muteCore.remoteCollabUpdate$.subscribe(({ login }) =>
       this.saveLogins(login)
     )
-
-    // Metadata
-    this.subs[this.subs.length] = muteCore.remoteMetadataUpdate$.subscribe(({ type, data }) => {
-      switch (type) {
-        case MetaDataType.Title:
-          const { title, titleModified } = data as TitleState
-          this.saveTitle(title, titleModified)
-          break
-        case MetaDataType.FixData:
-          const { docCreated, cryptoKey } = data as FixDataState
-          this.saveFixData(docCreated, cryptoKey)
-          if (this.crypto instanceof Symmetric) {
-            this.crypto.importKey(cryptoKey)
-          }
-          break
-        case MetaDataType.Logs:
-          const { share, vector } = data as LogState
-          this.saveLogs(share, isUndefined(vector) ? new Map() : vector)
-          break
-      }
-    })
 
     // Synchronization mechanism
     this.synchronize = () => {
