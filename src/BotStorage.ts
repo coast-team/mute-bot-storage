@@ -1,9 +1,13 @@
 import {
   FixDataState,
   MetaDataType,
-  MuteCore,
-  RichLogootSOperation,
-  State,
+  MuteCoreFactory,
+  MuteCoreTypes,
+  RichOperationStrategy,
+  RichOperationTypes,
+  StateStrategy,
+  StateTypes,
+  Strategy,
   Streams as MuteCoreStreams,
   TitleState,
 } from '@coast-team/mute-core'
@@ -34,12 +38,13 @@ export class BotStorage {
   public static AVATAR = 'https://www.shareicon.net/data/256x256/2016/01/01/228083_bot_256x256.png'
   public static ID = 9137
 
+  private crdtStrategy: Strategy
   private mongooseAdapter: MongooseAdapter
   private wg: WebGroup
   private displayName: string
   private login: string
-  private lastReceivedState: State | undefined
-  private lastSavedState: State | undefined
+  private lastReceivedState: StateTypes | undefined
+  private lastSavedState: StateTypes | undefined
   private mongoDoc: Document | undefined
   private saveInterval: NodeJS.Timer
   private saveChain: Promise<void>
@@ -62,6 +67,7 @@ export class BotStorage {
     mongooseAdapter: MongooseAdapter,
     cryptography: string
   ) {
+    this.crdtStrategy = Strategy.LOGOOTSPLIT
     this.displayName = pseudonym
     this.login = login
     this.wg = wg
@@ -95,8 +101,12 @@ export class BotStorage {
         this.mongoDoc = doc
         const operations = doc
           .get('operations')
-          .map((op: RichLogootSOperation) => RichLogootSOperation.fromPlain(op))
-        this.initMuteCore(doc, new State(new Map(), operations || []))
+          .map((op: RichOperationTypes) => RichOperationStrategy.fromPlain(this.crdtStrategy, op))
+        const state = StateStrategy.emptyState(this.crdtStrategy)
+        if (state) {
+          state.remoteOperations = operations || []
+          this.initMuteCore(doc, state)
+        }
       })
       .catch((err) => log.error(`Failed to initialize document ${wg.key}`, err))
   }
@@ -131,10 +141,11 @@ export class BotStorage {
     return doc
   }
 
-  private initMuteCore(mongoDoc: Document, docContent: State): MuteCore {
+  private initMuteCore(mongoDoc: Document, docContent: StateTypes): MuteCoreTypes {
     // TODO: MuteCore should consume doc Object
 
-    const muteCore = new MuteCore({
+    const muteCore = MuteCoreFactory.createMuteCore({
+      strategy: Strategy.LOGOOTSPLIT,
       profile: {
         displayName: this.displayName,
         login: this.login,
@@ -177,7 +188,7 @@ export class BotStorage {
     })
 
     // Message IN/OUT
-    muteCore.messageIn$ = this.message$
+    muteCore.messageIn$ = this.message$.asObservable()
     this.subs[this.subs.length] = muteCore.messageOut$.subscribe(
       ({ streamId, content, recipientId }) => {
         if (
@@ -325,7 +336,7 @@ export class BotStorage {
         this.lastReceivedState &&
         this.lastReceivedState !== this.lastSavedState
       ) {
-        this.mongoDoc.set({ operations: this.lastReceivedState.richLogootSOps })
+        this.mongoDoc.set({ operations: this.lastReceivedState.remoteOperations })
         this.saveDoc()
         this.lastSavedState = this.lastReceivedState
       }
