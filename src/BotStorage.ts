@@ -336,7 +336,16 @@ export class BotStorage {
         this.lastReceivedState &&
         this.lastReceivedState !== this.lastSavedState
       ) {
-        this.mongoDoc.set({ operations: this.lastReceivedState.remoteOperations })
+        this.mongoDoc.set({
+          operations: this.lastReceivedState.remoteOperations.map((ope) => {
+            return {
+              id: ope.id,
+              clock: ope.clock,
+              operation: ope.operation,
+              dependencies: Array.from(ope.dependencies),
+            }
+          }),
+        })
         this.saveDoc()
         this.lastSavedState = this.lastReceivedState
       }
