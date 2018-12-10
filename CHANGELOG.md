@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.3.0"></a>
+# [2.3.0](https://github.com/coast-team/mute-bot-storage/compare/v2.1.1...v2.3.0) (2018-12-10)
+
+
+### Bug Fixes
+
+* **botstorage:** fix bug when serializing dependencies as Map ([2093956](https://github.com/coast-team/mute-bot-storage/commit/2093956))
+* **crypto:** fix bug with metadata crypto on the first document opened ([38a1b7e](https://github.com/coast-team/mute-bot-storage/commit/38a1b7e))
+
+
+### Features
+
+* **botstorage:** update BotStorage with the new MuteCore architecture ([ae8f6d7](https://github.com/coast-team/mute-bot-storage/commit/ae8f6d7))
+* **log:** add cryptography type in the log when successfully started ([6404de7](https://github.com/coast-team/mute-bot-storage/commit/6404de7))
+* **mutecore:** update bot for the next version of mutecore with logs ([e3827c7](https://github.com/coast-team/mute-bot-storage/commit/e3827c7))
+
+
+
 <a name="2.2.1"></a>
 ## [2.2.1](https://github.com/coast-team/mute-bot-storage/compare/v2.2.0...v2.2.1) (2018-10-08)
 
