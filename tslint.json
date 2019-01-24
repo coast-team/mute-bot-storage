@@ -12,6 +12,7 @@
     "no-shadowed-variable": false,
     "no-unused-variable": {
       "severity": "warning"
-    }
+    },
+    "variable-name": [true, "allow-leading-underscore"]
   }
 }
