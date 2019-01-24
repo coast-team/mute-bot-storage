@@ -17,6 +17,8 @@ interface IOptions {
   port: number
   botURL: string
   signalingURL: string
+  keyServerURLPrefix: string
+  jwt: string
   database: string
   cryptography: string
   cors: boolean
@@ -47,6 +49,8 @@ const defaults: IOptions = {
   port: 20000,
   botURL: 'ws://localhost:20000',
   signalingURL: 'ws://localhost:8010',
+  keyServerURLPrefix: '', // dev http://localhost:4000/public-key
+  jwt: '',
   database: 'mutedocs',
   cryptography: 'keyagreement', // Possible values: 'none', 'metadata', 'keyagreement'
   cors: false,
@@ -64,6 +68,8 @@ program
   .option('-p, --port <number>', 'Port to use for the server.', defaults.port)
   .option('-b, --botURL <number>', 'Bot public URL.', defaults.botURL)
   .option('-s, --signalingURL <url>', 'Signaling server url.', defaults.signalingURL)
+  .option('-k, --keyServerURLPrefix <url>', 'Keyserver url prefix.', defaults.keyServerURLPrefix)
+  .option('-j, --jwt <jwt>', 'JSON Web Token for the keyserver API.', defaults.jwt)
   .option('', '\n')
   .option(
     '-c --cryptography <string>',
@@ -102,6 +108,8 @@ const {
   port,
   botURL,
   signalingURL,
+  keyServerURLPrefix,
+  jwt,
   database,
   cryptography,
   cors,
@@ -212,7 +220,16 @@ db.connect(
       },
     })
     bot.onWebGroup = (wg) => {
-      const botStorage = new BotStorage(name, getLogin(botURL), wg, db, cryptography)
+      const botStorage = new BotStorage(
+        name,
+        getLogin(),
+        getDeviceID(botURL),
+        wg,
+        db,
+        cryptography,
+        keyServerURLPrefix,
+        jwt
+      )
       log.info('New peer to peer network invitation received for ', botStorage.signalingKey)
     }
 
@@ -221,7 +238,18 @@ db.connect(
   .then(() => {
     log.info(
       `Successfully started the storage bot server at ${host}:${port} with the following settings`,
-      { name, host, port, botURL, signalingURL, cryptography, logLevel, logFolder }
+      {
+        name,
+        host,
+        port,
+        botURL,
+        signalingURL,
+        cryptography,
+        keyServerURLPrefix,
+        jwt,
+        logLevel,
+        logFolder,
+      }
     )
   })
   .catch((err) => log.fatal(err))
@@ -229,16 +257,21 @@ db.connect(
 function getInfo() {
   return {
     displayName: name,
-    login: getLogin(botURL),
+    login: getLogin(),
+    deviceID: getDeviceID(botURL),
     avatar: BotStorage.AVATAR,
     version,
   }
 }
 
-function getLogin(url: string) {
+function getDeviceID(url: string) {
   // find & remove protocol (http, ftp, etc.) and get hostname and port
   const chunks = url.split('/')
   const host = url.indexOf('://') > -1 ? chunks[2] : chunks[0]
 
-  return `bot.storage@${host}`
+  return host
+}
+
+function getLogin() {
+  return 'bot.storage'
 }

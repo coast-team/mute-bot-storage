@@ -13,6 +13,7 @@ import {
 } from '@coast-team/mute-core'
 import {
   // enableDebug,
+  asymmetricCrypto,
   KeyAgreementBD,
   KeyState,
   Streams as MuteCryptoStreams,
@@ -27,12 +28,18 @@ import { WebGroup, WebGroupState } from 'netflux'
 import { isUndefined } from 'util'
 import { log } from './log'
 import { MongooseAdapter } from './MongooseAdapter'
+import { PKRequest } from './PKRequest'
 import { Message } from './proto'
 
 const SAVE_INTERVAL = 120000
 
 // enableDebug(true)
 const SYNC_DOC_INTERVAL = 10000
+
+export interface IKeyPair {
+  publicKey: string
+  privateKey: string
+}
 
 export class BotStorage {
   public static AVATAR = 'https://www.shareicon.net/data/256x256/2016/01/01/228083_bot_256x256.png'
@@ -43,6 +50,8 @@ export class BotStorage {
   private wg: WebGroup
   private displayName: string
   private login: string
+  private deviceID: string
+  // private loginDeviceID: string
   private lastReceivedState: StateTypes | undefined
   private lastSavedState: StateTypes | undefined
   private mongoDoc: Document | undefined
@@ -58,18 +67,29 @@ export class BotStorage {
   private synchronize: () => void
 
   private crypto: Symmetric | KeyAgreementBD | undefined
+  private signingKeyPair: any
+  private exportedSigningKeyPair: IKeyPair | undefined
+  private members: Map<number, { key?: any; buffer: Uint8Array[] }>
   private subs: Subscription[]
+  private signatureErrorHandler: (id: number) => void
+
+  private pkRequest: PKRequest
 
   constructor(
     pseudonym: string,
     login: string,
+    deviceID: string,
     wg: WebGroup,
     mongooseAdapter: MongooseAdapter,
-    cryptography: string
+    cryptography: string,
+    keyServerURLPrefix: string,
+    jwt: string
   ) {
     this.crdtStrategy = Strategy.LOGOOTSPLIT
     this.displayName = pseudonym
     this.login = login
+    this.deviceID = deviceID
+    // this.loginDeviceID = `${this.login}@${this.deviceID}`
     this.wg = wg
     this.synchronize = () => {}
     this.syncDocContentInterval = undefined
@@ -81,6 +101,11 @@ export class BotStorage {
     this.state$ = new ReplaySubject()
     this.myId$ = new ReplaySubject()
     this.subs = []
+    this.members = new Map()
+    this.signatureErrorHandler = () => {}
+    this.pkRequest = new PKRequest(keyServerURLPrefix, jwt)
+
+    log.info(this.login, this.deviceID)
 
     // Configure document content save interval
     this.saveInterval = setInterval(() => {
@@ -113,6 +138,38 @@ export class BotStorage {
 
   get signalingKey(): string {
     return this.wg.key
+  }
+
+  async checkMySigningKeyPair() {
+    if (this.signingKeyPair === undefined) {
+      await this.generateSigningKeyPair()
+    }
+    if (this.exportedSigningKeyPair === undefined) {
+      log.error(
+        'Signing KeyPair',
+        "Check my PK, something went wrong here : exportedSigningKeyPair shouldn't be undefined"
+      )
+    } else {
+      const pk = await this.pkRequest.lookup(this.login, this.deviceID)
+      log.info('Signing KeyPair', `Check my PK, ${this.login}:${this.deviceID} : ${pk}`)
+      if (pk === '') {
+        await this.pkRequest.register(
+          this.login,
+          this.deviceID,
+          this.exportedSigningKeyPair.publicKey
+        )
+      } else if (pk !== undefined && pk !== this.exportedSigningKeyPair.publicKey) {
+        await this.pkRequest.update(
+          this.login,
+          this.deviceID,
+          this.exportedSigningKeyPair.publicKey
+        )
+      }
+    }
+  }
+
+  set onSignatureError(handler: (id: number) => void) {
+    this.signatureErrorHandler = handler
   }
 
   private initWebGroup() {
@@ -149,6 +206,7 @@ export class BotStorage {
       profile: {
         displayName: this.displayName,
         login: this.login,
+        deviceID: this.deviceID,
         avatar: BotStorage.AVATAR,
       },
       docContent,
@@ -212,8 +270,16 @@ export class BotStorage {
     // Collaborators
     muteCore.memberJoin$ = this.memberJoin$
     muteCore.memberLeave$ = this.memberLeave$
-    this.subs[this.subs.length] = muteCore.collabJoin$.subscribe(({ login }) => {
+    this.subs[this.subs.length] = muteCore.collabJoin$.subscribe(({ id, login, deviceID }) => {
       this.saveLogins(login)
+      if (login !== undefined && deviceID !== undefined) {
+        return this.verifyLoginPK(id, login, deviceID).catch((err: any) => {
+          log.info('COLLAB JOINED', 'Failed to retreive Public Key of ' + login, ', err: ', err)
+        })
+      } else {
+        log.info('COllab joined', "Login or deviceID is undefined ... SHOULDN'T HAPPEND !")
+      }
+      return
     })
     this.subs[this.subs.length] = muteCore.remoteCollabUpdate$.subscribe(({ login }) =>
       this.saveLogins(login)
@@ -279,6 +345,19 @@ export class BotStorage {
         this.crypto.onSend = (msg, streamId) => this.send(streamId, msg)
         const bd = this.crypto as KeyAgreementBD
 
+        if (this.pkRequest.baseUrl && this.pkRequest.jwt) {
+          log.info('KEYAGREEMENT', 'keyserver OK !')
+          this.checkMySigningKeyPair()
+            .then(() => {
+              log.info('KEYAGREEMENT', 'check my key OK !')
+              bd.signingKey = this.signingKeyPair.privateKey
+            })
+            .catch((err) => {
+              log.error("Failed to check the botstorage's signing key in the keyserver, err: ", err)
+            })
+          this.onSignatureError = (id) => log.error('Signature verification error for ', id)
+        }
+
         this.memberJoin$.subscribe((id) => bd.addMember(id))
         this.memberLeave$.subscribe((id) => bd.removeMember(id))
         this.state$.subscribe((state) => {
@@ -291,7 +370,7 @@ export class BotStorage {
           const { streamId, content } = Message.decode(bytes as Uint8Array)
 
           if (streamId === MuteCryptoStreams.KEY_AGREEMENT_BD) {
-            bd.onMessage(senderId, content)
+            this.onBDMessage(senderId, content)
           } else if (streamId === MuteCoreStreams.DOCUMENT_CONTENT) {
             bd.decrypt(content)
               .then((decryptedContent) =>
@@ -311,6 +390,45 @@ export class BotStorage {
           .pipe(auditTime(1000))
           .subscribe(() => this.restartSyncInterval())
         break
+    }
+  }
+
+  private async verifyLoginPK(id: number, login: string, deviceID: string) {
+    const publicKey = JSON.parse(await this.pkRequest.lookup(login, deviceID))
+    const cryptoKey = await asymmetricCrypto.importKey(publicKey)
+    const member = this.members.get(id)
+    if (member) {
+      log.info('MEMBER EXISTS AND GET/SAVE PK OF MEMBER')
+      member.key = cryptoKey
+      for (const m of member.buffer) {
+        ;(this.crypto as KeyAgreementBD).onMessage(id, m, member.key).catch(() => {
+          this.signatureErrorHandler(id)
+        })
+      }
+      member.buffer = []
+    } else {
+      log.info('MEMBER DOES NOT EXISTS AND GET/SAVE PK OF MEMBER')
+      this.members.set(id, { key: cryptoKey, buffer: [] })
+    }
+  }
+
+  private onBDMessage(id: number, content: Uint8Array) {
+    const bd = this.crypto as KeyAgreementBD
+    if (this.pkRequest.baseUrl && this.pkRequest.jwt) {
+      const member = this.members.get(id)
+      if (member) {
+        if (member.key) {
+          bd.onMessage(id, content, member.key).catch(() => {
+            this.signatureErrorHandler(id)
+          })
+        } else {
+          member.buffer.push(content)
+        }
+      } else {
+        this.members.set(id, { buffer: [content] })
+      }
+    } else {
+      bd.onMessage(id, content)
     }
   }
 
@@ -406,5 +524,28 @@ export class BotStorage {
     }
     this.synchronize()
     this.syncDocContentInterval = setInterval(() => this.synchronize(), SYNC_DOC_INTERVAL)
+  }
+
+  private async generateSigningKeyPair(): Promise<void> {
+    this.signingKeyPair = await asymmetricCrypto.generateSigningKeyPair()
+    this.exportedSigningKeyPair = await this.exportSigningKeyPair()
+    log.debug('PUBLIC KEY = ', this.exportedSigningKeyPair.publicKey)
+  }
+
+  // private async importSigningKeyPair({ publicKey, privateKey }: IKeyPair) {
+  //   this.signingKeyPair = {
+  //     publicKey: await asymmetricCrypto.importKey(JSON.parse(publicKey)),
+  //     privateKey: await asymmetricCrypto.importKey(JSON.parse(privateKey)),
+  //   }
+  // }
+
+  private async exportSigningKeyPair(): Promise<IKeyPair> {
+    if (this.signingKeyPair === undefined) {
+      throw new Error('Signing key pair is not defined')
+    }
+    return {
+      publicKey: JSON.stringify(await asymmetricCrypto.exportKey(this.signingKeyPair.publicKey)),
+      privateKey: JSON.stringify(await asymmetricCrypto.exportKey(this.signingKeyPair.privateKey)),
+    }
   }
 }
