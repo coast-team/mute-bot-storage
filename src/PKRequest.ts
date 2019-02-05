@@ -11,6 +11,11 @@ interface IUserPK {
   pk: string
 }
 
+export interface IKeyPair {
+  publicKey: string
+  privateKey: string
+}
+
 export class PKRequest {
   constructor(private _baseUrl: string, private _jwt: string) {
     axios.defaults.baseURL = this.baseUrl
@@ -55,6 +60,7 @@ export class PKRequest {
           resolve(response.data.pk)
         })
         .catch((error) => {
+          // IF SERVER NOT UP ERROR.RESPONSE == UNDEFINED
           // handle error
           log.error(
             'Signing KeyPair',

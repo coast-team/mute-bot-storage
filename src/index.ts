@@ -7,9 +7,11 @@ import * as bodyParser from 'koa-bodyparser'
 import * as KoaRouter from 'koa-router'
 import { Bot, LogLevel, setLogLevel } from 'netflux'
 
+import { asymmetricCrypto } from '@coast-team/mute-crypto'
 import { BotStorage } from './BotStorage'
 import { createLogger, log } from './log'
 import { IMetadata, MongooseAdapter } from './MongooseAdapter'
+import { IKeyPair } from './PKRequest'
 
 interface IOptions {
   name: string
@@ -203,7 +205,7 @@ db.connect(
       return http.createServer(app.callback())
     }
   })
-  .then((server: http.Server | https.Server) => {
+  .then(async (server: http.Server | https.Server) => {
     log.info(`Configured server  ✓`)
 
     server.on('clientError', (err) => {
@@ -219,6 +221,8 @@ db.connect(
         signalingServer: signalingURL,
       },
     })
+    const exportedSigningKeyPair =
+      cryptography === 'keyagreement' ? await generateSigningKeyPair() : undefined
     bot.onWebGroup = (wg) => {
       const botStorage = new BotStorage(
         name,
@@ -227,6 +231,7 @@ db.connect(
         wg,
         db,
         cryptography,
+        exportedSigningKeyPair,
         keyServerURLPrefix,
         jwt
       )
@@ -274,4 +279,21 @@ function getDeviceID(url: string) {
 
 function getLogin() {
   return 'bot.storage'
+}
+
+async function generateSigningKeyPair(): Promise<IKeyPair> {
+  const signingKeyPair = await asymmetricCrypto.generateSigningKeyPair()
+  const exportedSigningKeyPair = await exportSigningKeyPair(signingKeyPair)
+  log.debug('PUBLIC KEY = ', exportedSigningKeyPair.publicKey)
+  return exportedSigningKeyPair
+}
+
+async function exportSigningKeyPair(signingKeyPair: IKeyPair): Promise<IKeyPair> {
+  if (signingKeyPair === undefined) {
+    throw new Error('Signing key pair is not defined')
+  }
+  return {
+    publicKey: JSON.stringify(await asymmetricCrypto.exportKey(signingKeyPair.publicKey)),
+    privateKey: JSON.stringify(await asymmetricCrypto.exportKey(signingKeyPair.privateKey)),
+  }
 }
