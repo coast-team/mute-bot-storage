@@ -11,9 +11,9 @@
     "proto": "pbjs -t static-module -w es6 --no-verify --no-delimited --no-convert src/proto/index.proto -o src/proto/index.es6.js && pbts src/proto/index.es6.js -o src/proto/index.d.ts",
     "postproto": "babel --presets env -o src/proto/index.js src/proto/index.es6.js && rm src/proto/index.es6.js",
     "cz": "git-cz",
-    "precommit": "lint-staged && npm run build && git add dist/*",
+    "precommit": "lint-staged && npm run build",
     "commitmsg": "commitlint -e $GIT_PARAMS",
-    "prerelease": "npm run build && git add dist/*",
+    "prerelease": "npm run build",
     "release": "standard-version --no-verify"
   },
   "files": [
@@ -31,7 +31,7 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "@coast-team/mute-core": "^9.1.2",
-    "@coast-team/mute-crypto": "^0.4.1",
+    "@coast-team/mute-crypto": "^0.4.3",
     "axios": "^0.18.0",
     "bunyan": "^1.8.12",
     "commander": "^2.18.0",
