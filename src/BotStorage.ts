@@ -13,7 +13,6 @@ import {
 } from '@coast-team/mute-core'
 import {
   asymmetricCrypto,
-  enableDebug,
   KeyAgreementBD,
   KeyState,
   Streams as MuteCryptoStreams,
@@ -24,6 +23,7 @@ import { merge, ReplaySubject, Subject, Subscription } from 'rxjs'
 import { auditTime, filter } from 'rxjs/operators'
 
 import { LogState } from '@coast-team/mute-core/dist/types/src/doc'
+import { BN } from '@coast-team/mute-crypto-helper'
 import { WebGroup, WebGroupState } from 'netflux'
 import { isUndefined } from 'util'
 import { log } from './log'
@@ -33,7 +33,6 @@ import { Message } from './proto'
 
 const SAVE_INTERVAL = 120000
 
-// enableDebug(true)
 const SYNC_DOC_INTERVAL = 10000
 
 export class BotStorage {
@@ -58,6 +57,7 @@ export class BotStorage {
   private memberJoin$: ReplaySubject<number>
   private memberLeave$: ReplaySubject<number>
   private state$: ReplaySubject<WebGroupState>
+  private cryptoState: Subject<KeyState>
   private myId$: ReplaySubject<number>
   private synchronize: () => void
 
@@ -95,6 +95,7 @@ export class BotStorage {
     this.memberJoin$ = new ReplaySubject()
     this.memberLeave$ = new ReplaySubject()
     this.state$ = new ReplaySubject()
+    this.cryptoState = new Subject()
     this.myId$ = new ReplaySubject()
     this.subs = []
     this.members = new Map()
@@ -113,11 +114,11 @@ export class BotStorage {
       }
     }, SAVE_INTERVAL)
 
-    // Initialize cryptography
-    this.initMuteCrypto(cryptography)
-
     // Initialize WebGroup
     this.initWebGroup()
+
+    // Initialize cryptography
+    this.initMuteCrypto(cryptography)
 
     // Get the document from database or create a new one, then initialize CRDTs
     this.retreiveDocument(wg.key)
@@ -295,7 +296,7 @@ export class BotStorage {
         }
       }
     }
-    muteCore.collabJoin$.subscribe(() => muteCore.synchronize())
+    muteCore.collabJoin$.subscribe(() => this.synchronize())
 
     return muteCore
   }
@@ -339,7 +340,6 @@ export class BotStorage {
         }
         break
       case 'keyagreement':
-        enableDebug(true, false)
         this.crypto = new KeyAgreementBD()
         const bd = this.crypto as KeyAgreementBD
 
@@ -355,7 +355,6 @@ export class BotStorage {
         this.memberJoin$.subscribe((id) => bd.addMember(id))
         this.memberLeave$.subscribe((id) => bd.removeMember(id))
         this.state$.subscribe((state) => {
-          console.log('ON STATE CHANGED : ', state)
           if (state === WebGroupState.JOINED) {
             bd.setReady()
           }
@@ -375,10 +374,9 @@ export class BotStorage {
             this.message$.next({ senderId, streamId, content })
           }
         }
-        const cryptoState = new Subject()
-        this.crypto.onStateChange = (state) => cryptoState.next(state)
+        this.crypto.onStateChange = (state) => this.cryptoState.next(state)
         this.subs[this.subs.length] = merge(
-          cryptoState.pipe(filter((state) => state === KeyState.READY)),
+          this.cryptoState.pipe(filter((state) => state === KeyState.READY)),
           this.state$.pipe(filter((state) => state === WebGroupState.JOINED))
         )
           .pipe(auditTime(1000))
@@ -388,68 +386,52 @@ export class BotStorage {
   }
 
   private async verifyLoginPK(id: number, login: string, deviceID: string) {
-    // this.collabIDToLogin(id, login, deviceID)
     const publicKey = JSON.parse(await this.pkRequest.lookup(login, deviceID))
     const cryptoKey = await asymmetricCrypto.importKey(publicKey)
-    // const member = this.members.get(`${login}:${deviceID}`)
     const member = this.members.get(id)
     if (member) {
-      log.info('MEMBER EXISTS AND GET/SAVE PK OF MEMBER')
       member.key = cryptoKey
       for (const m of member.buffer) {
         ;(this.crypto as KeyAgreementBD).onMessage(id, m, member.key).catch(() => {
-          // this.signatureErrorHandler(login, deviceID)
           this.signatureErrorHandler(id)
         })
       }
       member.buffer = []
     } else {
-      log.info('MEMBER DOES NOT EXIST AND GET/SAVE PK OF MEMBER')
-      // this.members.set(`${login}:${deviceID}`, { key: cryptoKey, buffer: [] })
       this.members.set(id, { key: cryptoKey, buffer: [] })
     }
   }
 
   private onBDMessage(id: number, content: Uint8Array) {
-    // const loginDeviceID = this.collabs.get(id)
-    // if (!loginDeviceID) {
-    //   log.error('onBDMessage, no LOGIN DEVICEID associated to collaborator ID', 'must not happen')
-    //   return
-    // }
-    // console.log(loginDeviceID)
+    const content2 = content.slice()
     const bd = this.crypto as KeyAgreementBD
     if (this.pkRequest.baseUrl && this.pkRequest.jwt) {
-      // const member = this.members.get(`${loginDeviceID.login}:${loginDeviceID.deviceID}`)
       const member = this.members.get(id)
       if (member) {
         if (member.key) {
-          // console.log('ON BD MESSAGE :', 'found member key ', loginDeviceID.login, member.key)
-          bd.onMessage(id, content, member.key).catch(() => {
-            this.signatureErrorHandler(id)
-            // this.signatureErrorHandler(loginDeviceID.login, loginDeviceID.deviceID)
-          })
+          // Content is copied here to avoid mutation. Somehow a mutation happend just after verifying the signature.
+          // protobuf maybe ?
+          bd.onMessage(id, content.slice(), member.key)
+            .then(() => {
+              if (new BN(content2, 16).toString() !== new BN(content, 16).toString()) {
+                log.error(
+                  "CONTENT IS NOT THE SAME BEFORE AND AFTER VERIFYING THE SIGNATURE. SHOULDN'T HAPPEN."
+                )
+              }
+            })
+            .catch(() => {
+              this.signatureErrorHandler(id)
+            })
         } else {
           member.buffer.push(content)
         }
       } else {
         this.members.set(id, { buffer: [content] })
-        // this.members.set(`${loginDeviceID.login}:${loginDeviceID.deviceID}`, { buffer: [content] })
       }
     } else {
       bd.onMessage(id, content)
     }
   }
-
-  // private collabIDToLogin(id: number, login: string, deviceID: string) {
-  //   const collab = this.collabs.get(id)
-  //   if (collab) {
-  //     if (collab.login !== login || collab.deviceID !== deviceID) {
-  //       this.collabs.set(id, { login, deviceID })
-  //     }
-  //   } else {
-  //     this.collabs.set(id, { login, deviceID })
-  //   }
-  // }
 
   private send(streamId: number, content: Uint8Array, id?: number): void {
     const msg = Message.create({ streamId, content })
@@ -553,20 +535,4 @@ export class BotStorage {
       }
     }
   }
-
-  // private setCryptographyType(cryptography: string) {
-  //   switch (cryptography) {
-  //     case 'keyagreement':
-  //       this.cryptographyType = EncryptionType.KEY_AGREEMENT_BD
-  //       break
-  //     case 'metadata':
-  //       this.cryptographyType = EncryptionType.METADATA
-  //       break
-  //     case 'none':
-  //       this.cryptographyType = EncryptionType.NONE
-  //       break
-  //     default:
-  //       this.cryptographyType = EncryptionType.METADATA
-  //   }
-  // }
 }
