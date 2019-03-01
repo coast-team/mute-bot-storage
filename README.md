@@ -1,5 +1,7 @@
 # Mute-bot-storage
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/coast-team/mute-bot-storage.svg)](https://greenkeeper.io/)
+
 Very simple bot storage NodeJS server written in Typescript to use with [MUTE](https://github.com/coast-team/mute). It may be invited into MUTE collaboration session, like any other collaborator, but it never modifies the document content or title. Its role is to store the document into MongoDB.
 
 ## Features
