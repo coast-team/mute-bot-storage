@@ -1,5 +1,5 @@
 import { KeyAgreementBD, Symmetric } from '@coast-team/mute-crypto'
-import { asymmetricCrypto, BN } from '@coast-team/mute-crypto-helper'
+import { asymmetricCrypto } from '@coast-team/mute-crypto-helper'
 import { CryptoType } from './CryptoType'
 import { log } from './log'
 import { IKeyPair, PKRequest } from './PKRequest'
@@ -99,7 +99,6 @@ export class CryptoService {
   }
 
   public onBDMessage(id: number, content: Uint8Array) {
-    const content2 = content.slice()
     const bd = this.crypto as KeyAgreementBD
     if (this.pkRequest) {
       const member = this.members.get(id)
@@ -107,17 +106,9 @@ export class CryptoService {
         if (member.key) {
           // Content is copied here to avoid mutation. Somehow a mutation happend just after verifying the signature.
           // protobuf maybe ?
-          bd.onMessage(id, content.slice(), member.key)
-            .then(() => {
-              if (new BN(content2, 16).toString() !== new BN(content, 16).toString()) {
-                log.error(
-                  "CONTENT IS NOT THE SAME BEFORE AND AFTER VERIFYING THE SIGNATURE. SHOULDN'T HAPPEN."
-                )
-              }
-            })
-            .catch(() => {
-              this._signatureErrorHandler(id)
-            })
+          bd.onMessage(id, content.slice(), member.key).catch(() => {
+            this._signatureErrorHandler(id)
+          })
         } else {
           member.buffer.push(content)
         }
