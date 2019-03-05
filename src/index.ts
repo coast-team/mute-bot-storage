@@ -7,11 +7,14 @@ import * as bodyParser from 'koa-bodyparser'
 import * as KoaRouter from 'koa-router'
 import { Bot, LogLevel, setLogLevel } from 'netflux'
 
-import { asymmetricCrypto } from '@coast-team/mute-crypto'
+import { KeyAgreementBD, Symmetric } from '@coast-team/mute-crypto'
 import { BotStorage } from './BotStorage'
+import { CryptoService } from './CryptoService'
+import { CryptoType } from './CryptoType'
 import { createLogger, log } from './log'
 import { IMetadata, MongooseAdapter } from './MongooseAdapter'
-import { IKeyPair } from './PKRequest'
+import { NetworkService } from './network'
+import { PKRequest } from './PKRequest'
 
 interface IOptions {
   name: string
@@ -137,10 +140,7 @@ process.on('uncaughtException', (err) => {
 
 // Connect to MongoDB
 const db = new MongooseAdapter()
-db.connect(
-  `localhost`,
-  database
-)
+db.connect(`localhost`, database)
   .then(() => {
     log.info(`Connected to the database  ✓`)
 
@@ -221,19 +221,41 @@ db.connect(
         signalingServer: signalingURL,
       },
     })
-    const exportedSigningKeyPair =
-      cryptography === 'keyagreement' ? await generateSigningKeyPair() : undefined
+    let cryptoType = CryptoType.NONE
+    let cryptoService: CryptoService
+    switch (cryptography) {
+      case 'keyagreement':
+        cryptoType = CryptoType.KEY_AGREEMENT_BD
+        const signingKeyPair = await CryptoService.generateSigningKeyPair()
+        const exportedSigningKeyPair = await CryptoService.exportSigningKeyPair(signingKeyPair)
+        cryptoService = new CryptoService(
+          cryptoType,
+          new KeyAgreementBD(),
+          new PKRequest(keyServerURLPrefix, jwt),
+          signingKeyPair,
+          exportedSigningKeyPair
+        )
+        break
+      case 'metadata':
+        cryptoType = CryptoType.METADATA
+        cryptoService = new CryptoService(
+          cryptoType,
+          new Symmetric(),
+          undefined,
+          undefined,
+          undefined
+        )
+        break
+    }
     bot.onWebGroup = (wg) => {
+      const networkService = new NetworkService(wg, cryptoService)
       const botStorage = new BotStorage(
         name,
         getLogin(),
         getDeviceID(botURL),
-        wg,
         db,
-        cryptography,
-        exportedSigningKeyPair,
-        keyServerURLPrefix,
-        jwt
+        cryptoService,
+        networkService
       )
       log.info('New peer to peer network invitation received for ', botStorage.signalingKey)
     }
@@ -279,21 +301,4 @@ function getDeviceID(url: string) {
 
 function getLogin() {
   return 'bot.storage'
-}
-
-async function generateSigningKeyPair(): Promise<IKeyPair> {
-  const signingKeyPair = await asymmetricCrypto.generateSigningKeyPair()
-  const exportedSigningKeyPair = await exportSigningKeyPair(signingKeyPair)
-  log.debug('PUBLIC KEY = ', exportedSigningKeyPair.publicKey)
-  return exportedSigningKeyPair
-}
-
-async function exportSigningKeyPair(signingKeyPair: IKeyPair): Promise<IKeyPair> {
-  if (signingKeyPair === undefined) {
-    throw new Error('Signing key pair is not defined')
-  }
-  return {
-    publicKey: JSON.stringify(await asymmetricCrypto.exportKey(signingKeyPair.publicKey)),
-    privateKey: JSON.stringify(await asymmetricCrypto.exportKey(signingKeyPair.privateKey)),
-  }
 }
